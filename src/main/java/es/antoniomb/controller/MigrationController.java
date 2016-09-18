@@ -19,24 +19,10 @@ public class MigrationController {
     @Autowired
     private FAMigrationService genericDao;
 
-    @RequestMapping("/endpoint1")
+    @RequestMapping("/dummy")
     @ResponseBody
     MovieInfoDTO endpoint1() throws SQLException {
-        return genericDao.get();
-    }
-
-    @RequestMapping("/endpoint2")
-    @ResponseBody
-    List<MovieInfoDTO> endpoint2() throws SQLException {
-        return genericDao.getList();
-    }
-
-    @RequestMapping("/endpoint3")
-    @ResponseBody
-    List<MovieInfoDTO> endpoint3() throws SQLException {
-        List<MovieInfoDTO> list = genericDao.getList();
-        list.add(genericDao.get());
-        return list;
+        return null;
     }
 
 
