@@ -10,7 +10,7 @@ public class FAUtils {
         FILM("http://www.filmaffinity.com/en/film"),
         FILM_SUFIX(".html"),
         LOGIN("http://www.filmaffinity.com/en/login.php"),
-        LOGIN_POST("http://filmaffinity.com/en/account.ajax.php?action=login"),
+        LOGIN_POST("https://filmaffinity.com/en/account.ajax.php?action=login"),
         VOTES("http://www.filmaffinity.com/en/myvotes.php"),
         VOTES_PREFIX("http://www.filmaffinity.com/en/myvotes.php?p="),
         VOTES_SUFIX("&orderby="),

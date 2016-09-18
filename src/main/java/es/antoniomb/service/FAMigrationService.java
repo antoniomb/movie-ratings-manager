@@ -1,6 +1,7 @@
 package es.antoniomb.service;
 
 import es.antoniomb.utils.FAUtils;
+import es.antoniomb.utils.MigrationUtils;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -23,8 +24,11 @@ public class FAMigrationService {
 
     public String login(String username, String password) {
         String userID = null;
+
         try {
-            Connection.Response login = Jsoup.connect(FAUtils.URLS.LOGIN.getUrl())
+            MigrationUtils.disableSSLCertCheck();
+
+            Connection.Response login = Jsoup.connect(FAUtils.URLS.LOGIN_POST.getUrl())
                     .data("postback", "1")
                     .data("rp", "")
                     .data("username", username)
@@ -32,20 +36,15 @@ public class FAMigrationService {
                     .method(Connection.Method.POST)
                     .execute();
 
-            LOGGER.info(login.cookie("client-data"));
-            LOGGER.info(login.cookie("FCD"));
-            LOGGER.info(login.cookie("FSID"));
-
             Map<String, String> cookies = login.cookies();
-//            cookies.put("FSID","vsghnvijsr4ovebo9ddj27jlr4kr0ova974e3ifcc12u5qd424n0");
 
             Document votes = Jsoup.connect(FAUtils.URLS.VOTES.getUrl()).cookies(cookies).get();
 
-            Pattern userIdPattern = Pattern.compile("user_id=(?d)");
+            Pattern userIdPattern = Pattern.compile("user_id=(\\d+)");
 
-            Matcher matcher = userIdPattern.matcher(votes.body().getElementById("user-login-container").toString());
+            Matcher matcher = userIdPattern.matcher(votes.body().getElementById("user-nick").toString());
             if (matcher.find()) {
-                userID = matcher.group(0);
+                userID = matcher.group(1);
             }
             else {
                 LOGGER.log(Level.WARNING, "Error obtaining userId for username "+username);
