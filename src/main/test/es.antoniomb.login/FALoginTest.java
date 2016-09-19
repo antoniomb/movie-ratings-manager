@@ -1,5 +1,6 @@
 package es.antoniomb.login;
 
+import es.antoniomb.dto.UserInfoDTO;
 import es.antoniomb.service.FAMigrationService;
 import org.junit.Assert;
 import org.junit.Test;
@@ -15,14 +16,23 @@ public class FALoginTest {
 
     @Test
     public void login(){
-        Map<String, String> cookies = faMigrationService.login("antoniomiranda", "Abc123456");
+        UserInfoDTO userInfo = faMigrationService.login("antoniomiranda", "Abc123456");
 
-        Assert.assertTrue(cookies.containsKey("FSID"));
+        Assert.assertTrue(userInfo.getCookies().containsKey("FSID"));
     }
 
     @Test
-    public void getRatings() {
-        Map<String, String> cookies = faMigrationService.login("antoniomiranda", "Abc123456");
-        faMigrationService.getRatings(cookies);
+    public void fillUserInfo() {
+        UserInfoDTO userInfo = faMigrationService.login("antoniomiranda", "Abc123456");
+        faMigrationService.fillUserInfo(userInfo);
+
+        Assert.assertEquals(userInfo.getUserId(), "4382195");
+    }
+
+    @Test
+    public void fillMoviesInfo() {
+        UserInfoDTO userInfo = faMigrationService.login("antoniomiranda", "Abc123456");
+        faMigrationService.fillUserInfo(userInfo);
+        faMigrationService.fillMoviesInfo(userInfo);
     }
 }

@@ -50,4 +50,15 @@ public class MovieInfoDTO {
     public void setDate(String date) {
         this.date = date;
     }
+
+    @Override
+    public String toString() {
+        return "MovieInfoDTO{" +
+                "id='" + id + '\'' +
+                ", title='" + title + '\'' +
+                ", year='" + year + '\'' +
+                ", rate='" + rate + '\'' +
+                ", date='" + date + '\'' +
+                '}';
+    }
 }
