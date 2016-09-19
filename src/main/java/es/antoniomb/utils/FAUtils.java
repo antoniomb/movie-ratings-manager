@@ -14,7 +14,7 @@ public class FAUtils {
         VOTES("http://www.filmaffinity.com/en/myvotes.php"),
         VOTES_PREFIX("http://www.filmaffinity.com/en/myvotes.php?p="),
         VOTES_SUFIX("&orderby="),
-        VOTES_ID("http://www.filmaffinity.com/en/userratings.php?user_id="),
+        RATINGS("http://www.filmaffinity.com/en/userratings.php?user_id="),
         VOTES_PAGE_SUFIX("&p=");
 
         String url;

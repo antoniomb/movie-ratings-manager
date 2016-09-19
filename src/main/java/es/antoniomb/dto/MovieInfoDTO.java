@@ -5,27 +5,49 @@ package es.antoniomb.dto;
  */
 public class MovieInfoDTO {
 
-    public Long id;
-    public String value;
+    public String id;
+    public String title;
+    public String year;
+    public String rate;
+    public String date;
 
-    public MovieInfoDTO(Long id, String value) {
-        this.id = id;
-        this.value = value;
-    }
-
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
-    public String getValue() {
-        return value;
+    public String getTitle() {
+        return title;
     }
 
-    public void setValue(String value) {
-        this.value = value;
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getYear() {
+        return year;
+    }
+
+    public void setYear(String year) {
+        this.year = year;
+    }
+
+    public String getRate() {
+        return rate;
+    }
+
+    public void setRate(String rate) {
+        this.rate = rate;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
     }
 }

@@ -22,43 +22,80 @@ public class FAMigrationService {
 
     private static Logger LOGGER = Logger.getLogger(FAMigrationService.class.getName());
 
-    public String login(String username, String password) {
-        String userID = null;
+    public void migrate(String username, String password) {
 
+        Map<String, String> cookies = login(username, password);
+
+        getRatings(cookies);
+
+
+    }
+
+    public Map<String, String> login(String username, String password) {
+        Connection.Response login = null;
         try {
             MigrationUtils.disableSSLCertCheck();
 
-            Connection.Response login = Jsoup.connect(FAUtils.URLS.LOGIN_POST.getUrl())
+            login = Jsoup.connect(FAUtils.URLS.LOGIN_POST.getUrl())
                     .data("postback", "1")
                     .data("rp", "")
                     .data("username", username)
                     .data("password", password)
                     .method(Connection.Method.POST)
                     .execute();
-
-            Map<String, String> cookies = login.cookies();
-
-            Document votes = Jsoup.connect(FAUtils.URLS.VOTES.getUrl()).cookies(cookies).get();
-
-            Pattern userIdPattern = Pattern.compile("user_id=(\\d+)");
-
-            Matcher matcher = userIdPattern.matcher(votes.body().getElementById("user-nick").toString());
-            if (matcher.find()) {
-                userID = matcher.group(1);
-            }
-            else {
-                LOGGER.log(Level.WARNING, "Error obtaining userId for username "+username);
-            }
-
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             LOGGER.log(Level.WARNING, "Error logging user "+username, e);
         }
 
-        if (userID == null) {
+        if (login == null) {
             throw new RuntimeException("Login error");
         }
 
-        return userID;
+        return login.cookies();
+    }
+
+    public void getRatings(Map<String, String> cookies) {
+        try {
+            String userID = null;
+            Document votesPage = Jsoup.connect(FAUtils.URLS.VOTES.getUrl()).cookies(cookies).get();
+            Pattern userIdPattern = Pattern.compile("user_id=(\\d+)");
+            Matcher userIdMatcher = userIdPattern.matcher(votesPage.body().getElementById("user-nick").toString());
+            if (userIdMatcher.find()) {
+                userID = userIdMatcher.group(1);
+            }
+            else {
+                throw new RuntimeException("Error obtaining userID");
+            }
+            LOGGER.info("User id: "+userID);
+
+            String pages = null;
+            Document ratingsPage = Jsoup.connect(FAUtils.URLS.RATINGS.getUrl()+userID).cookies(cookies).get();
+            Pattern pagePattern = Pattern.compile("Page \n  <b>1</b> of \n  <b>(\\d+)</b>");
+            Matcher pageMatcher = pagePattern.matcher(ratingsPage.body().getElementsByClass("user-ratings-info-top").toString());
+            if (pageMatcher.find()) {
+                pages = pageMatcher.group(1);
+            }
+            else {
+                throw new RuntimeException("Error obtaining rating pages");
+            }
+            LOGGER.info("User ratings pages: "+pages);
+
+            String votes = null;
+            Pattern votesPattern = Pattern.compile("<div class=\"number\">\n  (\\d+)\n </div>");
+            Matcher votesMatcher = votesPattern.matcher(ratingsPage.body().getElementsByClass("active-tab").toString());
+            if (votesMatcher.find()) {
+                votes = votesMatcher.group(1);
+            }
+            else {
+                throw new RuntimeException("Error obtaining user votes");
+            }
+            LOGGER.info("User total votes: "+votes);
+
+        } catch (IOException e) {
+            LOGGER.log(Level.WARNING, "Error obtaining ratings", e);
+        }
+
     }
 
 }
