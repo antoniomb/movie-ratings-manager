@@ -1,9 +1,13 @@
 package es.antoniomb.utils;
 
+import java.text.SimpleDateFormat;
+
 /**
  * Created by amiranda on 18/9/16.
  */
 public class FAUtils {
+
+    public static SimpleDateFormat MONTH_FORMAT = new SimpleDateFormat("MMM");
 
     public enum URLS {
         HOME("http://www.filmaffinity.com/en/main.php"),

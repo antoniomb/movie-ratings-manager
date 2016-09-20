@@ -4,15 +4,22 @@ import es.antoniomb.dto.MovieInfo;
 import es.antoniomb.dto.UserInfo;
 import es.antoniomb.utils.FAUtils;
 import es.antoniomb.utils.MigrationUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -47,6 +54,8 @@ public class FAMigrationService implements IMigrationService {
         try {
             MigrationUtils.disableSSLCertCheck();
 
+            LOGGER.info("User name: " + username);
+
             //Request for login
             login = Jsoup.connect(FAUtils.URLS.LOGIN_POST.getUrl())
                     .data("postback", "1")
@@ -60,7 +69,7 @@ public class FAMigrationService implements IMigrationService {
             LOGGER.log(Level.WARNING, "Error logging user "+username, e);
         }
 
-        if (login == null) {
+        if (login == null || login.cookie("FSID") == null) {
             throw new RuntimeException("Login error");
         }
 
@@ -72,20 +81,21 @@ public class FAMigrationService implements IMigrationService {
 
     public void fillUserInfo(UserInfo userInfo) {
         try {
-            //Request for votes
+            //Request for obtaining userId
             Document votesPage = Jsoup.connect(FAUtils.URLS.VOTES.getUrl()).cookies(userInfo.getCookies()).get();
-
-            Pattern userIdPattern = Pattern.compile("user_id=(\\d+)");
-            Matcher userIdMatcher = userIdPattern.matcher(votesPage.body().getElementById("user-nick").toString());
-            if (userIdMatcher.find()) {
-                userInfo.setUserId(userIdMatcher.group(1));
+            if (votesPage.body().getElementById("user-nick") != null) {
+                Pattern userIdPattern = Pattern.compile("user_id=(\\d+)");
+                Matcher userIdMatcher = userIdPattern.matcher(votesPage.body().getElementById("user-nick").toString());
+                if (userIdMatcher.find()) {
+                    userInfo.setUserId(userIdMatcher.group(1));
+                }
             }
-            else {
+            if (userInfo.getUserId() == null) {
                 throw new RuntimeException("Error obtaining userID");
             }
             LOGGER.info("User id: "+userInfo.getUserId());
 
-            //Request for ratings
+            //Request for rating pages and votes number
             Document ratingsPage = Jsoup.connect(FAUtils.URLS.RATINGS.getUrl()+userInfo.getUserId()).cookies(userInfo.getCookies()).get();
 
             String pages = ratingsPage.body().getElementsByClass("user-ratings-info-top").get(0).child(0).childNode(3).childNode(0).outerHtml();
@@ -122,6 +132,16 @@ public class FAMigrationService implements IMigrationService {
                 for (Element movieDateElement : movieDateElements) {
                     Elements dateElement = movieDateElement.getElementsByClass("user-ratings-header");
                     String date = dateElement.get(0).childNode(0).outerHtml().substring(10);
+
+                    try {
+                        String[] split = date.replaceAll(",", "").split(" ");
+                        date = split[2]+"/"+ //year
+                               String.format("%02d", FAUtils.MONTH_FORMAT.parse(split[0]).getMonth()) + "/" + //month
+                               String.format("%02d", Integer.valueOf(split[1])); //day
+                    } catch (ParseException e) {
+                        LOGGER.log(Level.WARNING, "Error parsing date "+date, e);
+                    }
+
 
                     Elements movieElements = movieDateElement.getElementsByClass("user-ratings-movie");
                     for (Element movieElement : movieElements) {

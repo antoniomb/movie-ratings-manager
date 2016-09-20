@@ -7,6 +7,7 @@ import javax.net.ssl.*;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
+import java.text.SimpleDateFormat;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -16,6 +17,8 @@ import java.util.logging.Logger;
 public abstract class MigrationUtils {
 
     private static Logger LOGGER = Logger.getLogger(MigrationUtils.class.getName());
+
+    public static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/mm/yyyy");
 
     public static void parseWebCode(MigrationInput migrationInfo) {
         MigrationWeb from = MigrationWeb.parse(migrationInfo.getFrom());

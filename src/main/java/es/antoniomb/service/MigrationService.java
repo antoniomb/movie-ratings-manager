@@ -1,11 +1,15 @@
 package es.antoniomb.service;
 
+import com.opencsv.CSVWriter;
 import es.antoniomb.dto.MigrationInput;
 import es.antoniomb.dto.MigrationOutput;
 import es.antoniomb.dto.MovieInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -48,7 +52,7 @@ public class MigrationService {
     }
 
     private List<MovieInfo> getRatings(MigrationInput migrationInfo, MigrationOutput result) {
-        List<MovieInfo> moviesInfo = null;
+        List<MovieInfo> moviesInfo = new ArrayList<>();
         try {
             switch (migrationInfo.getSource()) {
                 case FILMAFFINITY:
@@ -102,6 +106,20 @@ public class MigrationService {
             if (result.getTargetStatus()) {
                 result.setMoviesWrited(moviesImported);
             }
+        }
+
+        CSVWriter writer = null;
+        try {
+            writer = new CSVWriter(new FileWriter("tmp.csv"), '\t', CSVWriter.NO_QUOTE_CHARACTER);
+            for (MovieInfo movieInfo : moviesInfo) {
+                String[] row = new String[]{movieInfo.getId(),movieInfo.getTitle(),movieInfo.getYear(),
+                                                movieInfo.getDate(),movieInfo.getRate()};
+                writer.writeNext(row);
+            }
+            writer.close();
+        }
+        catch (IOException e) {
+            LOGGER.log(Level.WARNING, "Error writing csv", e);
         }
     }
 }
