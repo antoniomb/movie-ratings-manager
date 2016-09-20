@@ -1,14 +1,17 @@
 package es.antoniomb.controller;
 
-import es.antoniomb.service.FAMigrationService;
-import es.antoniomb.dto.MovieInfoDTO;
+import es.antoniomb.dto.MigrationInput;
+import es.antoniomb.dto.MigrationOutput;
+import es.antoniomb.service.MigrationService;
+import es.antoniomb.utils.MigrationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.sql.SQLException;
-import java.util.List;
 
 /**
  * Created by amiranda on 18/09/16.
@@ -17,12 +20,15 @@ import java.util.List;
 public class MigrationController {
 
     @Autowired
-    private FAMigrationService genericDao;
+    private MigrationService migrationService;
 
-    @RequestMapping("/dummy")
+    @RequestMapping(value = "/migrate", method = RequestMethod.POST)
     @ResponseBody
-    MovieInfoDTO endpoint1() throws SQLException {
-        return null;
+    MigrationOutput migrate(@RequestBody MigrationInput migrationInfo) throws SQLException {
+
+        MigrationUtils.parseWebCode(migrationInfo);
+
+        return migrationService.migrate(migrationInfo);
     }
 
 

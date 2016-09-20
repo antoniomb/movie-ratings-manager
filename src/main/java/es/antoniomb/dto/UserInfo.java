@@ -5,7 +5,7 @@ import java.util.Map;
 /**
  * Created by amiranda on 19/9/16.
  */
-public class UserInfoDTO {
+public class UserInfo {
 
     private String userId;
     private Integer pages;

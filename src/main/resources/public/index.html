@@ -15,11 +15,34 @@
         <div class="row">
             <h2>Movie ratings migrator</h2>
         </div>
+        <form>
+            <div class="row">
+                <h3>Source</h3>
+                Username:<br>
+                <input type="text" name="fromUsername" ng-model="migration.fromUsername"><br>
+                Password:<br>
+                <input type="password" name="fromPassword" ng-model="migration.fromPassword">
+            </div>
+            <div class="row">
+                <h3>Target</h3>
+                Username:<br>
+                <input type="text" name="username" ng-model="migration.toUsername"><br>
+                Password:<br>
+                <input type="password" name="password" ng-model="migration.toPassword">
+            </div>
+            <div class="row">
+                <button class="big button" type="submit" ng-click="migrate(migration)">Migrate!</button>
+            </div>
+        </form>
+
         <div class="row">
-            <p>Value from API1: <span>{{value1}}</span></p>
-            <p>Value from API2: <span>{{value2}}</span></p>
-            <p>Value from API3: <span>{{value3}}</span></p>
+            SourceStatus: <span>{{sourceStatus}}</span> <br/>
+            TargetStatus: <span>{{targetStatus}}</span> <br/>
+            MoviesReaded: <span>{{moviesReaded}}</span> <br/>
+            MoviesWrited: <span>{{moviesWrited}}</span> <br/>
+            RatingAverage: {{ratingAvg}} <br/>
         </div>
+
     </div>
 
     <script src="app.js"></script>

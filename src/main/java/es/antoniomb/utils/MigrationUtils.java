@@ -1,5 +1,8 @@
 package es.antoniomb.utils;
 
+import es.antoniomb.dto.MigrationInput;
+import es.antoniomb.dto.enums.MigrationWeb;
+
 import javax.net.ssl.*;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
@@ -14,22 +17,26 @@ public abstract class MigrationUtils {
 
     private static Logger LOGGER = Logger.getLogger(MigrationUtils.class.getName());
 
+    public static void parseWebCode(MigrationInput migrationInfo) {
+        MigrationWeb from = MigrationWeb.parse(migrationInfo.getFrom());
+        if (from == null) {
+            throw new RuntimeException("Invalid source web code");
+        }
+        migrationInfo.setSource(from);
+
+        MigrationWeb to = MigrationWeb.parse(migrationInfo.getTo());
+        if (to == null) {
+            throw new RuntimeException("Invalid target web code");
+        }
+        migrationInfo.setTarget(to);
+    }
+
     public static void disableSSLCertCheck() {
         // Create a trust manager that does not validate certificate chains
         TrustManager[] trustAllCerts = new TrustManager[] {new X509TrustManager() {
-            @Override
-            public void checkClientTrusted(java.security.cert.X509Certificate[] x509Certificates, String s) throws CertificateException {
-
-            }
-
-            @Override
-            public void checkServerTrusted(java.security.cert.X509Certificate[] x509Certificates, String s) throws CertificateException {
-
-            }
-
-            public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-                return null;
-            }
+            public void checkClientTrusted(java.security.cert.X509Certificate[] x509Certificates, String s) throws CertificateException {}
+            public void checkServerTrusted(java.security.cert.X509Certificate[] x509Certificates, String s) throws CertificateException {}
+            public java.security.cert.X509Certificate[] getAcceptedIssuers() {return null;}
         }
         };
 
@@ -42,14 +49,12 @@ public abstract class MigrationUtils {
             LOGGER.log(Level.WARNING, "SSL error", e);
         }
         HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-
         // Create all-trusting host name verifier
         HostnameVerifier allHostsValid = new HostnameVerifier() {
             public boolean verify(String hostname, SSLSession session) {
                 return true;
             }
         };
-
         // Install the all-trusting host verifier
         HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
     }

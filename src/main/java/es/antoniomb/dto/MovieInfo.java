@@ -3,7 +3,7 @@ package es.antoniomb.dto;
 /**
  * Created by amiranda on 18/09/16.
  */
-public class MovieInfoDTO {
+public class MovieInfo {
 
     public String id;
     public String title;

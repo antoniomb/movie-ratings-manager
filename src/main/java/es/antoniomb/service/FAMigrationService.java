@@ -1,7 +1,7 @@
 package es.antoniomb.service;
 
-import es.antoniomb.dto.MovieInfoDTO;
-import es.antoniomb.dto.UserInfoDTO;
+import es.antoniomb.dto.MovieInfo;
+import es.antoniomb.dto.UserInfo;
 import es.antoniomb.utils.FAUtils;
 import es.antoniomb.utils.MigrationUtils;
 import org.jsoup.Connection;
@@ -23,20 +23,26 @@ import java.util.regex.Pattern;
  * Created by amiranda on 18/09/16.
  */
 @Service
-public class FAMigrationService {
+public class FAMigrationService implements IMigrationService {
 
     private static Logger LOGGER = Logger.getLogger(FAMigrationService.class.getName());
 
-    public void migrate(String username, String password) {
+    @Override
+    public List<MovieInfo> getRatings(String username, String password) {
 
-        UserInfoDTO userInfo = login(username, password);
+        UserInfo userInfo = login(username, password);
 
         fillUserInfo(userInfo);
 
-        fillMoviesInfo(userInfo);
+        return fillMoviesInfo(userInfo);
     }
 
-    public UserInfoDTO login(String username, String password) {
+    @Override
+    public Integer setRatings(String username, String password, List<MovieInfo> movieInfo) {
+        throw new RuntimeException("Not implemented!");
+    }
+
+    public UserInfo login(String username, String password) {
         Connection.Response login = null;
         try {
             MigrationUtils.disableSSLCertCheck();
@@ -58,13 +64,13 @@ public class FAMigrationService {
             throw new RuntimeException("Login error");
         }
 
-        UserInfoDTO userInfo = new UserInfoDTO();
+        UserInfo userInfo = new UserInfo();
         userInfo.setCookies(login.cookies());
 
         return userInfo;
     }
 
-    public void fillUserInfo(UserInfoDTO userInfo) {
+    public void fillUserInfo(UserInfo userInfo) {
         try {
             //Request for votes
             Document votesPage = Jsoup.connect(FAUtils.URLS.VOTES.getUrl()).cookies(userInfo.getCookies()).get();
@@ -107,8 +113,8 @@ public class FAMigrationService {
         }
     }
 
-    public List<MovieInfoDTO> fillMoviesInfo(UserInfoDTO userInfo) {
-        List<MovieInfoDTO> movies = new ArrayList<>();
+    public List<MovieInfo> fillMoviesInfo(UserInfo userInfo) {
+        List<MovieInfo> movies = new ArrayList<>();
         try {
             for (int i=1; i <= userInfo.getPages(); i++) {
                 String url = FAUtils.URLS.RATINGS.getUrl() + userInfo.getUserId() + FAUtils.URLS.PAGE_PREFIX.getUrl() + i;
@@ -131,7 +137,7 @@ public class FAMigrationService {
                         Elements ratingElement = movieElement.getElementsByClass("user-ratings-movie-rating");
                         String rating = ratingElement.get(0).getElementsByClass("ur-mr-rat").get(0).childNode(0).outerHtml().substring(1);
 
-                        MovieInfoDTO movieInfo = new MovieInfoDTO();
+                        MovieInfo movieInfo = new MovieInfo();
                         movieInfo.setId(id);
                         movieInfo.setTitle(title);
                         movieInfo.setYear(year);
