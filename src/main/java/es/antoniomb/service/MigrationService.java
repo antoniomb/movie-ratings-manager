@@ -7,12 +7,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by amiranda on 20/9/16.
  */
 @Service
 public class MigrationService {
+
+    private static Logger LOGGER = Logger.getLogger(MigrationService.class.getName());
 
     @Autowired
     private FAMigrationService fa;
@@ -61,6 +65,7 @@ public class MigrationService {
             result.setSourceStatus(true);
         }
         catch (Exception e) {
+            LOGGER.log(Level.WARNING, "Error getting ratings", e);
             result.setSourceStatus(false);
         }
         return moviesInfo;
@@ -84,6 +89,7 @@ public class MigrationService {
             result.setTargetStatus(true);
         }
         catch (Exception e) {
+            LOGGER.log(Level.WARNING, "Error setting ratings", e);
             result.setTargetStatus(false);
         }
         return moviesImported;

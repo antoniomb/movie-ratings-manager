@@ -88,20 +88,18 @@ public class FAMigrationService implements IMigrationService {
             //Request for ratings
             Document ratingsPage = Jsoup.connect(FAUtils.URLS.RATINGS.getUrl()+userInfo.getUserId()).cookies(userInfo.getCookies()).get();
 
-            Pattern pagePattern = Pattern.compile("Page \n  <b>1</b> of \n  <b>(\\d+)</b>");
-            Matcher pageMatcher = pagePattern.matcher(ratingsPage.body().getElementsByClass("user-ratings-info-top").toString());
-            if (pageMatcher.find()) {
-                userInfo.setPages(Integer.valueOf(pageMatcher.group(1)));
+            String pages = ratingsPage.body().getElementsByClass("user-ratings-info-top").get(0).child(0).childNode(3).childNode(0).outerHtml();
+            if (pages != null) {
+                userInfo.setPages(Integer.valueOf(pages));
             }
             else {
                 throw new RuntimeException("Error obtaining rating pages");
             }
             LOGGER.info("User ratings pages: " + userInfo.getPages());
 
-            Pattern votesPattern = Pattern.compile("<div class=\"number\">\n  (\\d+)\n </div>");
-            Matcher votesMatcher = votesPattern.matcher(ratingsPage.body().getElementsByClass("active-tab").toString());
-            if (votesMatcher.find()) {
-                userInfo.setVotes(Integer.valueOf(votesMatcher.group(1)));
+            String votes = ratingsPage.body().getElementsByClass("active-tab").get(0).childNode(1).childNodes().get(0).outerHtml();
+            if (votes != null) {
+                userInfo.setVotes(Integer.valueOf(votes.substring(1).replaceAll(",","")));
             }
             else {
                 throw new RuntimeException("Error obtaining user votes");
