@@ -18,7 +18,7 @@ public abstract class MigrationUtils {
 
     private static Logger LOGGER = Logger.getLogger(MigrationUtils.class.getName());
 
-    public static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/mm/yyyy");
+    public static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-mm-dd");
 
     public static void parseWebCode(MigrationInput migrationInfo) {
         MigrationWeb from = MigrationWeb.parse(migrationInfo.getFrom());

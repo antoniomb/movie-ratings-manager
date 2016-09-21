@@ -2,6 +2,7 @@ package es.antoniomb.login;
 
 import es.antoniomb.dto.UserInfo;
 import es.antoniomb.service.FAMigrationService;
+import es.antoniomb.utils.FAUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -16,7 +17,7 @@ public class FAServiceTest {
     public void login(){
         UserInfo userInfo = faMigrationService.login("antoniomiranda", "Abc123456");
 
-        Assert.assertTrue(userInfo.getCookies().containsKey("FSID"));
+        Assert.assertTrue(userInfo.getCookies().containsKey(FAUtils.SESSION_COOKIE));
     }
 
     @Test

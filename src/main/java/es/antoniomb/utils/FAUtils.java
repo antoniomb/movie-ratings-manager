@@ -7,6 +7,8 @@ import java.text.SimpleDateFormat;
  */
 public class FAUtils {
 
+    public static String SESSION_COOKIE = "FSID";
+
     public static SimpleDateFormat MONTH_FORMAT = new SimpleDateFormat("MMM");
 
     public enum URLS {

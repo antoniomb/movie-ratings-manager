@@ -11,6 +11,14 @@ public class MovieInfo {
     public String rate;
     public String date;
 
+    public MovieInfo() {
+    }
+
+    public MovieInfo(String title, String year) {
+        this.title = title;
+        this.year = year;
+    }
+
     public String getId() {
         return id;
     }

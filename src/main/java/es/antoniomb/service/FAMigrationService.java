@@ -4,22 +4,16 @@ import es.antoniomb.dto.MovieInfo;
 import es.antoniomb.dto.UserInfo;
 import es.antoniomb.utils.FAUtils;
 import es.antoniomb.utils.MigrationUtils;
-import org.apache.commons.lang3.time.DateUtils;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -69,7 +63,7 @@ public class FAMigrationService implements IMigrationService {
             LOGGER.log(Level.WARNING, "Error logging user "+username, e);
         }
 
-        if (login == null || login.cookie("FSID") == null) {
+        if (login == null || login.cookie(FAUtils.SESSION_COOKIE) == null) {
             throw new RuntimeException("Login error");
         }
 
@@ -135,8 +129,8 @@ public class FAMigrationService implements IMigrationService {
 
                     try {
                         String[] split = date.replaceAll(",", "").split(" ");
-                        date = split[2]+"/"+ //year
-                               String.format("%02d", FAUtils.MONTH_FORMAT.parse(split[0]).getMonth()) + "/" + //month
+                        date = split[2]+"-"+ //year
+                               String.format("%02d", FAUtils.MONTH_FORMAT.parse(split[0]).getMonth()) + "-" + //month
                                String.format("%02d", Integer.valueOf(split[1])); //day
                     } catch (ParseException e) {
                         LOGGER.log(Level.WARNING, "Error parsing date "+date, e);
@@ -155,10 +149,8 @@ public class FAMigrationService implements IMigrationService {
                         Elements ratingElement = movieElement.getElementsByClass("user-ratings-movie-rating");
                         String rating = ratingElement.get(0).getElementsByClass("ur-mr-rat").get(0).childNode(0).outerHtml().substring(1);
 
-                        MovieInfo movieInfo = new MovieInfo();
+                        MovieInfo movieInfo = new MovieInfo(title, year);
                         movieInfo.setId(id);
-                        movieInfo.setTitle(title);
-                        movieInfo.setYear(year);
                         movieInfo.setRate(rating);
                         movieInfo.setDate(date);
                         movies.add(movieInfo);
