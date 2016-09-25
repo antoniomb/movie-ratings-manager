@@ -20,6 +20,23 @@ public abstract class MigrationUtils {
 
     public static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-mm-dd");
 
+    public static void validateParams(MigrationInput migrationInfo) {
+        if (migrationInfo == null) {
+            throw new RuntimeException("Invalid input data");
+        }
+
+        if (migrationInfo.getFromUsername() == null || migrationInfo.getFromPassword() == null) {
+            throw new RuntimeException("Invalid from user data");
+        }
+
+        parseWebCode(migrationInfo);
+
+        if (!MigrationWeb.CSV.equals(migrationInfo.getTarget()) &&
+                (migrationInfo.getToUsername() == null || migrationInfo.getToPassword() == null)) {
+            throw new RuntimeException("Invalid to user data");
+        }
+    }
+
     public static void parseWebCode(MigrationInput migrationInfo) {
         MigrationWeb from = MigrationWeb.parse(migrationInfo.getFrom());
         if (from == null) {

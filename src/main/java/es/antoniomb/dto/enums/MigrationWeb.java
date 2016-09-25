@@ -4,7 +4,8 @@ package es.antoniomb.dto.enums;
  * Created by amiranda on 20/9/16.
  */
 public enum MigrationWeb {
-    FILMAFFINITY("fa"),
+    CSV("csv"),
+    FILMAFFINITY("filmaffinity"),
     IMDB("imdb"),
     LETSCINE("letscine");
     String webCode;

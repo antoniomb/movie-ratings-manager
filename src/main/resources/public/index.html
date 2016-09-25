@@ -11,27 +11,74 @@
     <meta charset='utf-8'>
 </head>
 <body>
-    <div ng-controller="MainCtrl">
+    <div ng-controller="AppController">
         <div class="row">
             <h2>Movie ratings migrator</h2>
         </div>
-        <form>
+        <form ng-submit="migrate(migration)">
             <div class="row">
-                <h3>Source</h3>
-                Username:<br>
-                <input type="text" name="fromUsername" ng-model="migration.fromUsername"><br>
-                Password:<br>
-                <input type="password" name="fromPassword" ng-model="migration.fromPassword">
+	            <div class="small-12 large-6 columns">
+	                <h3>Source</h3>
+					<ul class="button-group round toggle" data-toggle="buttons-radio">
+						<li>
+							<input type="radio" id="fromFilmaffinity" name="from-group" data-toggle="button"
+								   ng-model="migration.from" value="filmaffinity" checked>
+							<label class="button" for="fromFilmaffinity">Filmaffinity</label>
+						</li>
+						<li>
+							<input type="radio" id="fromIMDB" name="from-group" data-toggle="button"
+								   ng-model="migration.from" value="imdb">
+							<label class="button" for="fromIMDB">IMDB</label>
+						</li>
+						<li>
+							<input type="radio" id="fromLetsCine" name="from-group" data-toggle="button"
+								   ng-model="migration.from" value="letscine">
+							<label class="button" for="fromLetsCine">LetsCine</label>
+						</li>
+					</ul>
+	                <p>Username:</p>
+	                <input class="large-6 columns" type="text" name="fromUsername" ng-model="migration.fromUsername" required>
+	                <p>Password:</p>
+	                <input class="large-6 columns" type="password" name="fromPassword" ng-model="migration.fromPassword" require>
+	            </div>
+	        </div>
+            <div class="row">
+	             <div class="small-12 large-6 columns">
+	                <h3>Target</h3>
+
+	                <ul class="button-group round toggle" data-toggle="buttons-radio">
+	                    <li>
+	                        <input type="radio" id="toCSV" name="to-group" data-toggle="button"
+	                               ng-model="migration.to" value="csv" checked>
+	                        <label class="button" for="toCSV">Download CSV</label>
+	                    </li>
+	                    <li>
+	                        <input type="radio" id="toLetsCine" name="to-group" data-toggle="button"
+	                               ng-model="migration.to" value="letscine">
+	                        <label class="button" for="toLetsCine">LetsCine</label>
+	                    </li>
+	                    <li>
+	                        <input type="radio" id="toFilmaffinity" name="to-group" data-toggle="button"
+	                               ng-model="migration.to" value="filmaffinity">
+	                        <label class="button" for="toFilmaffinity">Filmaffinity</label>
+	                    </li>
+	                    <li>
+	                        <input type="radio" id="toIMDB" name="to-group" data-toggle="button"
+	                               ng-model="migration.to" value="imdb">
+	                        <label class="button" for="toIMDB">IMDB</label>
+	                    </li>
+	                </ul>
+
+	                Username:<br>
+	                <input class="large-6 columns" type="text" name="username" ng-model="migration.toUsername"><br>
+	                Password:<br>
+	                <input class="large-6 columns" type="password" name="password" ng-model="migration.toPassword">
+
+	            </div>
             </div>
+
             <div class="row">
-                <h3>Target</h3>
-                Username:<br>
-                <input type="text" name="username" ng-model="migration.toUsername"><br>
-                Password:<br>
-                <input type="password" name="password" ng-model="migration.toPassword">
-            </div>
-            <div class="row">
-                <button class="big button" type="submit" ng-click="migrate(migration)">Migrate!</button>
+                <button class="big button" type="submit">Migrate!</button>
             </div>
         </form>
 

@@ -26,10 +26,9 @@ public class MigrationController {
     @ResponseBody
     MigrationOutput migrate(@RequestBody MigrationInput migrationInfo) throws SQLException {
 
-        MigrationUtils.parseWebCode(migrationInfo);
+        MigrationUtils.validateParams(migrationInfo);
 
         return migrationService.migrate(migrationInfo);
     }
-
 
 }

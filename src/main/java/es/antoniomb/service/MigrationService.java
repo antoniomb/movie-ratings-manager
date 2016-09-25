@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -88,6 +89,9 @@ public class MigrationService {
                 case LETSCINE:
                     moviesImported = letsCine.setRatings(migrationInfo.getToUsername(), migrationInfo.getToPassword(), moviesInfo);
                     break;
+                case CSV:
+                    result.setCsv(generateCSV(moviesInfo));
+                    break;
                 default:
             }
             result.setTargetStatus(true);
@@ -107,19 +111,29 @@ public class MigrationService {
                 result.setMoviesWrited(moviesImported);
             }
         }
+    }
 
+    private String generateCSV(List<MovieInfo> moviesInfo) {
         CSVWriter writer = null;
         try {
-            writer = new CSVWriter(new FileWriter("tmp.csv"), '\t', CSVWriter.NO_QUOTE_CHARACTER);
+            StringWriter strWriter = new StringWriter();
+            writer = new CSVWriter(strWriter, '\t', CSVWriter.NO_QUOTE_CHARACTER);
+            writer.writeNext(new String[]{"id","title","year","ratingDate","rating"});
             for (MovieInfo movieInfo : moviesInfo) {
                 String[] row = new String[]{movieInfo.getId(),movieInfo.getTitle(),movieInfo.getYear(),
                                                 movieInfo.getDate(),movieInfo.getRate()};
                 writer.writeNext(row);
             }
-            writer.close();
+            return strWriter.toString();
         }
-        catch (IOException e) {
-            LOGGER.log(Level.WARNING, "Error writing csv", e);
+        finally {
+            try {
+                if (writer != null) {
+                    writer.close();
+                }
+            } catch (IOException e) {
+                LOGGER.log(Level.WARNING, "Error closing csv", e);
+            }
         }
     }
 }

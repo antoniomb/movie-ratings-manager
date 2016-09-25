@@ -14,6 +14,7 @@ public class MigrationOutput implements Serializable {
     private Integer moviesReaded;
     private Integer moviesWrited;
     private Double ratingAvg;
+    private String csv;
 
     public MigrationOutput() {
     }
@@ -56,5 +57,13 @@ public class MigrationOutput implements Serializable {
 
     public void setRatingAvg(Double ratingAvg) {
         this.ratingAvg = ratingAvg;
+    }
+
+    public String getCsv() {
+        return csv;
+    }
+
+    public void setCsv(String csv) {
+        this.csv = csv;
     }
 }

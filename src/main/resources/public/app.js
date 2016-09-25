@@ -1,13 +1,14 @@
 var app = angular.module('app', ['ngAnimate', 'ngTouch']);
 
-app.controller('MainCtrl', ['$scope', '$http',
+app.config(['$compileProvider',
+    function ($compileProvider) {
+        $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|tel|file|blob):/);
+    }]);
+
+app.controller('AppController', ['$scope', '$http',
     function ($scope, $http) {
 
     $scope.migrate = function(migration) {
-
-        //TODO hardcoded
-        migration.from = "fa";
-        migration.to = "letscine";
 
         $http.post('http://localhost:8090/migrate', migration)
             .success(function(data) {
@@ -16,6 +17,13 @@ app.controller('MainCtrl', ['$scope', '$http',
                 $scope.moviesReaded = data.moviesReaded;
                 $scope.moviesWrited = data.moviesWrited;
                 $scope.ratingAvg = data.ratingAvg;
+                if (migration.to == "csv") {
+                    var blob = new Blob([data.csv], { type : 'text/csv' });
+                    var downloadLink = angular.element('<a></a>');
+                    downloadLink.attr('href',window.URL.createObjectURL(blob));
+                    downloadLink.attr('download', migration.from+'-ratings.csv');
+                    downloadLink[0].click();
+                }
             });
     };
 
