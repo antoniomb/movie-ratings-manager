@@ -1,46 +1,58 @@
-@import url(https://fonts.googleapis.com/css?family=Roboto);
+@import 'https://fonts.googleapis.com/css?family=Varela+Round';
 
-body {
-    color:#888;
-    font-family: 'Roboto', sans-serif;
+body{
+    background: #F5F5F5;
+    color: #424242;
+    font-family: 'Varela Round', sans-serif;
 }
-.grid {
-    width: 100%;
-    min-height: 1000px;
-    height: 100%;
-    border: 1px solid #FFF;
-}
-.row{
-    max-width: 68rem !important;
-}
-a{
-    color:#a80c21;
-}
-a:hover, a:visited, a:active, a:focus {
-    color:#f40c21;
-}
-button, .button {
-    font-family: 'Roboto', sans-serif;
-    margin: 0rem;
-    padding: 0.5rem;
-    font-size: 1rem;
-    background-color: #a80c21;
-    border-color: #a80c21;
-    color: #FFFFFF;
-    padding: 9px 25px;
-}
-button:hover, button:focus, .button:hover, .button:focus {
-    background-color: #f40c21;
-}
-h2 {
+h1 {
     text-transform: uppercase;
-    color: #1a237e;
+    color: #FF5252;
+    padding: 0.8rem 0rem;
+    text-align: center;
 }
-p {
-    color: #3F51B5;
+h2{
+    margin: 0;
 }
-span {
-    color: #2196F3;
+p.target {
+    margin-bottom: 0.8rem;
+}
+.content{
+    background:#FFF;
+    margin-bottom: 1rem;
+}
+.section-box{
+    padding: 1rem;
+}
+/*Buttons*/
+button, .button {
+    font-family: 'Varela Round', sans-serif;
+    background-color: #FF5252;
+    font-size: 1.2em;
+    color: #FFFFFF;
+}
+button:hover, button:focus, .button:hover, .button:focus{
+    background-color: #FF8A80;
+}
+.button-group.round > * > button, .button-group.round > * .button {
+    border-left: 2px solid;
+    border-color: rgba(255, 255, 255, 0.8);
+}
+.button-group {
+    margin-bottom: 1rem;
+}
+.button.disabled {
+    background: #BDBDBD;
+    pointer-events: none;
+}
+button.big.button {
+    width: 100%;
+    text-transform: uppercase;
+}
+/*Input*/
+input:not([type]), input[type="text"], input[type="password"], input[type="date"], input[type="datetime"], input[type="datetime-local"], input[type="month"], input[type="week"], input[type="email"], input[type="number"], input[type="search"], input[type="tel"], input[type="time"], input[type="url"], input[type="color"], textarea {
+    border-color: #ddd;
+    box-shadow: none;
 }
 input[data-toggle] {
     display: none; }
@@ -51,4 +63,5 @@ input[data-toggle]:checked + label:active {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15) inset, 0 1px 2px rgba(0, 0, 0, 0.05); }
 
 .button-group.toggle li:not(first-child) {
-    margin: 0 -0.9rem; }
+    margin: 0 -0.9rem;
+}

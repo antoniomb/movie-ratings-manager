@@ -11,8 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.sql.SQLException;
-
 /**
  * Created by amiranda on 18/09/16.
  */
@@ -24,7 +22,7 @@ public class MigrationController {
 
     @RequestMapping(value = "/migrate", method = RequestMethod.POST)
     @ResponseBody
-    MigrationOutput migrate(@RequestBody MigrationInput migrationInfo) throws SQLException {
+    MigrationOutput migrate(@RequestBody MigrationInput migrationInfo) {
 
         MigrationUtils.validateParams(migrationInfo);
 

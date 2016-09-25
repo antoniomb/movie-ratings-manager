@@ -17,7 +17,7 @@ public enum MigrationWeb {
     }
     public static MigrationWeb parse(String webCode){
         for (MigrationWeb migrationWebCode : values()) {
-            if (webCode.equals(migrationWebCode.getWebCode())) {
+            if (migrationWebCode.getWebCode().equals(webCode)) {
                 return migrationWebCode;
             }
         }

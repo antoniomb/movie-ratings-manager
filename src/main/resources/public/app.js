@@ -10,7 +10,7 @@ app.controller('AppController', ['$scope', '$http', '$window',
 
     $scope.migrate = function(migration) {
 
-        var api_url = 'http://' + $window.location.hostname + ':' + $window.location.port + '/migrate';
+        var api_url = $window.location.origin + '/migrate';
         $http.post(api_url, migration)
             .success(function(data) {
                 $scope.sourceStatus = data.sourceStatus;
@@ -25,15 +25,16 @@ app.controller('AppController', ['$scope', '$http', '$window',
                     downloadLink.attr('download', migration.from+'-ratings.csv');
                     downloadLink[0].click();
                 }
+            })
+            .error(function(data) {
+                alert(data.message);
             });
     };
 
-    $scope.$watch( 'sourceStatus',
-        function(newValue, oldValue){
-            console.log('sourceStatus Changed');
-            console.log(newValue);
-            console.log(oldValue);
-        }
-    );
+    $scope.anySelected = function (object) {
+        return Object.keys(object).some(function (key) {
+            return object[key];
+        });
+    }
 
 }]);
