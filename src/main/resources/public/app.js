@@ -10,6 +10,10 @@ app.controller('AppController', ['$scope', '$http', '$window',
 
     $scope.migrate = function(migration) {
 
+        //Default values
+        migration.from = "filmaffinity";
+        migration.to = "csv";
+
         var api_url = $window.location.origin + '/migrate';
         $http.post(api_url, migration)
             .success(function(data) {

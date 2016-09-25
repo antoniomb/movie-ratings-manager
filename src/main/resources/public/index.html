@@ -21,20 +21,20 @@
 					<div class="small-10 small-centered columns section-box">
 						<h2>Source</h2>
 						<p class="target">Texto explicativo de cuenta de origen</p>
-						<ul class="button-group round toggle" data-toggle="buttons-radio">
+						<ul class="button-group round toggle" data-toggle="buttons-radio" ng-init="migration.from=filmaffinity" >
 							<li>
 								<input type="radio" id="fromFilmaffinity" name="from-group" data-toggle="button"
-									   ng-model="migration.from" value="filmaffinity" ng-required="!migration.from" checked>
+									   ng-model="migration.from" value="filmaffinity" checked="checked">
 								<label class="button" for="fromFilmaffinity">Filmaffinity</label>
 							</li>
 							<li>
 								<input type="radio" id="fromIMDB" name="from-group" data-toggle="button"
-									   ng-model="migration.from" value="imdb" ng-required="!migration.from">
+									   ng-model="migration.from" value="imdb">
 								<label class="button disabled" for="fromIMDB">IMDB</label>
 							</li>
 							<li>
 								<input type="radio" id="fromLetsCine" name="from-group" data-toggle="button"
-									   ng-model="migration.from" value="letscine" ng-required="!migration.from">
+									   ng-model="migration.from" value="letscine">
 								<label class="button disabled" for="fromLetsCine">LetsCine</label>
 							</li>
 						</ul>
@@ -48,7 +48,7 @@
 						<input class="large-6 columns" type="password" name="fromPassword" ng-model="migration.fromPassword" required>
 						<h2>Target</h2>
 						<p class="target">Texto explicativo de cuenta de origen</p>
-						<ul class="button-group round toggle" data-toggle="buttons-radio">
+						<ul class="button-group round toggle" data-toggle="buttons-radio" ng-init="migration.to=csv">
 							<li>
 								<input type="radio" id="toCSV" name="to-group" data-toggle="button"
 									   ng-model="migration.to" value="csv" checked>
