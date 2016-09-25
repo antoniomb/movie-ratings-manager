@@ -5,12 +5,13 @@ app.config(['$compileProvider',
         $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|tel|file|blob):/);
     }]);
 
-app.controller('AppController', ['$scope', '$http',
-    function ($scope, $http) {
+app.controller('AppController', ['$scope', '$http', '$window',
+    function ($scope, $http, $window) {
 
     $scope.migrate = function(migration) {
 
-        $http.post('http://localhost:8090/migrate', migration)
+        var api_url = 'http://' + $window.location.hostname + ':' + $window.location.port + '/migrate';
+        $http.post(api_url, migration)
             .success(function(data) {
                 $scope.sourceStatus = data.sourceStatus;
                 $scope.targetStatus = data.targetStatus;
