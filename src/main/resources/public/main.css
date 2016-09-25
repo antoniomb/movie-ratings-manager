@@ -50,12 +50,16 @@ button.big.button {
     text-transform: uppercase;
 }
 /*Input*/
+input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 1000px white inset !important;
+}
 input:not([type]), input[type="text"], input[type="password"], input[type="date"], input[type="datetime"], input[type="datetime-local"], input[type="month"], input[type="week"], input[type="email"], input[type="number"], input[type="search"], input[type="tel"], input[type="time"], input[type="url"], input[type="color"], textarea {
     border-color: #ddd;
     box-shadow: none;
 }
 input[data-toggle] {
-    display: none; }
+    display: none;
+}
 
 input[data-toggle]:checked + label,
 input[data-toggle]:checked + label:active {
