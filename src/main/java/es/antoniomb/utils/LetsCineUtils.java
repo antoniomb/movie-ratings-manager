@@ -9,6 +9,7 @@ public class LetsCineUtils {
 
     public enum URLS {
         HOME("http://www.letscine.com"),
+        LOGIN("https://www.letscine.com/login"),
         LOGIN_POST("https://www.letscine.com/action/login"),
         SEARCH("https://www.letscine.com/search.php?lang=es&type=multi&term="),
         LOAD_MOVIE("https://www.letscine.com/movies/load/"),

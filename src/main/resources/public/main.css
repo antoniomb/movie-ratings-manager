@@ -69,3 +69,8 @@ input[data-toggle]:checked + label:active {
 .button-group.toggle li:not(first-child) {
     margin: 0 -0.9rem;
 }
+
+#migration-result {
+    font-size: 1rem;
+}
+

@@ -11,9 +11,16 @@ app.controller('AppController', ['$scope', '$http', '$window',
     $scope.migrate = function(migration) {
 
         //Default values
-        migration.from = "filmaffinity";
-        migration.to = "csv";
+        if (!migration.from) {
+            migration.from = "filmaffinity";
+        }
+        if (!migration.to) {
+            migration.to = "csv";
+        }
 
+        var result = angular.element(document.querySelector('#migration-result'));
+        $scope.result = "Loading ...";
+        result.removeClass('success').removeClass('alert').addClass('info');
         var api_url = $window.location.origin + '/migrate';
         $http.post(api_url, migration)
             .success(function(data) {
@@ -22,16 +29,30 @@ app.controller('AppController', ['$scope', '$http', '$window',
                 $scope.moviesReaded = data.moviesReaded;
                 $scope.moviesWrited = data.moviesWrited;
                 $scope.ratingAvg = data.ratingAvg;
-                if (migration.to == "csv") {
-                    var blob = new Blob([data.csv], { type : 'text/csv' });
-                    var downloadLink = angular.element('<a></a>');
-                    downloadLink.attr('href',window.URL.createObjectURL(blob));
-                    downloadLink.attr('download', migration.from+'-ratings.csv');
-                    downloadLink[0].click();
+                if ($scope.sourceStatus == true && $scope.targetStatus == true) {
+                    if (migration.to == "csv") {
+                        var blob = new Blob([data.csv], {type: 'text/csv'});
+                        var downloadLink = angular.element('<a></a>');
+                        downloadLink.attr('href', window.URL.createObjectURL(blob));
+                        downloadLink.attr('download', migration.from + '-ratings.csv');
+                        downloadLink[0].click();
+
+                        $scope.result = "CSV succesfully generated: Found "+$scope.moviesReaded+ " movies";
+                    }
+                    else {
+                        $scope.result= "Source movies: "+$scope.moviesReaded+" - Matched movies on target: "+$scope.moviesWrited;
+                    }
+
                 }
+                else {
+                    $scope.result = "Login error";
+                    result.removeClass('success').addClass('alert');
+                }
+                result.removeClass('alert').removeClass('info').addClass('success');
             })
             .error(function(data) {
-                alert(data.message);
+                $scope.result = data.message;
+                result.removeClass('success').removeClass('info').addClass('alert');
             });
     };
 

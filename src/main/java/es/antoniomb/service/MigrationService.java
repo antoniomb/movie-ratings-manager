@@ -91,6 +91,7 @@ public class MigrationService {
                     break;
                 case CSV:
                     result.setCsv(generateCSV(moviesInfo));
+                    result.setMoviesWrited(moviesInfo.size());
                     break;
                 default:
             }

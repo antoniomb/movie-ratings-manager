@@ -26,27 +26,27 @@ public abstract class MigrationUtils {
         }
 
         if (migrationInfo.getFromUsername() == null || migrationInfo.getFromPassword() == null) {
-            throw new RuntimeException("Invalid from user data");
+            throw new RuntimeException("Invalid source user data");
         }
 
         parseWebCode(migrationInfo);
 
         if (!MigrationWeb.CSV.equals(migrationInfo.getTarget()) &&
-                (migrationInfo.getToUsername() == null || migrationInfo.getToPassword() == null)) {
-            throw new RuntimeException("Invalid to user data");
+                (migrationInfo.getToUsername() == null)) {
+            throw new RuntimeException("Invalid target user data");
         }
     }
 
     public static void parseWebCode(MigrationInput migrationInfo) {
         MigrationWeb from = MigrationWeb.parse(migrationInfo.getFrom());
         if (from == null) {
-            throw new RuntimeException("Invalid source web code");
+            throw new RuntimeException("Invalid source");
         }
         migrationInfo.setSource(from);
 
         MigrationWeb to = MigrationWeb.parse(migrationInfo.getTo());
         if (to == null) {
-            throw new RuntimeException("Invalid target web code");
+            throw new RuntimeException("Invalid target");
         }
         migrationInfo.setTarget(to);
     }

@@ -4,18 +4,19 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import es.antoniomb.dto.MovieInfo;
 import es.antoniomb.dto.UserInfo;
-import es.antoniomb.utils.FAUtils;
 import es.antoniomb.utils.LetsCineUtils;
 import es.antoniomb.utils.MigrationUtils;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -41,35 +42,63 @@ public class LetsCineMigrationService implements IMigrationService {
     }
 
     public UserInfo login(String username, String password) {
-        Connection.Response login = null;
+        Map<String,String> cookies = new HashMap<>();
         try {
             MigrationUtils.disableSSLCertCheck();
 
-            LOGGER.info("User name: "+username);
+            if (password == null) {
+                //Dummy cookie
+                cookies.put("Elgg",username);
+            }
+            else {
+                LOGGER.info("User name: " + username);
 
-            //Request for login
-            login = Jsoup.connect(LetsCineUtils.URLS.LOGIN_POST.getUrl())
-                    .data("returntoreferer", "true")
-                    .data("username", username)
-                    .data("password", password)
-                    .method(Connection.Method.POST)
-                    .execute();
-        }
-        catch (IOException e) {
-            LOGGER.log(Level.WARNING, "Error logging user "+username, e);
-        }
+                Document loginPage = Jsoup.connect(LetsCineUtils.URLS.LOGIN.getUrl()).get();
+                Element form = loginPage.getElementsByClass("elgg-form-login").get(0);
+                String elggTs = form.getElementsByAttributeValue("name", "__elgg_ts").val();
+                ;
+                String elggToken = form.getElementsByAttributeValue("name", "__elgg_token").val();
 
-        if (login == null || login.cookie(LetsCineUtils.SESSION_COOKIE) == null) {
-            throw new RuntimeException("Login error");
+                //Request for login
+                Connection.Response login = Jsoup.connect(LetsCineUtils.URLS.LOGIN_POST.getUrl())
+                        .data("returntoreferer", "true")
+                        .data("username", username)
+                        .data("password", password)
+                        .data("__elgg_ts", elggTs)
+                        .data("__elgg_token", elggToken)
+                        .header("Connection", "keep-alive")
+                        .header("Origin", "https://www.letscine.com")
+                        .header("Content-Type", "application/x-www-form-urlencoded")
+                        .header("Host", "www.letscine.com")
+                        .header("Upgrade-Insecure-Requests", "1")
+                        .header("X-Requested-With", "XMLHttpRequest")
+                        .referrer("https://www.letscine.com/login")
+                        .method(Connection.Method.POST)
+                        .execute();
+
+                System.out.println(login.parse().body());
+
+                if (login.cookie(LetsCineUtils.SESSION_COOKIE) == null) {
+                    throw new RuntimeException("Login error");
+                }
+
+                cookies = login.cookies();
+            }
+        }
+        catch(IOException e){
+            LOGGER.log(Level.WARNING, "Error logging user " + username, e);
         }
 
         UserInfo userInfo = new UserInfo();
-        userInfo.setCookies(login.cookies());
+        userInfo.setCookies(cookies);
 
         return userInfo;
     }
 
     public Integer fillMoviesInfo(UserInfo userInfo, List<MovieInfo> moviesInfo) {
+
+        List<String> unmatchedMovies = new ArrayList<>();
+
         int addMovie = 0;
         for (MovieInfo movieInfo : moviesInfo) {
             try {
@@ -82,16 +111,23 @@ public class LetsCineMigrationService implements IMigrationService {
                 String id = null;
                 String type = null;
                 for (JsonNode jsonNode : searchResult) {
-                    if (jsonNode.path("original_title").asText().equals(movieInfo.getTitle())) {
-                        if (jsonNode.path("release_date").asText().contains(movieInfo.getYear())) {
+                    if (jsonNode.path("release_date").asText().contains(movieInfo.getYear())) {
+                        if (id == null) {
                             id = jsonNode.path("id").asText();
                             type = jsonNode.path("media_type").asText();
+                        }
+                        else {
+                            id = null;
+                            LOGGER.warning("Multiple movies matched in same year for title: "+movieInfo.getTitle());
+                        }
+                        if (jsonNode.path("original_title").asText().equals(movieInfo.getTitle())) {
                             break;
                         }
                     }
                 }
 
                 if (id == null) {
+                    unmatchedMovies.add(movieInfo.getTitle());
                     LOGGER.warning("Movie not found for title: "+movieInfo.getTitle());
                 }
                 else {
@@ -101,7 +137,9 @@ public class LetsCineMigrationService implements IMigrationService {
                             .method(Connection.Method.POST)
                             .execute();
 
-                    Element form = loadResponse.parse().body().getElementsByClass("elgg-form-comment-save").get(0);
+                    Document moviePage = Jsoup.connect(loadResponse.url().toString()).cookies(userInfo.getCookies()).get();
+
+                    Element form = moviePage.getElementsByClass("elgg-form-comment-save").get(0);
                     String elggTs = form.getElementsByAttributeValue("name","__elgg_ts").val();;
                     String elggToken = form.getElementsByAttributeValue("name", "__elgg_token").val();
                     String movieUrl = loadResponse.url().getPath();
@@ -114,8 +152,10 @@ public class LetsCineMigrationService implements IMigrationService {
                             .data("id", id)
                             .data("movie_id", movieId)
                             .data("type", type)
-                            .data("__elgg_token", elggToken)
                             .data("__elgg_ts", elggTs)
+                            .data("__elgg_token", elggToken)
+//                            .data("__elgg_ts", "1474919327")
+//                            .data("__elgg_token", "CZORRFilTXYNf9eId9A-OA")
                             .header("X-Requested-With", "XMLHttpRequest")
                             .method(Connection.Method.POST)
                             .cookies(userInfo.getCookies())
@@ -144,6 +184,14 @@ public class LetsCineMigrationService implements IMigrationService {
             }
         }
 
+        LOGGER.info("Migration succesfull! "+(moviesInfo.size()-unmatchedMovies.size()) + " movies migrated!");
+
+        if (!unmatchedMovies.isEmpty()) {
+            LOGGER.warning("There are "+unmatchedMovies.size()+ " that didnt maches from source to target");
+            for (String unmatchedMovie : unmatchedMovies) {
+                LOGGER.warning("Title: "+unmatchedMovie);
+            }
+        }
 
         return addMovie;
     }
