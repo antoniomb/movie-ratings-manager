@@ -130,7 +130,7 @@ public class FAMigrationService implements IMigrationService {
                     try {
                         String[] split = date.replaceAll(",", "").split(" ");
                         date = split[2]+"-"+ //year
-                               String.format("%02d", FAUtils.MONTH_FORMAT.parse(split[0]).getMonth())+1 + "-" + //month
+                               String.format("%02d", FAUtils.MONTH_FORMAT.parse(split[0]).getMonth()+1) + "-" + //month
                                String.format("%02d", Integer.valueOf(split[1])); //day
                     } catch (ParseException e) {
                         LOGGER.log(Level.WARNING, "Error parsing date "+date, e);
