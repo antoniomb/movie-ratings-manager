@@ -10,6 +10,7 @@ import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -56,7 +57,6 @@ public class LetsCineMigrationService implements IMigrationService {
                 Document loginPage = Jsoup.connect(LetsCineUtils.URLS.LOGIN.getUrl()).get();
                 Element form = loginPage.getElementsByClass("elgg-form-login").get(0);
                 String elggTs = form.getElementsByAttributeValue("name", "__elgg_ts").val();
-                ;
                 String elggToken = form.getElementsByAttributeValue("name", "__elgg_token").val();
 
                 //Request for login
@@ -140,7 +140,7 @@ public class LetsCineMigrationService implements IMigrationService {
                     Document moviePage = Jsoup.connect(loadResponse.url().toString()).cookies(userInfo.getCookies()).get();
 
                     Element form = moviePage.getElementsByClass("elgg-form-comment-save").get(0);
-                    String elggTs = form.getElementsByAttributeValue("name","__elgg_ts").val();;
+                    String elggTs = form.getElementsByAttributeValue("name","__elgg_ts").val();
                     String elggToken = form.getElementsByAttributeValue("name", "__elgg_token").val();
                     String movieUrl = loadResponse.url().getPath();
                     String movieId = movieUrl.split("/")[2];
@@ -154,15 +154,35 @@ public class LetsCineMigrationService implements IMigrationService {
                             .data("type", type)
                             .data("__elgg_ts", elggTs)
                             .data("__elgg_token", elggToken)
-//                            .data("__elgg_ts", "1474919327")
-//                            .data("__elgg_token", "CZORRFilTXYNf9eId9A-OA")
                             .header("X-Requested-With", "XMLHttpRequest")
                             .method(Connection.Method.POST)
                             .cookies(userInfo.getCookies())
                             .ignoreContentType(true)
                             .execute();
 
-                    LOGGER.info("AddMovie: "+addResponse.body());
+                    if (addResponse.body().contains("\"status\":0")) {
+                        LOGGER.info("AddMovie[OK]: "+addResponse.body());
+                    }
+                    else {
+                        LOGGER.info("AddMovie[KO]: "+addResponse.body());
+
+                        String watched_id = moviePage.getElementsByAttribute("watched-id").get(0).val();
+
+                        if (watched_id != null ) {
+                            Connection.Response changeDateResponse = Jsoup.connect(LetsCineUtils.URLS.CHANGE_DATE_MOVIE.getUrl())
+                                    .data("watched_date", movieInfo.getDate())
+                                    .data("watched_id", watched_id)
+                                    .data("__elgg_ts", elggTs)
+                                    .data("__elgg_token", elggToken)
+                                    .header("X-Requested-With", "XMLHttpRequest")
+                                    .method(Connection.Method.POST)
+                                    .cookies(userInfo.getCookies())
+                                    .ignoreContentType(true)
+                                    .execute();
+
+                            LOGGER.info("UpdateDate: "+changeDateResponse.body());
+                        }
+                    }
 
                     Connection.Response rateResponse = Jsoup.connect(LetsCineUtils.URLS.RATE_MOVIE.getUrl())
                             .data("movie_id", movieId)

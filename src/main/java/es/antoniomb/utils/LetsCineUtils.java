@@ -14,7 +14,8 @@ public class LetsCineUtils {
         SEARCH("https://www.letscine.com/search.php?lang=es&type=multi&term="),
         LOAD_MOVIE("https://www.letscine.com/movies/load/"),
         ADD_MOVIE("https://www.letscine.com/action/history/addmovie"),
-        RATE_MOVIE("https://www.letscine.com/action/movie/rate");
+        RATE_MOVIE("https://www.letscine.com/action/movie/rate"),
+        CHANGE_DATE_MOVIE("https://www.letscine.com/action/history/change_date");
 
         String url;
 
