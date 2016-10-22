@@ -164,9 +164,9 @@ public class LetsCineMigrationService implements IMigrationService {
                         LOGGER.info("AddMovie[OK]: "+addResponse.body());
                     }
                     else {
-                        LOGGER.info("AddMovie[KO]: "+addResponse.body());
+                        LOGGER.info("AddMovie[KO]: " + addResponse.body());
 
-                        String watched_id = moviePage.getElementsByAttribute("watched-id").get(0).val();
+                        String watched_id = moviePage.getElementsByAttribute("watched-id").get(0).attributes().get("watched-id");
 
                         if (watched_id != null ) {
                             Connection.Response changeDateResponse = Jsoup.connect(LetsCineUtils.URLS.CHANGE_DATE_MOVIE.getUrl())
