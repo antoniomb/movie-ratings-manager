@@ -144,8 +144,8 @@ public class FAMigrationService implements IMigrationService {
 
                         Elements titleElement = movieElement.getElementsByClass("mc-title");
                         String title = titleElement.get(0).getElementsByTag("a").get(0).childNode(0).outerHtml();
-                        title = title.replaceAll("(S)","");
-                        title = title.replaceAll("(TV)","");
+                        title = title.replaceAll("\\(S\\)","");
+                        title = title.replaceAll("\\(TV\\)","");
                         String year = titleElement.get(0).getAllElements().get(0).childNode(1).outerHtml().trim().substring(1, 5);
 
                         Elements ratingElement = movieElement.getElementsByClass("user-ratings-movie-rating");
