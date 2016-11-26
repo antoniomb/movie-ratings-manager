@@ -22,7 +22,7 @@ public class MigrationTest {
     @Test
     public void migration(){
         MigrationInput input = new MigrationInput("filmaffinity","antoniomiranda","Abc123456",
-                                                  "letscine", "in79phanhibh8vkdmt27s95bv4", null);
+                                                  "letscine", "in79phanhibh8vkdmt27s95bv4", null, null, null);
 
         MigrationUtils.validateParams(input);
         Assert.assertEquals(input.getSource(), MigrationWeb.FILMAFFINITY);

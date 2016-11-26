@@ -57,13 +57,13 @@ public class MigrationService {
         try {
             switch (migrationInfo.getSource()) {
                 case FILMAFFINITY:
-                    moviesInfo = fa.getRatings(migrationInfo.getFromUsername(), migrationInfo.getFromPassword());
+                    moviesInfo = fa.getRatings(migrationInfo);
                     break;
                 case IMDB:
-                    moviesInfo = imdb.getRatings(migrationInfo.getFromUsername(), migrationInfo.getFromPassword());
+                    moviesInfo = imdb.getRatings(migrationInfo);
                     break;
                 case LETSCINE:
-                    moviesInfo = letsCine.getRatings(migrationInfo.getFromUsername(), migrationInfo.getFromPassword());
+                    moviesInfo = letsCine.getRatings(migrationInfo);
                     break;
                 default:
             }
@@ -81,13 +81,13 @@ public class MigrationService {
         try {
             switch (migrationInfo.getTarget()) {
                 case FILMAFFINITY:
-                    moviesImported = fa.setRatings(migrationInfo.getToUsername(), migrationInfo.getToPassword(), moviesInfo);
+                    moviesImported = fa.setRatings(migrationInfo, moviesInfo);
                     break;
                 case IMDB:
-                    moviesImported = imdb.setRatings(migrationInfo.getToUsername(), migrationInfo.getToPassword(), moviesInfo);
+                    moviesImported = imdb.setRatings(migrationInfo, moviesInfo);
                     break;
                 case LETSCINE:
-                    moviesImported = letsCine.setRatings(migrationInfo.getToUsername(), migrationInfo.getToPassword(), moviesInfo);
+                    moviesImported = letsCine.setRatings(migrationInfo, moviesInfo);
                     break;
                 case CSV:
                     result.setCsv(generateCSV(moviesInfo));
@@ -107,7 +107,9 @@ public class MigrationService {
     private void processResult(MigrationOutput result, List<MovieInfo> moviesInfo, Integer moviesImported) {
         if (result.getSourceStatus()) {
             result.setMoviesReaded(moviesInfo.size());
-            result.setRatingAvg(moviesInfo.stream().mapToDouble(m -> Double.valueOf(m.getRate())).average().getAsDouble());
+            if (!moviesInfo.isEmpty()) {
+                result.setRatingAvg(moviesInfo.stream().mapToDouble(m -> Double.valueOf(m.getRate())).average().getAsDouble());
+            }
             if (result.getTargetStatus()) {
                 result.setMoviesWrited(moviesImported);
             }

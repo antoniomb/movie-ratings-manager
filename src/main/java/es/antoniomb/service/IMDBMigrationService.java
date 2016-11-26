@@ -1,5 +1,6 @@
 package es.antoniomb.service;
 
+import es.antoniomb.dto.MigrationInput;
 import es.antoniomb.dto.MovieInfo;
 import org.springframework.stereotype.Service;
 
@@ -12,12 +13,12 @@ import java.util.List;
 public class IMDBMigrationService implements IMigrationService {
 
     @Override
-    public List<MovieInfo> getRatings(String username, String password) {
+    public List<MovieInfo> getRatings(MigrationInput input) {
         throw new RuntimeException("Not implemented!");
     }
 
     @Override
-    public Integer setRatings(String username, String password, List<MovieInfo> moviesInfo) {
+    public Integer setRatings(MigrationInput input, List<MovieInfo> moviesInfo) {
         throw new RuntimeException("Not implemented!");
     }
 }

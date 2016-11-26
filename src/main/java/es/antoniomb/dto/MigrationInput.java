@@ -17,17 +17,23 @@ public class MigrationInput implements Serializable {
     private String toUsername;
     private String toPassword;
     private MigrationWeb target;
+    private String fromDate;
+    private String toDate;
 
     public MigrationInput() {
     }
 
-    public MigrationInput(String from, String fromUsername, String fromPassword, String to, String toUsername, String toPassword) {
+    public MigrationInput(String from, String fromUsername, String fromPassword,
+                          String to, String toUsername, String toPassword,
+                          String fromDate, String toDate) {
         this.from = from;
         this.fromUsername = fromUsername;
         this.fromPassword = fromPassword;
         this.to = to;
         this.toUsername = toUsername;
         this.toPassword = toPassword;
+        this.fromDate = fromDate;
+        this.toDate = toDate;
     }
 
     public String getFrom() {
@@ -92,5 +98,21 @@ public class MigrationInput implements Serializable {
 
     public void setTarget(MigrationWeb target) {
         this.target = target;
+    }
+
+    public String getFromDate() {
+        return fromDate;
+    }
+
+    public void setFromDate(String fromDate) {
+        this.fromDate = fromDate;
+    }
+
+    public String getToDate() {
+        return toDate;
+    }
+
+    public void setToDate(String toDate) {
+        this.toDate = toDate;
     }
 }

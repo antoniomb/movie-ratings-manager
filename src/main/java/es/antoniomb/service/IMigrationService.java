@@ -1,5 +1,6 @@
 package es.antoniomb.service;
 
+import es.antoniomb.dto.MigrationInput;
 import es.antoniomb.dto.MovieInfo;
 
 import java.util.List;
@@ -9,8 +10,8 @@ import java.util.List;
  */
 public interface IMigrationService {
 
-    List<MovieInfo> getRatings(String username, String password);
+    List<MovieInfo> getRatings(MigrationInput input);
 
-    Integer setRatings(String username, String password, List<MovieInfo> moviesInfo);
+    Integer setRatings(MigrationInput input, List<MovieInfo> moviesInfo);
 
 }

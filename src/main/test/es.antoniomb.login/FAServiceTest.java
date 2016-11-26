@@ -32,6 +32,6 @@ public class FAServiceTest {
     public void fillMoviesInfo() {
         UserInfo userInfo = faMigrationService.login("antoniomiranda", "Abc123456");
         faMigrationService.fillUserInfo(userInfo);
-        faMigrationService.fillMoviesInfo(userInfo);
+        faMigrationService.fillMoviesInfo(userInfo, null, null);
     }
 }

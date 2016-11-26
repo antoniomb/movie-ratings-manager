@@ -1,5 +1,6 @@
 package es.antoniomb.service;
 
+import es.antoniomb.dto.MigrationInput;
 import es.antoniomb.dto.MovieInfo;
 import es.antoniomb.dto.UserInfo;
 import es.antoniomb.utils.FAUtils;
@@ -29,17 +30,17 @@ public class FAMigrationService implements IMigrationService {
     private static Logger LOGGER = Logger.getLogger(FAMigrationService.class.getName());
 
     @Override
-    public List<MovieInfo> getRatings(String username, String password) {
+    public List<MovieInfo> getRatings(MigrationInput input) {
 
-        UserInfo userInfo = login(username, password);
+        UserInfo userInfo = login(input.getFromUsername(), input.getFromPassword());
 
         fillUserInfo(userInfo);
 
-        return fillMoviesInfo(userInfo);
+        return fillMoviesInfo(userInfo, input.getFromDate(), input.getToDate());
     }
 
     @Override
-    public Integer setRatings(String username, String password, List<MovieInfo> movieInfo) {
+    public Integer setRatings(MigrationInput input, List<MovieInfo> movieInfo) {
         throw new RuntimeException("Not implemented!");
     }
 
@@ -116,7 +117,7 @@ public class FAMigrationService implements IMigrationService {
         }
     }
 
-    public List<MovieInfo> fillMoviesInfo(UserInfo userInfo) {
+    public List<MovieInfo> fillMoviesInfo(UserInfo userInfo, String fromDate, String toDate) {
         List<MovieInfo> movies = new ArrayList<>();
         try {
             for (int i=1; i <= userInfo.getPages(); i++) {
@@ -137,6 +138,11 @@ public class FAMigrationService implements IMigrationService {
                         LOGGER.log(Level.WARNING, "Error parsing date "+date, e);
                     }
 
+                    //If date ranges defined, escape if its out of range
+                    if ((fromDate != null && date.compareTo(fromDate) < 0) ||
+                        (toDate != null && date.compareTo(toDate) > 0) ) {
+                        continue;
+                    }
 
                     Elements movieElements = movieDateElement.getElementsByClass("user-ratings-movie");
                     for (Element movieElement : movieElements) {

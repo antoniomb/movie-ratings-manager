@@ -2,6 +2,7 @@ package es.antoniomb.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import es.antoniomb.dto.MigrationInput;
 import es.antoniomb.dto.MovieInfo;
 import es.antoniomb.dto.UserInfo;
 import es.antoniomb.utils.LetsCineUtils;
@@ -30,14 +31,14 @@ public class LetsCineMigrationService implements IMigrationService {
     private static Logger LOGGER = Logger.getLogger(LetsCineMigrationService.class.getName());
 
     @Override
-    public List<MovieInfo> getRatings(String username, String password) {
+    public List<MovieInfo> getRatings(MigrationInput input) {
         throw new RuntimeException("Not implemented!");
     }
 
     @Override
-    public Integer setRatings(String username, String password, List<MovieInfo> moviesInfo) {
+    public Integer setRatings(MigrationInput input, List<MovieInfo> moviesInfo) {
 
-        UserInfo userInfo = login(username, password);
+        UserInfo userInfo = login(input.getToUsername(), input.getToPassword());
 
         return fillMoviesInfo(userInfo, moviesInfo);
     }

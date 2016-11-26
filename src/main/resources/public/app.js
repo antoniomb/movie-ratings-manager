@@ -1,4 +1,4 @@
-var app = angular.module('app', ['ngAnimate', 'ngTouch']);
+var app = angular.module('app', ['ngAnimate', 'ngTouch', '720kb.datepicker']);
 
 app.config(['$compileProvider',
     function ($compileProvider) {
@@ -60,6 +60,6 @@ app.controller('AppController', ['$scope', '$http', '$window',
         return Object.keys(object).some(function (key) {
             return object[key];
         });
-    }
+    };
 
 }]);

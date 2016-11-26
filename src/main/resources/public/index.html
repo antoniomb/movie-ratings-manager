@@ -5,7 +5,9 @@
     <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.js"></script>
     <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular-touch.js"></script>
     <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular-animate.js"></script>
+	<script src="lib/angular-datepicker.js"></script>
     <link rel="stylesheet" href="lib/foundation.css" type="text/css">
+	<link rel="stylesheet" href="lib/angular-datepicker.css" type="text/css">
     <link rel="stylesheet" href="main.css" type="text/css">
     <link rel="shortcut icon" type="image/png" href="favicon.ico"/>
     <meta charset='utf-8'>
@@ -20,7 +22,7 @@
 	            <div class="small-10 small-centered columns content">
 					<div class="small-10 small-centered columns section-box">
 						<h2>Source</h2>
-						<p class="target">Texto explicativo de cuenta de origen</p>
+						<p class="target">Login data of source account</p>
 						<ul class="button-group round toggle" data-toggle="buttons-radio" ng-init="migration.from=filmaffinity" >
 							<li>
 								<input type="radio" id="fromFilmaffinity" name="from-group" data-toggle="button"
@@ -38,16 +40,17 @@
 								<label class="button disabled" for="fromLetsCine">LetsCine</label>
 							</li>
 						</ul>
-						<div class="small-12 large-6 colums">
+						<div class="small-12 large-6 columns">
 							<span>Username:</span>
 						</div>
-						<input class="large-6 columns" type="text" name="fromUsername" ng-model="migration.fromUsername" required>
-						<div class="small-12 large-6 colums">
+						<input class="large-6" type="text" name="fromUsername" ng-model="migration.fromUsername" required>
+						<div class="small-12 large-6 columns">
 							<span>Password:</span>
 						</div>
-						<input class="large-6 columns" type="password" name="fromPassword" ng-model="migration.fromPassword" required>
+						<input class="large-6" type="password" name="fromPassword" ng-model="migration.fromPassword" required>
+
 						<h2>Target</h2>
-						<p class="target">Texto explicativo de cuenta de destino</p>
+						<p class="target">Login data of target account</p>
 						<ul class="button-group round toggle" data-toggle="buttons-radio" ng-init="migration.to=csv">
 							<li>
 								<input type="radio" id="toCSV" name="to-group" data-toggle="button"
@@ -72,19 +75,35 @@
 						</ul>
 
 						<!-- letsCine login-cookie -->
-						<div class="row small-12 large-6 colums" ng-show="migration.to == 'letscine'">
-							<div class="small-12 large-6 colums">
+						<div class="row small-12 large-6" ng-show="migration.to == 'letscine'">
+							<div class="small-12 large-6 columns">
 								<span>Elgg cookie:</span>
 							</div>
 							<input class="large-6 columns" type="text" name="toUsername" ng-model="migration.toUsername">
 						</div>
-						<!--<div class="small-12 large-6 colums">
+						<!--<div class="small-12 large-6 columns">
 							<span>Username:</span>
 						<input class="large-6 columns" type="text" name="username" ng-model="migration.toUsername"><br>
-							<div class="small-12 large-6 colums">
+							<div class="small-12 large-6 columns">
 							<span>Password:</span>
 						<input class="large-6 columns" type="password" name="password" ng-model="migration.toPassword">
-					</div>-->
+						</div>-->
+
+						<h2>Date range</h2>
+						<p class="target">Optional date ranged migration</p>
+						<div class="row small-12 large-6">
+							<div class="small-12 large-6 columns">
+								<datepicker date-format="yyyy-MM-dd" >
+									<input ng-model="migration.fromDate" type="text" id="from-date" placeholder="From">
+								</datepicker>
+							</div>
+							<div class="small-12 large-6 columns">
+								<datepicker date-format="yyyy-MM-dd" >
+									<input ng-model="migration.toDate" type="text" id="to-date" placeholder="To">
+								</datepicker>
+							</div>
+						</div>
+					</div>
 				</div>
             </div>
 
