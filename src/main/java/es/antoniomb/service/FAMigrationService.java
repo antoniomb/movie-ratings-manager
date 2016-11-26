@@ -77,9 +77,10 @@ public class FAMigrationService implements IMigrationService {
         try {
             //Request for obtaining userId
             Document votesPage = Jsoup.connect(FAUtils.URLS.VOTES.getUrl()).cookies(userInfo.getCookies()).get();
-            if (votesPage.body().getElementById("user-nick") != null) {
+            Element userContainer = votesPage.body().getElementById("user-login-container");
+            if (userContainer != null) {
                 Pattern userIdPattern = Pattern.compile("user_id=(\\d+)");
-                Matcher userIdMatcher = userIdPattern.matcher(votesPage.body().getElementById("user-nick").toString());
+                Matcher userIdMatcher = userIdPattern.matcher(userContainer.getElementsByClass("user-menu-wr").get(0).toString());
                 if (userIdMatcher.find()) {
                     userInfo.setUserId(userIdMatcher.group(1));
                 }
