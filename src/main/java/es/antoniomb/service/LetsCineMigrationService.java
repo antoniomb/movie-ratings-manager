@@ -129,7 +129,7 @@ public class LetsCineMigrationService implements IMigrationService {
 
                 if (id == null) {
                     String movieInfoStr = movieInfo.getTitle() + " - year: " + movieInfo.getYear() +
-                            " - viewDate: " + movieInfo.getDate();
+                            " - viewDate: " + movieInfo.getDate() + " - rate: " + movieInfo.getRate();
                     unmatchedMovies.add(movieInfoStr);
                     LOGGER.warning("Movie not found: " + movieInfoStr);
                 }
