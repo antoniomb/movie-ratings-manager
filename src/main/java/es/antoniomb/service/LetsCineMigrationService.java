@@ -128,8 +128,10 @@ public class LetsCineMigrationService implements IMigrationService {
                 }
 
                 if (id == null) {
-                    unmatchedMovies.add(movieInfo.getTitle());
-                    LOGGER.warning("Movie not found for title: "+movieInfo.getTitle());
+                    String movieInfoStr = movieInfo.getTitle() + " - year: " + movieInfo.getYear() +
+                            " - viewDate: " + movieInfo.getDate();
+                    unmatchedMovies.add(movieInfoStr);
+                    LOGGER.warning("Movie not found: " + movieInfoStr);
                 }
                 else {
 
@@ -203,7 +205,7 @@ public class LetsCineMigrationService implements IMigrationService {
         LOGGER.info("Migration succesfull! "+(moviesInfo.size()-unmatchedMovies.size()) + " movies migrated!");
 
         if (!unmatchedMovies.isEmpty()) {
-            LOGGER.warning("There are "+unmatchedMovies.size()+ " that didnt maches from source to target");
+            LOGGER.warning("There are "+unmatchedMovies.size()+ " that not matches from source to target");
             for (String unmatchedMovie : unmatchedMovies) {
                 LOGGER.warning("Title: "+unmatchedMovie);
             }
