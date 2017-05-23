@@ -126,28 +126,28 @@
 
 			<div id="analysis-result" class="row ng-hide">
 				<div class="small-10 small-centered columns alert-box info">
-					<span><b>Top Directors:</b> {{topDirector}}</span>
+					<b>Top Directors:</b><span ng-bind-html="topDirector | rawHtml"></span>
 				</div>
 				<div class="small-10 small-centered columns alert-box info">
-					<span><b>Top Actors:</b> {{topActor}}</span>
+					<b>Top Actors:</b><span ng-bind-html="topActor | rawHtml"></span>
 				</div>
 				<div class="small-10 small-centered columns alert-box info">
-					<span><b>Top Countries:</b> {{topCountry}}</span>
+					<b>Top Countries:</b><span ng-bind-html="topCountry | rawHtml"></span>
 				</div>
 				<div class="small-10 small-centered columns alert-box info">
-					<span><b>Top Years:</b> {{topYear}}</span>
+					<b>Top Years:</b><span ng-bind-html="topYear | rawHtml"></span>
 				</div>
 				<div class="small-10 small-centered columns alert-box info">
-					<span><b>Ratings Distribution:</b> {{ratingsDistribution}}</span>
+					<b>Ratings Distribution:</b><span ng-bind-html="ratingsDistribution | rawHtml"></span>
 				</div>
 				<div class="small-10 small-centered columns alert-box info">
-					<span><b>Best Movies (10):</b> {{bestMovies}}</span>
+					<b>Best Movies (10):</b><span ng-bind-html="bestMovies | rawHtml"></span>
 				</div>
 				<div class="small-10 small-centered columns alert-box info">
-					<span><b>Worst Movies (1):</b> {{worstMovies}}</span>
+					<b>Worst Movies (1):</b><span ng-bind-html="worstMovies | rawHtml"></span>
 				</div>
 				<div class="small-10 small-centered columns alert-box info">
-					<span><b>Nicolas Cage Movies:</b> {{topJoke}}</span>
+					<b>Nicolas Cage Movies:</b><span ng-bind-html="topJoke | rawHtml"></span>
 				</div>
 			</div>
         </form>

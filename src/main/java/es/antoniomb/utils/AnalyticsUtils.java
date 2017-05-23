@@ -107,7 +107,7 @@ public class AnalyticsUtils {
                 topMovies.add(movieInfo.getTitle());
             }
         }
-        return StringUtils.join(topMovies.toArray(), ", ");
+        return StringUtils.join(topMovies.toArray(), "<br/>");
     }
 
     public static String calculateWorstMovies(List<MovieInfo> moviesInfo) {
@@ -117,7 +117,7 @@ public class AnalyticsUtils {
                 worstMovies.add(movieInfo.getTitle());
             }
         }
-        return StringUtils.join(worstMovies.toArray(), ", ");
+        return StringUtils.join(worstMovies.toArray(), "<br/>");
     }
 
     public static String calculateJokeTop(List<MovieInfo> moviesInfo) {
@@ -133,7 +133,7 @@ public class AnalyticsUtils {
         if (joke.isEmpty()) {
             return "none... seriously?";
         }
-        return StringUtils.join(joke.toArray(), ", ");
+        return StringUtils.join(joke.toArray(), "<br/>");
     }
 
     private static String calculateTop(Map<String, Integer> itemMap, boolean percentage) {
@@ -150,7 +150,7 @@ public class AnalyticsUtils {
                 top+= itemStr;
                 break;
             }
-            top+=itemStr+", ";
+            top+=itemStr+"<br/>";
         }
         return top;
     }

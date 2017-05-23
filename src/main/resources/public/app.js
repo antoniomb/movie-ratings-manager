@@ -5,6 +5,12 @@ app.config(['$compileProvider',
         $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|tel|file|blob):/);
     }]);
 
+app.filter('rawHtml', ['$sce', function($sce){
+    return function(val) {
+        return $sce.trustAsHtml(val);
+    };
+}]);
+
 app.controller('AppController', ['$scope', '$http', '$window',
     function ($scope, $http, $window) {
 
