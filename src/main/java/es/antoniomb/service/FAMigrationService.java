@@ -96,10 +96,9 @@ public class FAMigrationService implements IMigrationService {
 
 
             String pages = "1";
-            Element pager = ratingsPage.body().getElementsByClass("pager").get(0);
-            if (pager != null) {
-                int pageItems = pager.getElementsByTag("a").size();
-                pages = pager.getElementsByTag("a").get(pageItems - 2).childNode(0).outerHtml();
+            Elements pager = ratingsPage.body().getElementsByClass("pager").get(0).getElementsByTag("a");
+            if (pager.size() > 0) {
+                pages = pager.get(pager.size() - 2).childNode(0).outerHtml();
             }
             userInfo.setPages(Integer.valueOf(pages));
             LOGGER.info("User ratings pages: " + userInfo.getPages());
@@ -155,6 +154,7 @@ public class FAMigrationService implements IMigrationService {
                         title = title.replaceAll("\\(S\\)","");
                         title = title.replaceAll("\\(TV\\)","").trim();
                         String year = titleElement.get(0).getAllElements().get(0).childNode(1).outerHtml().trim().substring(1, 5);
+                        String country = titleElement.get(0).getElementsByTag("img").get(0).attr("title");
 
                         Elements directorElement = movieElement.getElementsByClass("mc-director");
                         String director = directorElement.get(0).getElementsByTag("a").get(0).childNode(0).outerHtml();
@@ -175,6 +175,7 @@ public class FAMigrationService implements IMigrationService {
                         movieInfo.setId(id);
                         movieInfo.setRate(rating);
                         movieInfo.setDate(date);
+                        movieInfo.setCountry(country);
                         movieInfo.setDirector(director);
                         movieInfo.setActors(actors);
                         movies.add(movieInfo);

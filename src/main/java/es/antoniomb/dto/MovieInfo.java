@@ -1,6 +1,5 @@
 package es.antoniomb.dto;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
@@ -15,6 +14,7 @@ public class MovieInfo {
     public String year;
     public String rate;
     public String date;
+    public String country;
     public String director;
     public List<String> actors;
 
@@ -66,6 +66,14 @@ public class MovieInfo {
         this.date = date;
     }
 
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
     public String getDirector() {
         return director;
     }
@@ -90,6 +98,7 @@ public class MovieInfo {
                 ", year='" + year + '\'' +
                 ", rate='" + rate + '\'' +
                 ", date='" + date + '\'' +
+                ", country='" + country + '\'' +
                 ", director='" + director + '\'' +
                 ", actors=" + StringUtils.join(actors.toArray(), ",") +
                 '}';

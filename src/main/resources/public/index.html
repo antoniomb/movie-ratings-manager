@@ -65,7 +65,7 @@
 							<li>
 								<input type="radio" id="toAnalysis" name="to-group" data-toggle="button"
 									   ng-model="migration.to" value="analysis">
-								<label class="button disabled" for="toAnalysis">Analysis</label>
+								<label class="button" for="toAnalysis">Analysis</label>
 							</li>
 							<!--<li>
 								<input type="radio" id="toFilmaffinity" name="to-group" data-toggle="button"
@@ -115,13 +115,27 @@
             <div class="row">
 				<div class="small-10 small-centered columns">
 					<div id="migration-result" class="left small-7 alert-box" ng-show="result">
-						{{result}}
+						<span>{{result}}</span>
 					</div>
 					<div class="right small-4">
                 		<button class="big button" type="submit">Migrate!</button>
 					</div>
 				</div>
             </div>
+			<div id="analysis-result" class="row ng-hide">
+				<div class="small-10 small-centered columns alert-box info">
+					<span><b>Top Directors:</b> {{topDirector}}</span>
+				</div>
+				<div class="small-10 small-centered columns alert-box info">
+					<span><b>Top Actors:</b> {{topActor}}</span>
+				</div>
+				<div class="small-10 small-centered columns alert-box info">
+					<span><b>Top Country:</b> {{topCountry}}</span>
+				</div>
+				<div class="small-10 small-centered columns alert-box info">
+					<span><b>Top Year:</b> {{topYear}}</span>
+				</div>
+			</div>
         </form>
 
     <!--<div class="row">

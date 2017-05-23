@@ -14,6 +14,10 @@ public class MigrationOutput implements Serializable {
     private Integer moviesReaded;
     private Integer moviesWrited;
     private Double ratingAvg;
+    private String topDirector;
+    private String topActor;
+    private String topCountry;
+    private String topYear;
     private String csv;
 
     public MigrationOutput() {
@@ -57,6 +61,38 @@ public class MigrationOutput implements Serializable {
 
     public void setRatingAvg(Double ratingAvg) {
         this.ratingAvg = ratingAvg;
+    }
+
+    public String getTopActor() {
+        return topActor;
+    }
+
+    public void setTopActor(String topActor) {
+        this.topActor = topActor;
+    }
+
+    public String getTopDirector() {
+        return topDirector;
+    }
+
+    public void setTopDirector(String topDirector) {
+        this.topDirector = topDirector;
+    }
+
+    public String getTopCountry() {
+        return topCountry;
+    }
+
+    public void setTopCountry(String topCountry) {
+        this.topCountry = topCountry;
+    }
+
+    public String getTopYear() {
+        return topYear;
+    }
+
+    public void setTopYear(String topYear) {
+        this.topYear = topYear;
     }
 
     public String getCsv() {

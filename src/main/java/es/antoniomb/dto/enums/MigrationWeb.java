@@ -7,9 +7,10 @@ public enum MigrationWeb {
     CSV("csv"),
     FILMAFFINITY("filmaffinity"),
     IMDB("imdb"),
-    LETSCINE("letscine");
+    LETSCINE("letscine"),
+    ANALYSIS("analysis");
     String webCode;
-    private MigrationWeb(String webCode) {
+    MigrationWeb(String webCode) {
         this.webCode = webCode;
     }
     public String getWebCode() {

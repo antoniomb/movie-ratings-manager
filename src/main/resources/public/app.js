@@ -19,7 +19,7 @@ app.controller('AppController', ['$scope', '$http', '$window',
         }
 
         var result = angular.element(document.querySelector('#migration-result'));
-        $scope.result = "Loading ...";
+        $scope.result = "Loading ... \n";
         result.removeClass('success').removeClass('alert').addClass('info');
         var api_url = $window.location.origin + '/migrate';
         $http.post(api_url, migration)
@@ -28,6 +28,10 @@ app.controller('AppController', ['$scope', '$http', '$window',
                 $scope.targetStatus = data.targetStatus;
                 $scope.moviesReaded = data.moviesReaded;
                 $scope.moviesWrited = data.moviesWrited;
+                $scope.topDirector = data.topDirector;
+                $scope.topActor = data.topActor;
+                $scope.topCountry = data.topCountry;
+                $scope.topYear = data.topYear;
                 $scope.ratingAvg = data.ratingAvg;
                 if ($scope.sourceStatus == true && $scope.targetStatus == true) {
                     if (migration.to == "csv") {
@@ -40,7 +44,14 @@ app.controller('AppController', ['$scope', '$http', '$window',
                         $scope.result = "CSV succesfully generated: Found "+$scope.moviesReaded+ " movies";
                     }
                     else {
-                        $scope.result= "Source movies: "+$scope.moviesReaded+" - Matched movies on target: "+$scope.moviesWrited;
+                        if (migration.to == "analysis") {
+                            var analysis = angular.element(document.querySelector('#analysis-result'));
+                            analysis.removeClass('ng-hide');
+                            $scope.result+= "Source movies: "+$scope.moviesReaded;
+                        }
+                        else {
+                            $scope.result+= "Source movies: "+$scope.moviesReaded+" - Matched movies on target: "+$scope.moviesWrited;
+                        }
                     }
 
                 }

@@ -31,7 +31,8 @@ public abstract class MigrationUtils {
 
         parseWebCode(migrationInfo);
 
-        if (!MigrationWeb.CSV.equals(migrationInfo.getTarget()) &&
+        if (!(MigrationWeb.CSV.equals(migrationInfo.getTarget()) ||
+                MigrationWeb.ANALYSIS.equals(migrationInfo.getTarget())) &&
                 (migrationInfo.getToUsername() == null)) {
             throw new RuntimeException("Invalid target user data");
         }
