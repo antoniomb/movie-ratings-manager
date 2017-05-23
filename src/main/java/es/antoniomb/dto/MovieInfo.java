@@ -1,5 +1,10 @@
 package es.antoniomb.dto;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.List;
+
 /**
  * Created by amiranda on 18/09/16.
  */
@@ -10,6 +15,8 @@ public class MovieInfo {
     public String year;
     public String rate;
     public String date;
+    public String director;
+    public List<String> actors;
 
     public MovieInfo() {
     }
@@ -59,14 +66,32 @@ public class MovieInfo {
         this.date = date;
     }
 
+    public String getDirector() {
+        return director;
+    }
+
+    public void setDirector(String director) {
+        this.director = director;
+    }
+
+    public List<String> getActors() {
+        return actors;
+    }
+
+    public void setActors(List<String> actors) {
+        this.actors = actors;
+    }
+
     @Override
     public String toString() {
-        return "MovieInfoDTO{" +
+        return "MovieInfo{" +
                 "id='" + id + '\'' +
                 ", title='" + title + '\'' +
                 ", year='" + year + '\'' +
                 ", rate='" + rate + '\'' +
                 ", date='" + date + '\'' +
+                ", director='" + director + '\'' +
+                ", actors=" + StringUtils.join(actors.toArray(), ",") +
                 '}';
     }
 }

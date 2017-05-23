@@ -1,6 +1,7 @@
 package es.antoniomb.utils;
 
 import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 /**
  * Created by amiranda on 18/9/16.
@@ -9,7 +10,7 @@ public class FAUtils {
 
     public static String SESSION_COOKIE = "FSID";
 
-    public static SimpleDateFormat MONTH_FORMAT = new SimpleDateFormat("MMM");
+    public static SimpleDateFormat MONTH_FORMAT = new SimpleDateFormat("MMM", Locale.ENGLISH);
 
     public enum URLS {
         HOME("http://www.filmaffinity.com/en/main.php"),

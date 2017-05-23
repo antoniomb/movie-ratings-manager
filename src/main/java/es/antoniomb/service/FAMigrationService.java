@@ -94,13 +94,14 @@ public class FAMigrationService implements IMigrationService {
             //Request for rating pages and votes number
             Document ratingsPage = Jsoup.connect(FAUtils.URLS.RATINGS.getUrl()+userInfo.getUserId()).cookies(userInfo.getCookies()).get();
 
-            String pages = ratingsPage.body().getElementsByClass("user-ratings-info-top").get(0).child(0).childNode(3).childNode(0).outerHtml();
-            if (pages != null) {
-                userInfo.setPages(Integer.valueOf(pages));
+
+            String pages = "1";
+            Element pager = ratingsPage.body().getElementsByClass("pager").get(0);
+            if (pager != null) {
+                int pageItems = pager.getElementsByTag("a").size();
+                pages = pager.getElementsByTag("a").get(pageItems - 2).childNode(0).outerHtml();
             }
-            else {
-                throw new RuntimeException("Error obtaining rating pages");
-            }
+            userInfo.setPages(Integer.valueOf(pages));
             LOGGER.info("User ratings pages: " + userInfo.getPages());
 
             String votes = ratingsPage.body().getElementsByClass("active-tab").get(0).childNode(1).childNodes().get(0).outerHtml();
@@ -152,8 +153,20 @@ public class FAMigrationService implements IMigrationService {
                         Elements titleElement = movieElement.getElementsByClass("mc-title");
                         String title = titleElement.get(0).getElementsByTag("a").get(0).childNode(0).outerHtml();
                         title = title.replaceAll("\\(S\\)","");
-                        title = title.replaceAll("\\(TV\\)","");
+                        title = title.replaceAll("\\(TV\\)","").trim();
                         String year = titleElement.get(0).getAllElements().get(0).childNode(1).outerHtml().trim().substring(1, 5);
+
+                        Elements directorElement = movieElement.getElementsByClass("mc-director");
+                        String director = directorElement.get(0).getElementsByTag("a").get(0).childNode(0).outerHtml();
+
+                        List<String> actors = new ArrayList<>();
+                        Elements castElement = movieElement.getElementsByClass("mc-cast").get(0).getElementsByClass("nb");
+                        if (castElement.size() > 1) {
+                            for (Element element : castElement) {
+                                String actor = element.getElementsByTag("a").get(0).childNode(0).outerHtml();
+                                actors.add(actor);
+                            }
+                        }
 
                         Elements ratingElement = movieElement.getElementsByClass("user-ratings-movie-rating");
                         String rating = ratingElement.get(0).getElementsByClass("ur-mr-rat").get(0).childNode(0).outerHtml().substring(1);
@@ -162,6 +175,8 @@ public class FAMigrationService implements IMigrationService {
                         movieInfo.setId(id);
                         movieInfo.setRate(rating);
                         movieInfo.setDate(date);
+                        movieInfo.setDirector(director);
+                        movieInfo.setActors(actors);
                         movies.add(movieInfo);
 
                         LOGGER.info(movieInfo.toString());
