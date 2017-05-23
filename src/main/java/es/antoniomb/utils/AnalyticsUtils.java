@@ -1,5 +1,6 @@
 package es.antoniomb.utils;
 
+import es.antoniomb.dto.MigrationOutputAnalytics;
 import es.antoniomb.dto.MovieInfo;
 import org.apache.commons.lang3.StringUtils;
 
@@ -9,6 +10,18 @@ import java.util.*;
  * Created by amiranda on 23/5/17.
  */
 public class AnalyticsUtils {
+
+    public static MigrationOutputAnalytics calculateAnalytics(List<MovieInfo> moviesInfo) {
+        MigrationOutputAnalytics analytics = new MigrationOutputAnalytics();
+        analytics.setTopDirector(AnalyticsUtils.calculateTopDirectors(moviesInfo));
+        analytics.setTopActor(AnalyticsUtils.calculateTopActors(moviesInfo));
+        analytics.setTopCountry(AnalyticsUtils.calculateTopCountry(moviesInfo));
+        analytics.setTopYear(AnalyticsUtils.calculateTopYear(moviesInfo));
+        analytics.setBestMovies(AnalyticsUtils.calculateBestMovies(moviesInfo));
+        analytics.setWorstMovies(AnalyticsUtils.calculateWorstMovies(moviesInfo));
+        analytics.setTopJoke(AnalyticsUtils.calculateJokeTop(moviesInfo));
+        return analytics;
+    }
 
     public static String calculateTopDirectors(List<MovieInfo> moviesInfo) {
         Map<String, Integer> directors = new HashMap<>();
@@ -88,7 +101,23 @@ public class AnalyticsUtils {
         return StringUtils.join(worstMovies.toArray(), ", ");
     }
 
-    public static String calculateTop(Map<String, Integer> itemMap) {
+    public static String calculateJokeTop(List<MovieInfo> moviesInfo) {
+        List<String> joke = new ArrayList<>();
+        for (MovieInfo movieInfo : moviesInfo) {
+            for (String actor : movieInfo.getActors()) {
+                if (actor.equals("Nicolas Cage")) {
+                    joke.add(movieInfo.getTitle());
+                    break;
+                }
+            }
+        }
+        if (joke.isEmpty()) {
+            return "none... seriously?";
+        }
+        return StringUtils.join(joke.toArray(), ", ");
+    }
+
+    private static String calculateTop(Map<String, Integer> itemMap) {
         ValueComparator bvc = new ValueComparator(itemMap);
         TreeMap<String, Integer> sortedMap = new TreeMap<>(bvc);
         sortedMap.putAll(itemMap);

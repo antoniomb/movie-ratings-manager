@@ -13,14 +13,9 @@ public class MigrationOutput implements Serializable {
     private Boolean targetStatus;
     private Integer moviesReaded;
     private Integer moviesWrited;
-    private Double ratingAvg;
-    private String topDirector;
-    private String topActor;
-    private String topCountry;
-    private String topYear;
-    private String bestMovies;
-    private String worstMovies;
+    private String ratingAvg;
     private String csv;
+    private MigrationOutputAnalytics analytics;
 
     public MigrationOutput() {
     }
@@ -57,60 +52,12 @@ public class MigrationOutput implements Serializable {
         this.moviesWrited = moviesWrited;
     }
 
-    public Double getRatingAvg() {
+    public String getRatingAvg() {
         return ratingAvg;
     }
 
-    public void setRatingAvg(Double ratingAvg) {
+    public void setRatingAvg(String ratingAvg) {
         this.ratingAvg = ratingAvg;
-    }
-
-    public String getTopActor() {
-        return topActor;
-    }
-
-    public void setTopActor(String topActor) {
-        this.topActor = topActor;
-    }
-
-    public String getTopDirector() {
-        return topDirector;
-    }
-
-    public void setTopDirector(String topDirector) {
-        this.topDirector = topDirector;
-    }
-
-    public String getTopCountry() {
-        return topCountry;
-    }
-
-    public void setTopCountry(String topCountry) {
-        this.topCountry = topCountry;
-    }
-
-    public String getTopYear() {
-        return topYear;
-    }
-
-    public void setTopYear(String topYear) {
-        this.topYear = topYear;
-    }
-
-    public String getBestMovies() {
-        return bestMovies;
-    }
-
-    public void setBestMovies(String bestMovies) {
-        this.bestMovies = bestMovies;
-    }
-
-    public String getWorstMovies() {
-        return worstMovies;
-    }
-
-    public void setWorstMovies(String worstMovies) {
-        this.worstMovies = worstMovies;
     }
 
     public String getCsv() {
@@ -119,5 +66,13 @@ public class MigrationOutput implements Serializable {
 
     public void setCsv(String csv) {
         this.csv = csv;
+    }
+
+    public MigrationOutputAnalytics getAnalytics() {
+        return analytics;
+    }
+
+    public void setAnalytics(MigrationOutputAnalytics analytics) {
+        this.analytics = analytics;
     }
 }

@@ -72,5 +72,18 @@ input[data-toggle]:checked + label:active {
 
 #migration-result {
     font-size: 1rem;
+    padding: 16px;
+    border: 0;
+}
+
+#analysis-result b {
+    font-size: 1rem;
+    display: block;
+    margin-bottom: 6px;
+}
+
+#run-block {
+    padding: 0;
+    border: 1px;
 }
 

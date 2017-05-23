@@ -5,14 +5,14 @@ import es.antoniomb.dto.MigrationInput;
 import es.antoniomb.dto.MigrationOutput;
 import es.antoniomb.dto.MovieInfo;
 import es.antoniomb.utils.AnalyticsUtils;
-import es.antoniomb.utils.ValueComparator;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.*;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -96,12 +96,7 @@ public class MigrationService {
                     break;
                 case ANALYSIS:
                     result.setMoviesWrited(moviesInfo.size());
-                    result.setTopDirector(AnalyticsUtils.calculateTopDirectors(moviesInfo));
-                    result.setTopActor(AnalyticsUtils.calculateTopActors(moviesInfo));
-                    result.setTopCountry(AnalyticsUtils.calculateTopCountry(moviesInfo));
-                    result.setTopYear(AnalyticsUtils.calculateTopYear(moviesInfo));
-                    result.setBestMovies(AnalyticsUtils.calculateBestMovies(moviesInfo));
-                    result.setWorstMovies(AnalyticsUtils.calculateWorstMovies(moviesInfo));
+                    result.setAnalytics(AnalyticsUtils.calculateAnalytics(moviesInfo));
                 default:
             }
             result.setTargetStatus(true);
@@ -117,7 +112,8 @@ public class MigrationService {
         if (result.getSourceStatus()) {
             result.setMoviesReaded(moviesInfo.size());
             if (!moviesInfo.isEmpty()) {
-                result.setRatingAvg(moviesInfo.stream().mapToDouble(m -> Double.valueOf(m.getRate())).average().getAsDouble());
+                double avg = moviesInfo.stream().mapToDouble(m -> Double.valueOf(m.getRate())).average().getAsDouble();
+                result.setRatingAvg(new DecimalFormat("#.00").format(avg));
             }
             if (result.getTargetStatus()) {
                 result.setMoviesWrited(moviesImported);

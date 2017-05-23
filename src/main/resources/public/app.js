@@ -31,13 +31,16 @@ app.controller('AppController', ['$scope', '$http', '$window',
                 $scope.targetStatus = data.targetStatus;
                 $scope.moviesReaded = data.moviesReaded;
                 $scope.moviesWrited = data.moviesWrited;
-                $scope.topDirector = data.topDirector;
-                $scope.topActor = data.topActor;
-                $scope.topCountry = data.topCountry;
-                $scope.topYear = data.topYear;
-                $scope.bestMovies = data.bestMovies;
-                $scope.worstMovies = data.worstMovies;
                 $scope.ratingAvg = data.ratingAvg;
+                if (data.analytics !== null) {
+                    $scope.topDirector = data.analytics.topDirector;
+                    $scope.topActor = data.analytics.topActor;
+                    $scope.topCountry = data.analytics.topCountry;
+                    $scope.topYear = data.analytics.topYear;
+                    $scope.bestMovies = data.analytics.bestMovies;
+                    $scope.worstMovies = data.analytics.worstMovies;
+                    $scope.topJoke = data.analytics.topJoke;
+                }
                 if ($scope.sourceStatus == true && $scope.targetStatus == true) {
                     if (migration.to == "csv") {
                         var blob = new Blob([data.csv], {type: 'text/csv'});
@@ -51,7 +54,7 @@ app.controller('AppController', ['$scope', '$http', '$window',
                     else {
                         if (migration.to == "analysis") {
                             analysis.removeClass('ng-hide');
-                            $scope.result+= "Source movies: "+$scope.moviesReaded;
+                            $scope.result+= "Source movies: "+$scope.moviesReaded + " with rating avg: "+$scope.ratingAvg;
                         }
                         else {
                             $scope.result+= "Source movies: "+$scope.moviesReaded+" - Matched movies on target: "+$scope.moviesWrited;
