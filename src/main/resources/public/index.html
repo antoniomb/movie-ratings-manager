@@ -21,7 +21,7 @@
             <div class="row">
 	            <div class="small-10 small-centered columns content">
 					<div class="small-10 small-centered columns section-box">
-						<h2>Source</h2>
+						<h2>Source data</h2>
 						<p class="target">Login data of source account</p>
 						<ul class="button-group round toggle" data-toggle="buttons-radio" ng-init="migration.from=filmaffinity" >
 							<li>
@@ -49,8 +49,8 @@
 						</div>
 						<input class="large-6" type="password" name="fromPassword" ng-model="migration.fromPassword" required>
 
-						<h2>Target</h2>
-						<p class="target">Login data of target account</p>
+						<h2>Action</h2>
+						<p class="target">Action to execute</p>
 						<ul class="button-group round toggle" data-toggle="buttons-radio" ng-init="migration.to=csv">
 							<li>
 								<input type="radio" id="toCSV" name="to-group" data-toggle="button"
@@ -58,15 +58,16 @@
 								<label class="button" for="toCSV">Download CSV</label>
 							</li>
 							<li>
-								<input type="radio" id="toLetsCine" name="to-group" data-toggle="button"
-									   ng-model="migration.to" value="letscine">
-								<label class="button" for="toLetsCine">LetsCine</label>
-							</li>
-							<li>
 								<input type="radio" id="toAnalysis" name="to-group" data-toggle="button"
 									   ng-model="migration.to" value="analysis">
-								<label class="button" for="toAnalysis">Analysis</label>
+								<label class="button" for="toAnalysis">Analyze</label>
 							</li>
+							<li>
+								<input type="radio" id="toLetsCine" name="to-group" data-toggle="button"
+									   ng-model="migration.to" value="letscine">
+								<label class="button" for="toLetsCine">Migrate to LetsCine</label>
+							</li>
+
 							<!--<li>
 								<input type="radio" id="toFilmaffinity" name="to-group" data-toggle="button"
 									   ng-model="migration.to" value="filmaffinity">
@@ -122,6 +123,7 @@
 					</div>
 				</div>
             </div>
+
 			<div id="analysis-result" class="row ng-hide">
 				<div class="small-10 small-centered columns alert-box info">
 					<span><b>Top Directors:</b> {{topDirector}}</span>
@@ -146,14 +148,6 @@
 				</div>
 			</div>
         </form>
-
-    <!--<div class="row">
-            SourceStatus: <span>{{sourceStatus}}</span> <br/>
-            TargetStatus: <span>{{targetStatus}}</span> <br/>
-            MoviesReaded: <span>{{moviesReaded}}</span> <br/>
-            MoviesWrited: <span>{{moviesWrited}}</span> <br/>
-            RatingAverage: {{ratingAvg}} <br/>
-        </div>-->
 
     </div>
 
