@@ -9,6 +9,7 @@ public class MigrationOutputAnalytics {
     private String topActor;
     private String topCountry;
     private String topYear;
+    private String ratingsDistribution;
     private String bestMovies;
     private String worstMovies;
     private String topJoke;
@@ -43,6 +44,14 @@ public class MigrationOutputAnalytics {
 
     public void setTopYear(String topYear) {
         this.topYear = topYear;
+    }
+
+    public String getRatingsDistribution() {
+        return ratingsDistribution;
+    }
+
+    public void setRatingsDistribution(String ratingsDistribution) {
+        this.ratingsDistribution = ratingsDistribution;
     }
 
     public String getBestMovies() {

@@ -4,6 +4,8 @@ import es.antoniomb.dto.MigrationOutputAnalytics;
 import es.antoniomb.dto.MovieInfo;
 import org.apache.commons.lang3.StringUtils;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.*;
 
 /**
@@ -11,12 +13,15 @@ import java.util.*;
  */
 public class AnalyticsUtils {
 
+    private static DecimalFormat formatter = new DecimalFormat("0.0");
+
     public static MigrationOutputAnalytics calculateAnalytics(List<MovieInfo> moviesInfo) {
         MigrationOutputAnalytics analytics = new MigrationOutputAnalytics();
         analytics.setTopDirector(AnalyticsUtils.calculateTopDirectors(moviesInfo));
         analytics.setTopActor(AnalyticsUtils.calculateTopActors(moviesInfo));
         analytics.setTopCountry(AnalyticsUtils.calculateTopCountry(moviesInfo));
         analytics.setTopYear(AnalyticsUtils.calculateTopYear(moviesInfo));
+        analytics.setRatingsDistribution(AnalyticsUtils.calculateRatingsDistribution(moviesInfo));
         analytics.setBestMovies(AnalyticsUtils.calculateBestMovies(moviesInfo));
         analytics.setWorstMovies(AnalyticsUtils.calculateWorstMovies(moviesInfo));
         analytics.setTopJoke(AnalyticsUtils.calculateJokeTop(moviesInfo));
@@ -34,7 +39,7 @@ public class AnalyticsUtils {
                 directors.put(movieInfo.getDirector(), 1);
             }
         }
-        return calculateTop(directors);
+        return calculateTop(directors, false);
     }
 
     public static String calculateTopActors(List<MovieInfo> moviesInfo) {
@@ -50,7 +55,7 @@ public class AnalyticsUtils {
                 }
             }
         }
-        return calculateTop(actors);
+        return calculateTop(actors, false);
     }
 
     public static String calculateTopCountry(List<MovieInfo> moviesInfo) {
@@ -64,7 +69,7 @@ public class AnalyticsUtils {
                 country.put(movieInfo.getCountry(), 1);
             }
         }
-        return calculateTop(country);
+        return calculateTop(country, true);
     }
 
     public static String calculateTopYear(List<MovieInfo> moviesInfo) {
@@ -78,7 +83,21 @@ public class AnalyticsUtils {
                 year.put(movieInfo.getYear(), 1);
             }
         }
-        return calculateTop(year);
+        return calculateTop(year, true);
+    }
+
+    public static String calculateRatingsDistribution(List<MovieInfo> moviesInfo) {
+        Map<String, Integer> year = new HashMap<>();
+        for (MovieInfo movieInfo : moviesInfo) {
+            if (year.containsKey(movieInfo.getRate())) {
+                Integer count = year.get(movieInfo.getRate());
+                year.put(movieInfo.getRate(), ++count);
+            }
+            else {
+                year.put(movieInfo.getRate(), 1);
+            }
+        }
+        return calculateTop(year, true);
     }
 
     public static String calculateBestMovies(List<MovieInfo> moviesInfo) {
@@ -117,18 +136,21 @@ public class AnalyticsUtils {
         return StringUtils.join(joke.toArray(), ", ");
     }
 
-    private static String calculateTop(Map<String, Integer> itemMap) {
+    private static String calculateTop(Map<String, Integer> itemMap, boolean percentage) {
         ValueComparator bvc = new ValueComparator(itemMap);
         TreeMap<String, Integer> sortedMap = new TreeMap<>(bvc);
         sortedMap.putAll(itemMap);
         String top = "";
         int i = 0;
+        int total = sortedMap.values().stream().mapToInt(Integer::intValue).sum();
         for (Map.Entry<String,Integer> item : sortedMap.entrySet()) {
+            String percentageValue = percentage ? " - "+formatter.format((item.getValue()*100.0f)/total)+"%" : "";
+            String itemStr = item.getKey() + " (" + item.getValue() + percentageValue + ")";
             if (i++ == 24 || i == sortedMap.entrySet().size()) {
-                top+=item.getKey()+"("+item.getValue()+")";
+                top+= itemStr;
                 break;
             }
-            top+=item.getKey()+"("+item.getValue()+")"+", ";
+            top+=itemStr+", ";
         }
         return top;
     }

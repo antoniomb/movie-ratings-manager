@@ -37,6 +37,7 @@ app.controller('AppController', ['$scope', '$http', '$window',
                     $scope.topActor = data.analytics.topActor;
                     $scope.topCountry = data.analytics.topCountry;
                     $scope.topYear = data.analytics.topYear;
+                    $scope.ratingsDistribution = data.analytics.ratingsDistribution;
                     $scope.bestMovies = data.analytics.bestMovies;
                     $scope.worstMovies = data.analytics.worstMovies;
                     $scope.topJoke = data.analytics.topJoke;
