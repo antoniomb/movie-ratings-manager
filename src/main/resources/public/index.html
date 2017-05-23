@@ -94,8 +94,8 @@
 						<input class="large-6 columns" type="password" name="password" ng-model="migration.toPassword">
 						</div>-->
 
-						<h2>Date range</h2>
-						<p class="target">Optional date ranged migration</p>
+						<h2>Date rating range</h2>
+						<p class="target">Optional date rating ranged execution</p>
 						<div class="row small-12 large-6">
 							<div class="small-12 large-6 columns">
 								<datepicker date-format="yyyy-MM-dd" >
@@ -118,7 +118,7 @@
 						<span>{{result}}</span>
 					</div>
 					<div class="right small-4">
-                		<button class="big button" type="submit">Migrate!</button>
+                		<button class="big button" type="submit">Run!</button>
 					</div>
 				</div>
             </div>
@@ -130,10 +130,16 @@
 					<span><b>Top Actors:</b> {{topActor}}</span>
 				</div>
 				<div class="small-10 small-centered columns alert-box info">
-					<span><b>Top Country:</b> {{topCountry}}</span>
+					<span><b>Top Countries:</b> {{topCountry}}</span>
 				</div>
 				<div class="small-10 small-centered columns alert-box info">
-					<span><b>Top Year:</b> {{topYear}}</span>
+					<span><b>Top Years:</b> {{topYear}}</span>
+				</div>
+				<div class="small-10 small-centered columns alert-box info">
+					<span><b>Best Movies (10):</b> {{bestMovies}}</span>
+				</div>
+				<div class="small-10 small-centered columns alert-box info">
+					<span><b>Worst Movies (1):</b> {{worstMovies}}</span>
 				</div>
 			</div>
         </form>

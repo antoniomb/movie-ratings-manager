@@ -19,6 +19,9 @@ app.controller('AppController', ['$scope', '$http', '$window',
         }
 
         var result = angular.element(document.querySelector('#migration-result'));
+        var analysis = angular.element(document.querySelector('#analysis-result'));
+        analysis.addClass("ng-hide");
+
         $scope.result = "Loading ... \n";
         result.removeClass('success').removeClass('alert').addClass('info');
         var api_url = $window.location.origin + '/migrate';
@@ -32,6 +35,8 @@ app.controller('AppController', ['$scope', '$http', '$window',
                 $scope.topActor = data.topActor;
                 $scope.topCountry = data.topCountry;
                 $scope.topYear = data.topYear;
+                $scope.bestMovies = data.bestMovies;
+                $scope.worstMovies = data.worstMovies;
                 $scope.ratingAvg = data.ratingAvg;
                 if ($scope.sourceStatus == true && $scope.targetStatus == true) {
                     if (migration.to == "csv") {
@@ -45,7 +50,6 @@ app.controller('AppController', ['$scope', '$http', '$window',
                     }
                     else {
                         if (migration.to == "analysis") {
-                            var analysis = angular.element(document.querySelector('#analysis-result'));
                             analysis.removeClass('ng-hide');
                             $scope.result+= "Source movies: "+$scope.moviesReaded;
                         }

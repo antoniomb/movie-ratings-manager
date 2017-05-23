@@ -18,6 +18,8 @@ public class MigrationOutput implements Serializable {
     private String topActor;
     private String topCountry;
     private String topYear;
+    private String bestMovies;
+    private String worstMovies;
     private String csv;
 
     public MigrationOutput() {
@@ -93,6 +95,22 @@ public class MigrationOutput implements Serializable {
 
     public void setTopYear(String topYear) {
         this.topYear = topYear;
+    }
+
+    public String getBestMovies() {
+        return bestMovies;
+    }
+
+    public void setBestMovies(String bestMovies) {
+        this.bestMovies = bestMovies;
+    }
+
+    public String getWorstMovies() {
+        return worstMovies;
+    }
+
+    public void setWorstMovies(String worstMovies) {
+        this.worstMovies = worstMovies;
     }
 
     public String getCsv() {

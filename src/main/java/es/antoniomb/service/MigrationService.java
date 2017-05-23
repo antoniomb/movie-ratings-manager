@@ -4,7 +4,9 @@ import com.opencsv.CSVWriter;
 import es.antoniomb.dto.MigrationInput;
 import es.antoniomb.dto.MigrationOutput;
 import es.antoniomb.dto.MovieInfo;
+import es.antoniomb.utils.AnalyticsUtils;
 import es.antoniomb.utils.ValueComparator;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -94,10 +96,12 @@ public class MigrationService {
                     break;
                 case ANALYSIS:
                     result.setMoviesWrited(moviesInfo.size());
-                    result.setTopDirector(calculateTopDirectors(moviesInfo));
-                    result.setTopActor(calculateTopActors(moviesInfo));
-                    result.setTopCountry(calculateTopCountry(moviesInfo));
-                    result.setTopYear(calculateTopYear(moviesInfo));
+                    result.setTopDirector(AnalyticsUtils.calculateTopDirectors(moviesInfo));
+                    result.setTopActor(AnalyticsUtils.calculateTopActors(moviesInfo));
+                    result.setTopCountry(AnalyticsUtils.calculateTopCountry(moviesInfo));
+                    result.setTopYear(AnalyticsUtils.calculateTopYear(moviesInfo));
+                    result.setBestMovies(AnalyticsUtils.calculateBestMovies(moviesInfo));
+                    result.setWorstMovies(AnalyticsUtils.calculateWorstMovies(moviesInfo));
                 default:
             }
             result.setTargetStatus(true);
@@ -107,80 +111,6 @@ public class MigrationService {
             result.setTargetStatus(false);
         }
         return moviesImported;
-    }
-
-    private String calculateTopDirectors(List<MovieInfo> moviesInfo) {
-        Map<String, Integer> directors = new HashMap<>();
-        for (MovieInfo movieInfo : moviesInfo) {
-            if (directors.containsKey(movieInfo.getDirector())) {
-                Integer count = directors.get(movieInfo.getDirector());
-                directors.put(movieInfo.getDirector(), ++count);
-            }
-            else {
-                directors.put(movieInfo.getDirector(), 1);
-            }
-        }
-        return calculateTop(directors);
-    }
-
-    private String calculateTopActors(List<MovieInfo> moviesInfo) {
-        Map<String, Integer> actors = new HashMap<>();
-        for (MovieInfo movieInfo : moviesInfo) {
-            for (String actor : movieInfo.getActors()) {
-                if (actors.containsKey(actor)) {
-                    Integer count = actors.get(actor);
-                    actors.put(actor, ++count);
-                }
-                else {
-                    actors.put(actor, 1);
-                }
-            }
-        }
-        return calculateTop(actors);
-    }
-
-    private String calculateTopCountry(List<MovieInfo> moviesInfo) {
-        Map<String, Integer> country = new HashMap<>();
-        for (MovieInfo movieInfo : moviesInfo) {
-            if (country.containsKey(movieInfo.getCountry())) {
-                Integer count = country.get(movieInfo.getCountry());
-                country.put(movieInfo.getCountry(), ++count);
-            }
-            else {
-                country.put(movieInfo.getCountry(), 1);
-            }
-        }
-        return calculateTop(country);
-    }
-
-    private String calculateTopYear(List<MovieInfo> moviesInfo) {
-        Map<String, Integer> year = new HashMap<>();
-        for (MovieInfo movieInfo : moviesInfo) {
-            if (year.containsKey(movieInfo.getYear())) {
-                Integer count = year.get(movieInfo.getYear());
-                year.put(movieInfo.getYear(), ++count);
-            }
-            else {
-                year.put(movieInfo.getYear(), 1);
-            }
-        }
-        return calculateTop(year);
-    }
-
-    private String calculateTop(Map<String, Integer> itemMap) {
-        ValueComparator bvc = new ValueComparator(itemMap);
-        TreeMap<String, Integer> sortedMap = new TreeMap<>(bvc);
-        sortedMap.putAll(itemMap);
-        String top = "";
-        int i = 0;
-        for (Map.Entry<String,Integer> item : sortedMap.entrySet()) {
-            if (i++ == 9 || i == sortedMap.entrySet().size()) {
-                top+=item.getKey()+"("+item.getValue()+")";
-                break;
-            }
-            top+=item.getKey()+"("+item.getValue()+")"+", ";
-        }
-        return top;
     }
 
     private void processResult(MigrationOutput result, List<MovieInfo> moviesInfo, Integer moviesImported) {
