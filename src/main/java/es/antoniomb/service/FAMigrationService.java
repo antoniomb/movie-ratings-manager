@@ -3,6 +3,7 @@ package es.antoniomb.service;
 import es.antoniomb.dto.MigrationInput;
 import es.antoniomb.dto.MovieInfo;
 import es.antoniomb.dto.UserInfo;
+import es.antoniomb.exception.MigrationException;
 import es.antoniomb.utils.FAUtils;
 import es.antoniomb.utils.MigrationUtils;
 import org.jsoup.Connection;
@@ -65,7 +66,7 @@ public class FAMigrationService implements IMigrationService {
         }
 
         if (login == null || login.cookie(FAUtils.SESSION_COOKIE) == null) {
-            throw new RuntimeException("Login error");
+            throw new MigrationException("Login error");
         }
 
         UserInfo userInfo = new UserInfo();
@@ -87,7 +88,7 @@ public class FAMigrationService implements IMigrationService {
                 }
             }
             if (userInfo.getUserId() == null) {
-                throw new RuntimeException("Error obtaining userID");
+                throw new MigrationException("Error obtaining userID");
             }
             LOGGER.info("User id: "+userInfo.getUserId());
 
@@ -103,12 +104,12 @@ public class FAMigrationService implements IMigrationService {
             userInfo.setPages(Integer.valueOf(pages));
             LOGGER.info("User ratings pages: " + userInfo.getPages());
 
-            String votes = ratingsPage.body().getElementsByClass("active-tab").get(0).childNode(1).childNodes().get(0).outerHtml();
+            String votes =  ratingsPage.body().getElementsByClass("active-tab").get(0).childNode(3).childNode(1).outerHtml();
             if (votes != null) {
                 userInfo.setVotes(Integer.valueOf(votes.substring(1).replaceAll(",","")));
             }
             else {
-                throw new RuntimeException("Error obtaining user votes");
+                throw new MigrationException("Error obtaining user votes");
             }
             LOGGER.info("User total votes: " + userInfo.getVotes());
 

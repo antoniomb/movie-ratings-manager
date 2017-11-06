@@ -4,6 +4,8 @@ import com.opencsv.CSVWriter;
 import es.antoniomb.dto.MigrationInput;
 import es.antoniomb.dto.MigrationOutput;
 import es.antoniomb.dto.MovieInfo;
+import es.antoniomb.exception.MigrationException;
+import es.antoniomb.utils.AnalyticsComplexUtils;
 import es.antoniomb.utils.AnalyticsUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -97,12 +99,17 @@ public class MigrationService {
                 case ANALYSIS:
                     result.setMoviesWrited(moviesInfo.size());
                     result.setAnalytics(AnalyticsUtils.calculateAnalytics(moviesInfo));
+//                    result.setAnalyticsComplex(AnalyticsComplexUtils.calculateAnalytics(moviesInfo));
                 default:
             }
             result.setTargetStatus(true);
         }
+        catch (MigrationException e) {
+            LOGGER.log(Level.WARNING, "Error setting ratings");
+            result.setTargetStatus(false);
+        }
         catch (Exception e) {
-            LOGGER.log(Level.WARNING, "Error setting ratings", e);
+            LOGGER.log(Level.SEVERE, "Generic error setting ratings", e);
             result.setTargetStatus(false);
         }
         return moviesImported;

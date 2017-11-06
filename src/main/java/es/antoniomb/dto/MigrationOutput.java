@@ -1,7 +1,5 @@
 package es.antoniomb.dto;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
-
 import java.io.Serializable;
 
 /**
@@ -16,6 +14,7 @@ public class MigrationOutput implements Serializable {
     private String ratingAvg;
     private String csv;
     private MigrationOutputAnalytics analytics;
+    private MigrationOuputComplexAnalytics analyticsComplex;
 
     public MigrationOutput() {
     }
@@ -74,5 +73,13 @@ public class MigrationOutput implements Serializable {
 
     public void setAnalytics(MigrationOutputAnalytics analytics) {
         this.analytics = analytics;
+    }
+
+    public MigrationOuputComplexAnalytics getAnalyticsComplex() {
+        return analyticsComplex;
+    }
+
+    public void setAnalyticsComplex(MigrationOuputComplexAnalytics analyticsComplex) {
+        this.analyticsComplex = analyticsComplex;
     }
 }
