@@ -2,49 +2,170 @@ package es.antoniomb.utils;
 
 import es.antoniomb.dto.MigrationOuputComplexAnalytics;
 import es.antoniomb.dto.MovieInfo;
-import org.apache.commons.collections.MapUtils;
 
 import java.text.DecimalFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class AnalyticsComplexUtils {
 
-    private static DecimalFormat formatter = new DecimalFormat("0.0");
+    private static final String JOKE_ACTOR = "Nicolas Cage";
+    private static final int TOP_VALUES = 20;
+    private static DecimalFormat FORMATTER = new DecimalFormat("0.0");
+
 
     public static MigrationOuputComplexAnalytics calculateAnalytics(List<MovieInfo> moviesInfo) {
         MigrationOuputComplexAnalytics analytics = new MigrationOuputComplexAnalytics();
 
-        Map<String, List<String>> directors = analytics.getDirectors();
-        Map<String, List<String>> actors = analytics.getActors();
+        Map<String, List<MigrationOuputComplexAnalytics.Movie>> directors = new HashMap<>();
+        Map<String, List<MigrationOuputComplexAnalytics.Movie>> actors = new HashMap<>();
+        Map<String, Integer> country = new HashMap<>();
+        Map<String, Integer> year = new HashMap<>();
+        Map<String, Integer> ratings = new HashMap<>();
+        Map<String, Integer> topMovies = new HashMap<>();
+        Map<String, Integer> worstMovies = new HashMap<>();
+        Map<String, Integer> jokeActor = new HashMap<>();
+
         for (MovieInfo movieInfo : moviesInfo) {
 
-            //Build director info
-            if (directors.containsKey(movieInfo.getDirector())) {
-                directors.get(movieInfo.getDirector()).add(buildMovieStr(movieInfo));
-            }
-            else {
-                directors.put(movieInfo.getDirector(), new ArrayList<>(List.of(buildMovieStr(movieInfo))));
-            }
-
-            //Build actor info
-            for (String actor : movieInfo.getActors()) {
-                if (actors.containsKey(actor)) {
-                    actors.get(actor).add(buildMovieStr(movieInfo));
-                }
-                else {
-                    actors.put(actor, new ArrayList<>(List.of(buildMovieStr(movieInfo))));
-                }
-            }
+            topDirector(directors, movieInfo);
+            topActor(actors, jokeActor, movieInfo);
+            topCountry(country, movieInfo);
+            topYear(year, movieInfo);
+            ratingsDist(ratings, movieInfo);
+            topMovies(topMovies, movieInfo);
+            worstMovies(worstMovies, movieInfo);
         }
-
-        MapUtil.sortByValue(directors);
-        MapUtil.sortByValue(actors);
+        analytics.setDirectors(calculateTop(directors));
+        analytics.setActors(calculateTop(actors));
+        analytics.setCountries(calculateTop(country, true));
+        analytics.setYears(calculateTop(year, true));
+        analytics.setRatingDist(calculateTop(year, true));
+        analytics.setBestMovies(calculateTop(topMovies, false));
+        analytics.setWorstMovies(calculateTop(worstMovies, false));
+        analytics.setJokeActor(calculateTop(jokeActor, false));
 
         return analytics;
     }
 
+    private static void worstMovies(Map<String, Integer> worstMovies, MovieInfo movieInfo) {
+        if (movieInfo.getRate().equals("1")) {
+            worstMovies.put(movieInfo.getTitle(), Integer.valueOf(movieInfo.getYear()));
+        }
+    }
+
+    private static void topMovies(Map<String, Integer> topMovies, MovieInfo movieInfo) {
+        if (movieInfo.getRate().equals("10")) {
+            topMovies.put(movieInfo.getTitle(), Integer.valueOf(movieInfo.getYear()));
+        }
+    }
+
+    private static void ratingsDist(Map<String, Integer> year, MovieInfo movieInfo) {
+        if (year.containsKey(movieInfo.getRate())) {
+            Integer count = year.get(movieInfo.getRate());
+            year.put(movieInfo.getRate(), ++count);
+        }
+        else {
+            year.put(movieInfo.getRate(), 1);
+        }
+    }
+
+    private static void topYear(Map<String, Integer> year, MovieInfo movieInfo) {
+        if (year.containsKey(movieInfo.getYear())) {
+            Integer count = year.get(movieInfo.getYear());
+            year.put(movieInfo.getYear(), ++count);
+        }
+        else {
+            year.put(movieInfo.getYear(), 1);
+        }
+    }
+
+    private static void topCountry(Map<String, Integer> country, MovieInfo movieInfo) {
+        if (country.containsKey(movieInfo.getCountry())) {
+            Integer count = country.get(movieInfo.getCountry());
+            country.put(movieInfo.getCountry(), ++count);
+        }
+        else {
+            country.put(movieInfo.getCountry(), 1);
+        }
+    }
+
+    private static void topActor(Map<String, List<MigrationOuputComplexAnalytics.Movie>> actors, Map<String, Integer> jokeActor, MovieInfo movieInfo) {
+        for (String actor : movieInfo.getActors()) {
+            if (actors.containsKey(actor)) {
+                actors.get(actor).add(MigrationOuputComplexAnalytics.Movie.of(movieInfo.getTitle(),movieInfo.getYear()));
+            }
+            else {
+                actors.put(actor, new ArrayList<>(List.of(
+                        MigrationOuputComplexAnalytics.Movie.of(movieInfo.getTitle(),movieInfo.getYear()))));
+            }
+            if (actor.equals(JOKE_ACTOR)) {
+                jokeActor.put(movieInfo.getTitle(), Integer.valueOf(movieInfo.getYear()));
+                break;
+            }
+        }
+    }
+
+    private static void topDirector(Map<String, List<MigrationOuputComplexAnalytics.Movie>> directors, MovieInfo movieInfo) {
+        if (directors.containsKey(movieInfo.getDirector())) {
+            directors.get(movieInfo.getDirector()).add(MigrationOuputComplexAnalytics.Movie.of(
+                    movieInfo.getTitle(),movieInfo.getYear()));
+        }
+        else {
+            directors.put(movieInfo.getDirector(), new ArrayList<>(List.of(
+                    MigrationOuputComplexAnalytics.Movie.of(movieInfo.getTitle(),movieInfo.getYear()))));
+        }
+    }
+
     private static String buildMovieStr(MovieInfo movieInfo) {
         return movieInfo.getTitle()+" ("+movieInfo.getYear()+")";
+    }
+
+    private static Map<String, List<MigrationOuputComplexAnalytics.Movie>> calculateTop(
+            Map<String, List<MigrationOuputComplexAnalytics.Movie>> itemMap) {
+        Map<String, Integer> itemMapBySize = new HashMap();
+        for (Map.Entry<String, List<MigrationOuputComplexAnalytics.Movie>> entry : itemMap.entrySet()) {
+            itemMapBySize.put(entry.getKey(), entry.getValue().size());
+        }
+
+        ValueComparator bvc = new ValueComparator(itemMapBySize);
+        TreeMap<String, Integer> sortedMapBySize = new TreeMap<>(bvc);
+        sortedMapBySize.putAll(itemMapBySize);
+
+        Map<String, List<MigrationOuputComplexAnalytics.Movie>> sortedMap = new LinkedHashMap<>();
+        int i = 0;
+        for (Map.Entry<String,Integer> item : sortedMapBySize.entrySet()) {
+            sortedMap.put(item.getKey(), itemMap.get(item.getKey()).stream().
+                    sorted((o1, o2) -> o1.getYear().compareTo(o2.getYear())).
+                    collect(Collectors.toList()));
+            if (++i >= TOP_VALUES) {
+                break;
+            }
+        }
+        return sortedMap;
+    }
+
+    private static Map<String, String> calculateTop(Map<String, Integer> itemMap, boolean percentage) {
+        ValueComparator bvc = new ValueComparator(itemMap);
+        TreeMap<String, Integer> sortedMap = new TreeMap<>(bvc);
+        sortedMap.putAll(itemMap);
+
+        Map<String, String> sortedTop = new LinkedHashMap<>();
+        int i = 0;
+        int total = sortedMap.values().stream().mapToInt(Integer::intValue).sum();
+        for (Map.Entry<String,Integer> item : sortedMap.entrySet()) {
+            if (percentage) {
+                String percentageValue = " - " + FORMATTER.format((item.getValue() * 100.0f) / total) + "%";
+                sortedTop.put(item.getKey(), " (" + item.getValue() + percentageValue + ")");
+            }
+            else {
+                sortedTop.put(item.getKey(), item.getValue().toString());
+            }
+            if (++i >= TOP_VALUES) {
+                break;
+            }
+        }
+        return sortedTop;
     }
 
 }

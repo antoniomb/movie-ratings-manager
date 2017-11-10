@@ -38,6 +38,8 @@ app.controller('AppController', ['$scope', '$http', '$window',
                 $scope.moviesReaded = data.moviesReaded;
                 $scope.moviesWrited = data.moviesWrited;
                 $scope.ratingAvg = data.ratingAvg;
+                $scope.analytics = data.analyticsComplex;
+
                 if (data.analytics !== null) {
                     $scope.topDirector = data.analytics.topDirector;
                     $scope.topActor = data.analytics.topActor;
@@ -85,6 +87,11 @@ app.controller('AppController', ['$scope', '$http', '$window',
         return Object.keys(object).some(function (key) {
             return object[key];
         });
+    };
+
+    $scope.getKeys = function(obj) {
+        if (obj)
+            return Object.keys(obj);
     };
 
 }]);

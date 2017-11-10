@@ -2,29 +2,98 @@ package es.antoniomb.dto;
 
 import es.antoniomb.utils.ValueComparator;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 public class MigrationOuputComplexAnalytics {
 
-    private Map<String, List<String>> directors = new TreeMap<>();
-    private Map<String, List<String>> actors = new TreeMap<>();
+    public static class Movie {
+        private String title;
+        private String year;
+        private Movie(String title, String year) {
+            this.title = title;
+            this.year = year;
+        }
+        public static Movie of(String title, String year) {
+            return new Movie(title, year);
+        }
+        public String getTitle() {
+            return title;
+        }
+        public String getYear() {
+            return year;
+        }
+    }
 
-    public Map<String, List<String>> getDirectors() {
+    private Map<String, List<Movie>> directors;
+    private Map<String, List<Movie>> actors;
+    Map<String, String> countries;
+    Map<String, String> years;
+    Map<String, String> ratingDist;
+    Map<String, String> bestMovies;
+    Map<String, String> worstMovies;
+    Map<String, String> jokeActor;
+
+    public Map<String, List<Movie>> getDirectors() {
         return directors;
     }
 
-    public void setDirectors(Map<String, List<String>> directors) {
+    public void setDirectors(Map<String, List<Movie>> directors) {
         this.directors = directors;
     }
 
-    public Map<String, List<String>> getActors() {
+    public Map<String, List<Movie>> getActors() {
         return actors;
     }
 
-    public void setActors(Map<String, List<String>> actors) {
+    public void setActors(Map<String, List<Movie>> actors) {
         this.actors = actors;
+    }
+
+    public Map<String, String> getCountries() {
+        return countries;
+    }
+
+    public void setCountries(Map<String, String> countries) {
+        this.countries = countries;
+    }
+
+    public Map<String, String> getYears() {
+        return years;
+    }
+
+    public void setYears(Map<String, String> years) {
+        this.years = years;
+    }
+
+    public Map<String, String> getRatingDist() {
+        return ratingDist;
+    }
+
+    public void setRatingDist(Map<String, String> ratingDist) {
+        this.ratingDist = ratingDist;
+    }
+
+    public Map<String, String> getBestMovies() {
+        return bestMovies;
+    }
+
+    public void setBestMovies(Map<String, String> bestMovies) {
+        this.bestMovies = bestMovies;
+    }
+
+    public Map<String, String> getWorstMovies() {
+        return worstMovies;
+    }
+
+    public void setWorstMovies(Map<String, String> worstMovies) {
+        this.worstMovies = worstMovies;
+    }
+
+    public Map<String, String> getJokeActor() {
+        return jokeActor;
+    }
+
+    public void setJokeActor(Map<String, String> jokeActor) {
+        this.jokeActor = jokeActor;
     }
 }
