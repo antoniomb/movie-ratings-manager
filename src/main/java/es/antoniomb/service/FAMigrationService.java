@@ -14,6 +14,8 @@ import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.net.Authenticator;
+import java.net.PasswordAuthentication;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -59,6 +61,7 @@ public class FAMigrationService implements IMigrationService {
                     .data("username", username)
                     .data("password", password)
                     .method(Connection.Method.POST)
+                    .validateTLSCertificates(false)
                     .execute();
         }
         catch (IOException e) {
