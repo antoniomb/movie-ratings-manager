@@ -40,7 +40,7 @@ public class AnalyticsComplexUtils {
         analytics.setActors(calculateTop(actors));
         analytics.setCountries(calculateTop(country, true));
         analytics.setYears(calculateTop(year, true));
-        analytics.setRatingDist(calculateTop(year, true));
+        analytics.setRatingDist(calculateTop(ratings, true));
         analytics.setBestMovies(calculateTop(topMovies, false));
         analytics.setWorstMovies(calculateTop(worstMovies, false));
         analytics.setJokeActor(calculateTop(jokeActor, false));
