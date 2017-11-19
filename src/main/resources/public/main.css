@@ -1,5 +1,9 @@
 @import 'https://fonts.googleapis.com/css?family=Varela+Round';
 
+@-ms-viewport{
+    width: device-width;
+}
+
 body{
     background: #F5F5F5;
     color: #424242;
