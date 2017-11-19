@@ -93,11 +93,11 @@ public class AnalyticsComplexUtils {
     private static void topActor(Map<String, List<MigrationOuputComplexAnalytics.Movie>> actors, Map<String, Integer> jokeActor, MovieInfo movieInfo) {
         for (String actor : movieInfo.getActors()) {
             if (actors.containsKey(actor)) {
-                actors.get(actor).add(MigrationOuputComplexAnalytics.Movie.of(movieInfo.getTitle(),movieInfo.getYear()));
+                actors.get(actor).add(MigrationOuputComplexAnalytics.Movie.of(movieInfo.getTitle(),movieInfo.getYear(),movieInfo.getRate()));
             }
             else {
                 actors.put(actor, new ArrayList<>(List.of(
-                        MigrationOuputComplexAnalytics.Movie.of(movieInfo.getTitle(),movieInfo.getYear()))));
+                        MigrationOuputComplexAnalytics.Movie.of(movieInfo.getTitle(),movieInfo.getYear(),movieInfo.getRate()))));
             }
             if (actor.equals(JOKE_ACTOR)) {
                 jokeActor.put(movieInfo.getTitle(), Integer.valueOf(movieInfo.getYear()));
@@ -109,16 +109,12 @@ public class AnalyticsComplexUtils {
     private static void topDirector(Map<String, List<MigrationOuputComplexAnalytics.Movie>> directors, MovieInfo movieInfo) {
         if (directors.containsKey(movieInfo.getDirector())) {
             directors.get(movieInfo.getDirector()).add(MigrationOuputComplexAnalytics.Movie.of(
-                    movieInfo.getTitle(),movieInfo.getYear()));
+                    movieInfo.getTitle(),movieInfo.getYear(),movieInfo.getRate()));
         }
         else {
             directors.put(movieInfo.getDirector(), new ArrayList<>(List.of(
-                    MigrationOuputComplexAnalytics.Movie.of(movieInfo.getTitle(),movieInfo.getYear()))));
+                    MigrationOuputComplexAnalytics.Movie.of(movieInfo.getTitle(),movieInfo.getYear(),movieInfo.getRate()))));
         }
-    }
-
-    private static String buildMovieStr(MovieInfo movieInfo) {
-        return movieInfo.getTitle()+" ("+movieInfo.getYear()+")";
     }
 
     private static Map<String, List<MigrationOuputComplexAnalytics.Movie>> calculateTop(

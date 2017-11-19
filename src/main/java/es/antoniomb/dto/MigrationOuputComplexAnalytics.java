@@ -9,18 +9,23 @@ public class MigrationOuputComplexAnalytics {
     public static class Movie {
         private String title;
         private String year;
-        private Movie(String title, String year) {
+        private String rating;
+        private Movie(String title, String year, String rating) {
             this.title = title;
             this.year = year;
+            this.rating = rating;
         }
-        public static Movie of(String title, String year) {
-            return new Movie(title, year);
+        public static Movie of(String title, String year, String rating) {
+            return new Movie(title, year, rating);
         }
         public String getTitle() {
             return title;
         }
         public String getYear() {
             return year;
+        }
+        public String getRating() {
+            return rating;
         }
     }
 

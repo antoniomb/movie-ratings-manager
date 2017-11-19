@@ -85,6 +85,12 @@ input[data-toggle]:checked + label:active {
     display: block;
     margin-bottom: 6px;
 }
+#analysis-result span {
+    font-size: 0.8rem;
+}
+#analysis-result li {
+    font-size: 0.6rem;
+}
 
 #run-block {
     padding: 0;
