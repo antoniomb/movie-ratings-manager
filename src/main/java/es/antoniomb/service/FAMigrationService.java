@@ -14,14 +14,13 @@ import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.net.Authenticator;
-import java.net.PasswordAuthentication;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -128,17 +127,41 @@ public class FAMigrationService implements IMigrationService {
 
     public List<MovieInfo> fillMoviesInfo(UserInfo userInfo, String fromDate, String toDate) {
         List<MovieInfo> movies = new ArrayList<>();
+        List<Future<List<MovieInfo>>> futures = new ArrayList<>();
         for (int i=1; i <= userInfo.getPages(); i++) {
             int page = i;
-            executorService.submit(() -> {
-                fillMoviesInfoPage(userInfo, fromDate, toDate, movies, page);
-            });
+            futures.add(executorService.submit(() ->
+                    fillMoviesInfoPage(userInfo, fromDate, toDate, page)));
+        }
+
+        //Wait for futures
+        int futuresDone = 0;
+        while (true) {
+            for (Future<List<MovieInfo>> future : futures) {
+                try {
+                    movies.addAll(future.get());
+                    futuresDone++;
+                } catch (InterruptedException|ExecutionException e) {
+                    LOGGER.log(Level.WARNING, "Error obtaining ratings", e);
+                }
+            }
+
+            if (futuresDone == userInfo.getPages()) {
+                break;
+            }
+
+            //Wait for next iteration
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException ignored) {
+            }
         }
 
         return movies;
     }
 
-    private void fillMoviesInfoPage(UserInfo userInfo, String fromDate, String toDate, List<MovieInfo> movies, int i) {
+    private List<MovieInfo> fillMoviesInfoPage(UserInfo userInfo, String fromDate, String toDate, int i) {
+        List<MovieInfo> movies = new ArrayList<>();
         String url = FAUtils.URLS.RATINGS.getUrl() + userInfo.getUserId() + FAUtils.URLS.PAGE_PREFIX.getUrl() + i;
         Document ratingsPage = null;
         try {
@@ -206,6 +229,7 @@ public class FAMigrationService implements IMigrationService {
                 LOGGER.info(movieInfo.toString());
             }
         }
+        return movies;
     }
 
 }
