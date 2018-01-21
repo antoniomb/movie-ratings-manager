@@ -19,6 +19,9 @@ import java.net.PasswordAuthentication;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -31,6 +34,8 @@ import java.util.regex.Pattern;
 public class FAMigrationService implements IMigrationService {
 
     private static Logger LOGGER = Logger.getLogger(FAMigrationService.class.getName());
+
+    private final ExecutorService executorService = Executors.newFixedThreadPool(10);
 
     @Override
     public List<MovieInfo> getRatings(MigrationInput input) {
@@ -123,76 +128,84 @@ public class FAMigrationService implements IMigrationService {
 
     public List<MovieInfo> fillMoviesInfo(UserInfo userInfo, String fromDate, String toDate) {
         List<MovieInfo> movies = new ArrayList<>();
-        try {
-            for (int i=1; i <= userInfo.getPages(); i++) {
-                String url = FAUtils.URLS.RATINGS.getUrl() + userInfo.getUserId() + FAUtils.URLS.PAGE_PREFIX.getUrl() + i;
-                Document ratingsPage = Jsoup.connect(url).cookies(userInfo.getCookies()).get();
-
-                Elements movieDateElements = ratingsPage.body().getElementsByClass("user-ratings-wrapper");
-                for (Element movieDateElement : movieDateElements) {
-                    Elements dateElement = movieDateElement.getElementsByClass("user-ratings-header");
-                    String date = dateElement.get(0).childNode(0).outerHtml().substring(10);
-
-                    try {
-                        String[] split = date.replaceAll(",", "").split(" ");
-                        date = split[2]+"-"+ //year
-                               String.format("%02d", FAUtils.MONTH_FORMAT.parse(split[0]).getMonth()+1) + "-" + //month
-                               String.format("%02d", Integer.valueOf(split[1])); //day
-                    } catch (ParseException e) {
-                        LOGGER.log(Level.WARNING, "Error parsing date "+date, e);
-                    }
-
-                    //If date ranges defined, escape if its out of range
-                    if ((fromDate != null && date.compareTo(fromDate) < 0) ||
-                        (toDate != null && date.compareTo(toDate) > 0) ) {
-                        continue;
-                    }
-
-                    Elements movieElements = movieDateElement.getElementsByClass("user-ratings-movie");
-                    for (Element movieElement : movieElements) {
-                        Elements idElement = movieElement.getElementsByClass("movie-card");
-                        String id = idElement.get(0).attr("data-movie-id");
-
-                        Elements titleElement = movieElement.getElementsByClass("mc-title");
-                        String title = titleElement.get(0).getElementsByTag("a").get(0).childNode(0).outerHtml();
-                        title = title.replaceAll("\\(S\\)","");
-                        title = title.replaceAll("\\(TV\\)","").trim();
-                        String year = titleElement.get(0).getAllElements().get(0).childNode(1).outerHtml().trim().substring(1, 5);
-                        String country = titleElement.get(0).getElementsByTag("img").get(0).attr("title");
-
-                        Elements directorElement = movieElement.getElementsByClass("mc-director");
-                        String director = directorElement.get(0).getElementsByTag("a").get(0).childNode(0).outerHtml();
-
-                        List<String> actors = new ArrayList<>();
-                        Elements castElement = movieElement.getElementsByClass("mc-cast").get(0).getElementsByClass("nb");
-                        if (castElement.size() > 1) {
-                            for (Element element : castElement) {
-                                String actor = element.getElementsByTag("a").get(0).childNode(0).outerHtml();
-                                actors.add(actor);
-                            }
-                        }
-
-                        Elements ratingElement = movieElement.getElementsByClass("user-ratings-movie-rating");
-                        String rating = ratingElement.get(0).getElementsByClass("ur-mr-rat").get(0).childNode(0).outerHtml().substring(1);
-
-                        MovieInfo movieInfo = new MovieInfo(title, year);
-                        movieInfo.setId(id);
-                        movieInfo.setRate(rating);
-                        movieInfo.setDate(date);
-                        movieInfo.setCountry(country);
-                        movieInfo.setDirector(director);
-                        movieInfo.setActors(actors);
-                        movies.add(movieInfo);
-
-                        LOGGER.info(movieInfo.toString());
-                    }
-                }
-            }
-        } catch (IOException e) {
-            LOGGER.log(Level.WARNING, "Error obtaining ratings", e);
+        for (int i=1; i <= userInfo.getPages(); i++) {
+            int page = i;
+            executorService.submit(() -> {
+                fillMoviesInfoPage(userInfo, fromDate, toDate, movies, page);
+            });
         }
 
         return movies;
+    }
+
+    private void fillMoviesInfoPage(UserInfo userInfo, String fromDate, String toDate, List<MovieInfo> movies, int i) {
+        String url = FAUtils.URLS.RATINGS.getUrl() + userInfo.getUserId() + FAUtils.URLS.PAGE_PREFIX.getUrl() + i;
+        Document ratingsPage = null;
+        try {
+            ratingsPage = Jsoup.connect(url).cookies(userInfo.getCookies()).get();
+        } catch (IOException e) {
+            LOGGER.log(Level.WARNING, "Error loading cookies", e);
+        }
+
+        Elements movieDateElements = ratingsPage.body().getElementsByClass("user-ratings-wrapper");
+        for (Element movieDateElement : movieDateElements) {
+            Elements dateElement = movieDateElement.getElementsByClass("user-ratings-header");
+            String date = dateElement.get(0).childNode(0).outerHtml().substring(10);
+
+            try {
+                String[] split = date.replaceAll(",", "").split(" ");
+                date = split[2]+"-"+ //year
+                       String.format("%02d", FAUtils.MONTH_FORMAT.parse(split[0]).getMonth()+1) + "-" + //month
+                       String.format("%02d", Integer.valueOf(split[1])); //day
+            } catch (ParseException e) {
+                LOGGER.log(Level.WARNING, "Error parsing date "+date, e);
+            }
+
+            //If date ranges defined, escape if its out of range
+            if ((fromDate != null && date.compareTo(fromDate) < 0) ||
+                (toDate != null && date.compareTo(toDate) > 0) ) {
+                continue;
+            }
+
+            Elements movieElements = movieDateElement.getElementsByClass("user-ratings-movie");
+            for (Element movieElement : movieElements) {
+                Elements idElement = movieElement.getElementsByClass("movie-card");
+                String id = idElement.get(0).attr("data-movie-id");
+
+                Elements titleElement = movieElement.getElementsByClass("mc-title");
+                String title = titleElement.get(0).getElementsByTag("a").get(0).childNode(0).outerHtml();
+                title = title.replaceAll("\\(S\\)","");
+                title = title.replaceAll("\\(TV\\)","").trim();
+                String year = titleElement.get(0).getAllElements().get(0).childNode(1).outerHtml().trim().substring(1, 5);
+                String country = titleElement.get(0).getElementsByTag("img").get(0).attr("title");
+
+                Elements directorElement = movieElement.getElementsByClass("mc-director");
+                String director = directorElement.get(0).getElementsByTag("a").get(0).childNode(0).outerHtml();
+
+                List<String> actors = new ArrayList<>();
+                Elements castElement = movieElement.getElementsByClass("mc-cast").get(0).getElementsByClass("nb");
+                if (castElement.size() > 1) {
+                    for (Element element : castElement) {
+                        String actor = element.getElementsByTag("a").get(0).childNode(0).outerHtml();
+                        actors.add(actor);
+                    }
+                }
+
+                Elements ratingElement = movieElement.getElementsByClass("user-ratings-movie-rating");
+                String rating = ratingElement.get(0).getElementsByClass("ur-mr-rat").get(0).childNode(0).outerHtml().substring(1);
+
+                MovieInfo movieInfo = new MovieInfo(title, year);
+                movieInfo.setId(id);
+                movieInfo.setRate(rating);
+                movieInfo.setDate(date);
+                movieInfo.setCountry(country);
+                movieInfo.setDirector(director);
+                movieInfo.setActors(actors);
+                movies.add(movieInfo);
+
+                LOGGER.info(movieInfo.toString());
+            }
+        }
     }
 
 }
