@@ -99,7 +99,7 @@ app.controller('AppController', ['$scope', '$http', '$window',
         for(var i = 0; i < MyData.length; i++){
             sum += parseInt(MyData[i].rating, 10); //don't forget to add the base
         }
-        return Math.round(sum*100.0/MyData.length) / 100;
+        return sum === 0 ? 0 : Math.round(sum*100.0/MyData.length) / 100;
     };
 
     $scope.getLength = function(obj){
