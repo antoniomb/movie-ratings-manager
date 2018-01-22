@@ -11,7 +11,7 @@ public class AnalyticsComplexUtils {
 
     private static final String JOKE_ACTOR = "Nicolas Cage";
     private static final int TOP_VALUES = 25;
-    public static DecimalFormat FORMATTER = new DecimalFormat("0.0");
+    public static DecimalFormat FORMATTER = new DecimalFormat("0.00");
 
     public static MigrationOuputComplexAnalytics calculateAnalytics(List<MovieInfo> moviesInfo) {
         MigrationOuputComplexAnalytics analytics = new MigrationOuputComplexAnalytics();
@@ -101,7 +101,7 @@ public class AnalyticsComplexUtils {
                         MigrationOuputComplexAnalytics.Movie.of(movieInfo.getTitle(),movieInfo.getYear(),movieInfo.getRate()))));
             }
             if (actor.equals(JOKE_ACTOR)) {
-                jokeActor.put(movieInfo.getTitle(), Integer.valueOf(movieInfo.getYear()));
+                jokeActor.put(movieInfo.getTitle() + " - " + movieInfo.getRate(), Integer.valueOf(movieInfo.getYear()));
                 break;
             }
         }

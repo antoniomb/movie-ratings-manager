@@ -18,7 +18,7 @@ public class ValueAvgComparator implements Comparator<String> {
     // Note: this comparator imposes orderings that are inconsistent with
     // equals.
     public int compare(String a, String b) {
-        if (base.get(a).getHits() < base.get(b).getHits()) {
+        if (base.get(a).getHits() > base.get(b).getHits()) {
             return -1;
         } else if (base.get(a).equals(base.get(b))) {
             return a.compareTo(b);

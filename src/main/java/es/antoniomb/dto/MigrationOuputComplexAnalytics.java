@@ -45,7 +45,7 @@ public class MigrationOuputComplexAnalytics {
             this.totalRating+=Integer.parseInt(rating);
         }
         public String avg() {
-            return AnalyticsComplexUtils.FORMATTER.format((totalRating) / hits);
+            return AnalyticsComplexUtils.FORMATTER.format(((totalRating * 100.0f) / hits) / 100);
         }
     }
 
