@@ -21,7 +21,7 @@ app.controller('AppController', ['$scope', '$http', '$window',
             migration.from = "filmaffinity";
         }
         if (!migration.to) {
-            migration.to = "csv";
+            migration.to = "analysis";
         }
 
         var result = angular.element(document.querySelector('#migration-result'));

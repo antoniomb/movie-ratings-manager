@@ -89,9 +89,15 @@ input[data-toggle]:checked + label:active {
     font-size: 0.8rem;
 }
 #analysis-result li {
-    font-size: 0.6rem;
+    font-size: 0.7rem;
+    list-style: none;
 }
-
+#analysis-result span:hover {
+    cursor: pointer;
+}
+#analysis-result div.data {
+    margin-bottom: 5px;
+}
 #run-block {
     padding: 0;
     border: 1px;
