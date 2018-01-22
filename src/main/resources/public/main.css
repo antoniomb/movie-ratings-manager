@@ -42,6 +42,9 @@ button:hover, button:focus, .button:hover, .button:focus{
     border-left: 2px solid;
     border-color: rgba(255, 255, 255, 0.8);
 }
+.button-group.round label {
+    padding: 1rem;
+}
 .button-group {
     margin-bottom: 1rem;
 }
