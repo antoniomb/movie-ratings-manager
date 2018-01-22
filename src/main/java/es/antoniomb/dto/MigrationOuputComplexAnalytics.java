@@ -1,8 +1,9 @@
 package es.antoniomb.dto;
 
-import es.antoniomb.utils.ValueComparator;
+import es.antoniomb.utils.AnalyticsComplexUtils;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 
 public class MigrationOuputComplexAnalytics {
 
@@ -26,6 +27,25 @@ public class MigrationOuputComplexAnalytics {
         }
         public String getRating() {
             return rating;
+        }
+    }
+
+    public static class TotalAvg {
+        private int hits;
+        private int totalRating;
+        public TotalAvg(String rating) {
+            this.hits = 1;
+            this.totalRating = Integer.parseInt(rating);
+        }
+        public int getHits(){
+            return hits;
+        }
+        public void addRating(String rating) {
+            ++this.hits;
+            this.totalRating+=Integer.parseInt(rating);
+        }
+        public String avg() {
+            return AnalyticsComplexUtils.FORMATTER.format((totalRating) / hits);
         }
     }
 

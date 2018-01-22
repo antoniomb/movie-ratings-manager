@@ -10,17 +10,16 @@ import java.util.stream.Collectors;
 public class AnalyticsComplexUtils {
 
     private static final String JOKE_ACTOR = "Nicolas Cage";
-    private static final int TOP_VALUES = 20;
-    private static DecimalFormat FORMATTER = new DecimalFormat("0.0");
-
+    private static final int TOP_VALUES = 25;
+    public static DecimalFormat FORMATTER = new DecimalFormat("0.0");
 
     public static MigrationOuputComplexAnalytics calculateAnalytics(List<MovieInfo> moviesInfo) {
         MigrationOuputComplexAnalytics analytics = new MigrationOuputComplexAnalytics();
 
         Map<String, List<MigrationOuputComplexAnalytics.Movie>> directors = new HashMap<>();
         Map<String, List<MigrationOuputComplexAnalytics.Movie>> actors = new HashMap<>();
-        Map<String, Integer> country = new HashMap<>();
-        Map<String, Integer> year = new HashMap<>();
+        Map<String, MigrationOuputComplexAnalytics.TotalAvg> country = new HashMap<>();
+        Map<String, MigrationOuputComplexAnalytics.TotalAvg> year = new HashMap<>();
         Map<String, Integer> ratings = new HashMap<>();
         Map<String, Integer> topMovies = new HashMap<>();
         Map<String, Integer> worstMovies = new HashMap<>();
@@ -38,8 +37,8 @@ public class AnalyticsComplexUtils {
         }
         analytics.setDirectors(calculateTop(directors));
         analytics.setActors(calculateTop(actors));
-        analytics.setCountries(calculateTop(country, true));
-        analytics.setYears(calculateTop(year, true));
+        analytics.setCountries(calculateAvgTop(country, true));
+        analytics.setYears(calculateAvgTop(year, true));
         analytics.setRatingDist(calculateTop(ratings, true));
         analytics.setBestMovies(calculateTop(topMovies, false));
         analytics.setWorstMovies(calculateTop(worstMovies, false));
@@ -70,23 +69,25 @@ public class AnalyticsComplexUtils {
         }
     }
 
-    private static void topYear(Map<String, Integer> year, MovieInfo movieInfo) {
+    private static void topYear(Map<String, MigrationOuputComplexAnalytics.TotalAvg> year, MovieInfo movieInfo) {
         if (year.containsKey(movieInfo.getYear())) {
-            Integer count = year.get(movieInfo.getYear());
-            year.put(movieInfo.getYear(), ++count);
+            MigrationOuputComplexAnalytics.TotalAvg count = year.get(movieInfo.getYear());
+            count.addRating(movieInfo.getRate());
+            year.put(movieInfo.getYear(), count);
         }
         else {
-            year.put(movieInfo.getYear(), 1);
+            year.put(movieInfo.getYear(), new MigrationOuputComplexAnalytics.TotalAvg(movieInfo.getRate()));
         }
     }
 
-    private static void topCountry(Map<String, Integer> country, MovieInfo movieInfo) {
+    private static void topCountry(Map<String, MigrationOuputComplexAnalytics.TotalAvg> country, MovieInfo movieInfo) {
         if (country.containsKey(movieInfo.getCountry())) {
-            Integer count = country.get(movieInfo.getCountry());
-            country.put(movieInfo.getCountry(), ++count);
+            MigrationOuputComplexAnalytics.TotalAvg count = country.get(movieInfo.getCountry());
+            count.addRating(movieInfo.getRate());
+            country.put(movieInfo.getCountry(), count);
         }
         else {
-            country.put(movieInfo.getCountry(), 1);
+            country.put(movieInfo.getCountry(), new MigrationOuputComplexAnalytics.TotalAvg(movieInfo.getRate()));
         }
     }
 
@@ -163,5 +164,30 @@ public class AnalyticsComplexUtils {
         }
         return sortedTop;
     }
+
+    private static Map<String, String> calculateAvgTop(Map<String, MigrationOuputComplexAnalytics.TotalAvg> itemMap, boolean percentage) {
+
+        ValueAvgComparator bvc = new ValueAvgComparator(itemMap);
+        TreeMap<String, MigrationOuputComplexAnalytics.TotalAvg> sortedMap = new TreeMap<>(bvc);
+        sortedMap.putAll(itemMap);
+
+        Map<String, String> sortedTop = new LinkedHashMap<>();
+        int i = 0;
+        int total = sortedMap.values().stream().mapToInt(MigrationOuputComplexAnalytics.TotalAvg::getHits).sum();
+        for (Map.Entry<String,MigrationOuputComplexAnalytics.TotalAvg> item : sortedMap.entrySet()) {
+            if (percentage) {
+                String percentageValue = " - " + FORMATTER.format((item.getValue().getHits() * 100.0f) / total) + "%";
+                sortedTop.put(item.getKey(), " (" + item.getValue().getHits() + percentageValue + ") - " + item.getValue().avg());
+            }
+            else {
+                sortedTop.put(item.getKey(), item.getValue().toString());
+            }
+            if (++i >= TOP_VALUES) {
+                break;
+            }
+        }
+        return sortedTop;
+    }
+
 
 }

@@ -101,4 +101,9 @@ app.controller('AppController', ['$scope', '$http', '$window',
         }
         return Math.round(sum*100.0/MyData.length) / 100;
     };
+
+    $scope.getLength = function(obj){
+        if (obj)
+            return Object.keys(obj).length;
+    }
 }]);

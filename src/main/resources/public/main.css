@@ -32,7 +32,7 @@ p.target {
 button, .button {
     font-family: 'Varela Round', sans-serif;
     background-color: #FF5252;
-    font-size: 1.2em;
+    font-size: 1rem;
     color: #FFFFFF;
 }
 button:hover, button:focus, .button:hover, .button:focus{
