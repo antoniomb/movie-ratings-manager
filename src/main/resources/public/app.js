@@ -63,7 +63,7 @@ app.controller('AppController', ['$scope', '$http', '$window',
                     else {
                         if (migration.to == "analysis") {
                             analysis.removeClass('ng-hide');
-                            $scope.result= "Source movies: "+$scope.moviesReaded + " with rating avg: "+$scope.ratingAvg;
+                            $scope.result= +$scope.moviesReaded + " ratings with avg: "+$scope.ratingAvg;
                         }
                         else {
                             $scope.result= "Source movies: "+$scope.moviesReaded+" - Matched movies on target: "+$scope.moviesWrited;

@@ -20,6 +20,7 @@ public class AnalyticsComplexUtils {
         Map<String, List<MigrationOuputComplexAnalytics.Movie>> actors = new HashMap<>();
         Map<String, MigrationOuputComplexAnalytics.TotalAvg> country = new HashMap<>();
         Map<String, MigrationOuputComplexAnalytics.TotalAvg> year = new HashMap<>();
+        Map<String, MigrationOuputComplexAnalytics.TotalAvg> yearByRatingDate = new HashMap<>();
         Map<String, Integer> ratings = new HashMap<>();
         Map<String, Integer> topMovies = new HashMap<>();
         Map<String, Integer> worstMovies = new HashMap<>();
@@ -31,6 +32,7 @@ public class AnalyticsComplexUtils {
             topActor(actors, jokeActor, movieInfo);
             topCountry(country, movieInfo);
             topYear(year, movieInfo);
+            topYearByRatingDate(yearByRatingDate, movieInfo);
             ratingsDist(ratings, movieInfo);
             topMovies(topMovies, movieInfo);
             worstMovies(worstMovies, movieInfo);
@@ -39,6 +41,7 @@ public class AnalyticsComplexUtils {
         analytics.setActors(calculateTop(actors));
         analytics.setCountries(calculateAvgTop(country, true));
         analytics.setYears(calculateAvgTop(year, true));
+        analytics.setYearsByRatingDate(calculateAvgTop(yearByRatingDate, true));
         analytics.setRatingDist(calculateTop(ratings, true));
         analytics.setBestMovies(calculateTop(topMovies, false));
         analytics.setWorstMovies(calculateTop(worstMovies, false));
@@ -77,6 +80,18 @@ public class AnalyticsComplexUtils {
         }
         else {
             year.put(movieInfo.getYear(), new MigrationOuputComplexAnalytics.TotalAvg(movieInfo.getRate()));
+        }
+    }
+
+    private static void topYearByRatingDate(Map<String, MigrationOuputComplexAnalytics.TotalAvg> yearByRatingDate, MovieInfo movieInfo) {
+        String ratingDate = movieInfo.getDate().split("-")[0];
+        if (yearByRatingDate.containsKey(ratingDate)) {
+            MigrationOuputComplexAnalytics.TotalAvg count = yearByRatingDate.get(ratingDate);
+            count.addRating(movieInfo.getRate());
+            yearByRatingDate.put(ratingDate, count);
+        }
+        else {
+            yearByRatingDate.put(ratingDate, new MigrationOuputComplexAnalytics.TotalAvg(movieInfo.getRate()));
         }
     }
 

@@ -53,6 +53,7 @@ public class MigrationOuputComplexAnalytics {
     private Map<String, List<Movie>> actors;
     Map<String, String> countries;
     Map<String, String> years;
+    Map<String, String> yearsByRatingDate;
     Map<String, String> ratingDist;
     Map<String, String> bestMovies;
     Map<String, String> worstMovies;
@@ -88,6 +89,14 @@ public class MigrationOuputComplexAnalytics {
 
     public void setYears(Map<String, String> years) {
         this.years = years;
+    }
+
+    public Map<String, String> getYearsByRatingDate() {
+        return yearsByRatingDate;
+    }
+
+    public void setYearsByRatingDate(Map<String, String> yearsByRatingDate) {
+        this.yearsByRatingDate = yearsByRatingDate;
     }
 
     public Map<String, String> getRatingDist() {
