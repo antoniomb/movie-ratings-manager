@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 public class AnalyticsComplexUtils {
 
     private static final String JOKE_ACTOR = "Nicolas Cage";
-    private static final int TOP_VALUES = 25;
+    private static final int TOP_VALUES = 50;
     public static DecimalFormat FORMATTER = new DecimalFormat("0.00");
 
     public static MigrationOuputComplexAnalytics calculateAnalytics(List<MovieInfo> moviesInfo) {
