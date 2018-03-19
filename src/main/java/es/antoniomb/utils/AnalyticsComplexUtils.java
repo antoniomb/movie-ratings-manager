@@ -41,7 +41,7 @@ public class AnalyticsComplexUtils {
         }
         analytics.setDirectors(calculateTop(directors));
         analytics.setActors(calculateTop(actors));
-        analytics.setCountries(calculateTopAvg(country, false));
+        analytics.setCountries(calculateTopAvg(sortMapMoviesByValue(country), false));
         analytics.setYears(calculateTopAvg(sortMapByKey(year), false));
         analytics.setYearsByRatingDate(calculateTopAvg(sortMapByKey(yearByRatingDate), true));
         analytics.setRatingDist(calculateTop(ratings, true));
@@ -150,14 +150,12 @@ public class AnalyticsComplexUtils {
 
     private static Map<String, List<MigrationOuputComplexAnalytics.Movie>> calculateTop(
             Map<String, List<MigrationOuputComplexAnalytics.Movie>> itemMap) {
+
         Map<String, Integer> itemMapBySize = new HashMap();
         for (Map.Entry<String, List<MigrationOuputComplexAnalytics.Movie>> entry : itemMap.entrySet()) {
             itemMapBySize.put(entry.getKey(), entry.getValue().size());
         }
-
-        ValueComparator bvc = new ValueComparator(itemMapBySize);
-        TreeMap<String, Integer> sortedMapBySize = new TreeMap<>(bvc);
-        sortedMapBySize.putAll(itemMapBySize);
+        TreeMap<String, Integer> sortedMapBySize = sortMapByValue(itemMapBySize);
 
         Map<String, List<MigrationOuputComplexAnalytics.Movie>> sortedMap = new LinkedHashMap<>();
         int i = 0;
@@ -173,9 +171,7 @@ public class AnalyticsComplexUtils {
     }
 
     private static Map<String, String> calculateTop(Map<String, Integer> itemMap, boolean percentage) {
-        ValueComparator bvc = new ValueComparator(itemMap);
-        TreeMap<String, Integer> sortedMap = new TreeMap<>(bvc);
-        sortedMap.putAll(itemMap);
+        TreeMap<String, Integer> sortedMap = sortMapByValue(itemMap);
 
         Map<String, String> sortedTop = new LinkedHashMap<>();
         int i = 0;
@@ -247,6 +243,28 @@ public class AnalyticsComplexUtils {
                 new TreeMap<>(AnalyticsComplexUtils::reverseComparator);
         sortedMapByKey.putAll(itemMap);
         return sortedMapByKey;
+    }
+
+    private static TreeMap<String, Integer> sortMapByValue(Map<String, Integer> itemMap) {
+        ValueComparator bvc = new ValueComparator(itemMap);
+        TreeMap<String, Integer> sortedMap = new TreeMap<>(bvc);
+        sortedMap.putAll(itemMap);
+        return sortedMap;
+    }
+
+    private static Map<String, MigrationOuputComplexAnalytics.TotalAvg> sortMapMoviesByValue(
+            Map<String, MigrationOuputComplexAnalytics.TotalAvg> itemMap) {
+        Map<String, Integer> itemMapBySize = new HashMap();
+        for (Map.Entry<String, MigrationOuputComplexAnalytics.TotalAvg> entry : itemMap.entrySet()) {
+            itemMapBySize.put(entry.getKey(), entry.getValue().getMovies().size());
+        }
+        TreeMap<String, Integer> sortedMapBySize = sortMapByValue(itemMapBySize);
+
+        Map<String, MigrationOuputComplexAnalytics.TotalAvg> sortedMap = new LinkedHashMap<>();
+        for (Map.Entry<String,Integer> item : sortedMapBySize.entrySet()) {
+            sortedMap.put(item.getKey(), itemMap.get(item.getKey()));
+        }
+        return sortedMap;
     }
 
     private static int reverseComparator(String o1, String o2) {
