@@ -2,6 +2,7 @@ package es.antoniomb.dto;
 
 import es.antoniomb.utils.AnalyticsComplexUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -33,9 +34,11 @@ public class MigrationOuputComplexAnalytics {
     public static class TotalAvg {
         private int hits;
         private int totalRating;
-        public TotalAvg(String rating) {
+        private List<Movie> movies = new ArrayList<>();
+        public TotalAvg(String rating, Movie movie) {
             this.hits = 1;
             this.totalRating = Integer.parseInt(rating);
+            this.movies.add(movie);
         }
         public int getHits(){
             return hits;
@@ -44,6 +47,13 @@ public class MigrationOuputComplexAnalytics {
             ++this.hits;
             this.totalRating+=Integer.parseInt(rating);
         }
+        public List<Movie> getMovies() {
+            return movies;
+        }
+        public void setMovies(List<Movie> movies) {
+            this.movies = movies;
+        }
+
         public String avg() {
             return AnalyticsComplexUtils.FORMATTER.format(((totalRating * 100.0f) / hits) / 100);
         }
@@ -51,9 +61,9 @@ public class MigrationOuputComplexAnalytics {
 
     private Map<String, List<Movie>> directors;
     private Map<String, List<Movie>> actors;
-    Map<String, String> countries;
-    Map<String, String> years;
-    Map<String, String> yearsByRatingDate;
+    Map<String, List<Movie>> countries;
+    Map<String, List<Movie>> years;
+    Map<String, List<Movie>> yearsByRatingDate;
     Map<String, String> ratingDist;
     Map<String, String> bestMovies;
     Map<String, String> worstMovies;
@@ -75,27 +85,27 @@ public class MigrationOuputComplexAnalytics {
         this.actors = actors;
     }
 
-    public Map<String, String> getCountries() {
+    public Map<String, List<Movie>> getCountries() {
         return countries;
     }
 
-    public void setCountries(Map<String, String> countries) {
+    public void setCountries(Map<String, List<Movie>> countries) {
         this.countries = countries;
     }
 
-    public Map<String, String> getYears() {
+    public Map<String, List<Movie>> getYears() {
         return years;
     }
 
-    public void setYears(Map<String, String> years) {
+    public void setYears(Map<String, List<Movie>> years) {
         this.years = years;
     }
 
-    public Map<String, String> getYearsByRatingDate() {
+    public Map<String, List<Movie>> getYearsByRatingDate() {
         return yearsByRatingDate;
     }
 
-    public void setYearsByRatingDate(Map<String, String> yearsByRatingDate) {
+    public void setYearsByRatingDate(Map<String, List<Movie>> yearsByRatingDate) {
         this.yearsByRatingDate = yearsByRatingDate;
     }
 

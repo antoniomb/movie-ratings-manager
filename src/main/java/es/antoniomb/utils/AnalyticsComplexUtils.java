@@ -12,6 +12,7 @@ public class AnalyticsComplexUtils {
 
     private static final String JOKE_ACTOR = "Nicolas Cage";
     private static final int TOP_VALUES = 50;
+    private static final int TOP_AVG_VALUES = 20;
     public static DecimalFormat FORMATTER = new DecimalFormat("0.00");
 
     public static MigrationOuputComplexAnalytics calculateAnalytics(List<MovieInfo> moviesInfo) {
@@ -40,9 +41,9 @@ public class AnalyticsComplexUtils {
         }
         analytics.setDirectors(calculateTop(directors));
         analytics.setActors(calculateTop(actors));
-        analytics.setCountries(calculateAvgTop(country, true, false));
-        analytics.setYears(calculateAvgTop(year, true, false));
-        analytics.setYearsByRatingDate(calculateAvgTop(yearByRatingDate, true, true));
+        analytics.setCountries(calculateTopAvg(country, false));
+        analytics.setYears(calculateTopAvg(sortMapByKey(year), false));
+        analytics.setYearsByRatingDate(calculateTopAvg(sortMapByKey(yearByRatingDate), true));
         analytics.setRatingDist(calculateTop(ratings, true));
         analytics.setBestMovies(calculateTop(topMovies, false));
         analytics.setWorstMovies(calculateTop(worstMovies, false));
@@ -74,36 +75,49 @@ public class AnalyticsComplexUtils {
     }
 
     private static void topYear(Map<String, MigrationOuputComplexAnalytics.TotalAvg> year, MovieInfo movieInfo) {
+        MigrationOuputComplexAnalytics.Movie movie = MigrationOuputComplexAnalytics.Movie.of(
+                movieInfo.getTitle(), movieInfo.getYear(), movieInfo.getRate());
         if (year.containsKey(movieInfo.getYear())) {
             MigrationOuputComplexAnalytics.TotalAvg count = year.get(movieInfo.getYear());
             count.addRating(movieInfo.getRate());
+            count.getMovies().add(movie);
             year.put(movieInfo.getYear(), count);
         }
         else {
-            year.put(movieInfo.getYear(), new MigrationOuputComplexAnalytics.TotalAvg(movieInfo.getRate()));
+            year.put(movieInfo.getYear(),
+                    new MigrationOuputComplexAnalytics.TotalAvg(movieInfo.getRate(), movie));
         }
     }
 
     private static void topYearByRatingDate(Map<String, MigrationOuputComplexAnalytics.TotalAvg> yearByRatingDate, MovieInfo movieInfo) {
         String ratingDate = movieInfo.getDate().split("-")[0];
+        MigrationOuputComplexAnalytics.Movie movie = MigrationOuputComplexAnalytics.Movie.of(
+                movieInfo.getTitle(), movieInfo.getYear(), movieInfo.getRate());
         if (yearByRatingDate.containsKey(ratingDate)) {
             MigrationOuputComplexAnalytics.TotalAvg count = yearByRatingDate.get(ratingDate);
             count.addRating(movieInfo.getRate());
+            count.getMovies().add(movie);
             yearByRatingDate.put(ratingDate, count);
         }
         else {
-            yearByRatingDate.put(ratingDate, new MigrationOuputComplexAnalytics.TotalAvg(movieInfo.getRate()));
+            yearByRatingDate.put(ratingDate,
+                    new MigrationOuputComplexAnalytics.TotalAvg(movieInfo.getRate(),movie));
         }
     }
 
     private static void topCountry(Map<String, MigrationOuputComplexAnalytics.TotalAvg> country, MovieInfo movieInfo) {
+        MigrationOuputComplexAnalytics.Movie movie = MigrationOuputComplexAnalytics.Movie.of(
+                movieInfo.getTitle(), movieInfo.getYear(), movieInfo.getRate());
         if (country.containsKey(movieInfo.getCountry())) {
             MigrationOuputComplexAnalytics.TotalAvg count = country.get(movieInfo.getCountry());
             count.addRating(movieInfo.getRate());
+
+            count.getMovies().add(movie);
             country.put(movieInfo.getCountry(), count);
         }
         else {
-            country.put(movieInfo.getCountry(), new MigrationOuputComplexAnalytics.TotalAvg(movieInfo.getRate()));
+            country.put(movieInfo.getCountry(),
+                    new MigrationOuputComplexAnalytics.TotalAvg(movieInfo.getRate(),movie));
         }
     }
 
@@ -181,8 +195,25 @@ public class AnalyticsComplexUtils {
         return sortedTop;
     }
 
-    private static Map<String, String> calculateAvgTop(Map<String, MigrationOuputComplexAnalytics.TotalAvg> itemMap,
-                                                       boolean percentage, boolean yearRatio) {
+    private static Map<String, List<MigrationOuputComplexAnalytics.Movie>> calculateTopAvg(
+            Map<String, MigrationOuputComplexAnalytics.TotalAvg> itemMap, boolean yearRatio) {
+
+        Map<String, List<MigrationOuputComplexAnalytics.Movie>> sortedMap = new LinkedHashMap<>();
+        Map<String, String> avgKeys = getTopAvgKeys(itemMap, true, yearRatio);
+
+        for (Map.Entry<String, MigrationOuputComplexAnalytics.TotalAvg> item : itemMap.entrySet()) {
+            sortedMap.put(item.getKey() + " - " + avgKeys.get(item.getKey()),
+                    itemMap.get(item.getKey()).getMovies().stream().
+                            sorted((o1, o2) -> reverseComparator(o1.getRating(), o2.getRating())).
+                            limit(TOP_AVG_VALUES).
+                            collect(Collectors.toList()));
+        }
+
+        return sortedMap;
+    }
+
+    private static Map<String, String> getTopAvgKeys(Map<String, MigrationOuputComplexAnalytics.TotalAvg> itemMap,
+                                                     boolean percentage, boolean yearRatio) {
 
         ValueAvgComparator bvc = new ValueAvgComparator(itemMap);
         TreeMap<String, MigrationOuputComplexAnalytics.TotalAvg> sortedMap = new TreeMap<>(bvc);
@@ -207,12 +238,19 @@ public class AnalyticsComplexUtils {
             else {
                 sortedTop.put(item.getKey(), item.getValue().toString());
             }
-            if (++i >= TOP_VALUES) {
-                break;
-            }
         }
         return sortedTop;
     }
 
+    private static TreeMap<String, MigrationOuputComplexAnalytics.TotalAvg> sortMapByKey(Map<String, MigrationOuputComplexAnalytics.TotalAvg> itemMap) {
+        TreeMap<String, MigrationOuputComplexAnalytics.TotalAvg> sortedMapByKey =
+                new TreeMap<>(AnalyticsComplexUtils::reverseComparator);
+        sortedMapByKey.putAll(itemMap);
+        return sortedMapByKey;
+    }
+
+    private static int reverseComparator(String o1, String o2) {
+        return Integer.valueOf(o1).compareTo(Integer.valueOf(o2)) * -1;
+    }
 
 }
