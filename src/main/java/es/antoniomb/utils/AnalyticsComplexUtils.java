@@ -4,6 +4,7 @@ import es.antoniomb.dto.MigrationOuputComplexAnalytics;
 import es.antoniomb.dto.MovieInfo;
 
 import java.text.DecimalFormat;
+import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -39,9 +40,9 @@ public class AnalyticsComplexUtils {
         }
         analytics.setDirectors(calculateTop(directors));
         analytics.setActors(calculateTop(actors));
-        analytics.setCountries(calculateAvgTop(country, true));
-        analytics.setYears(calculateAvgTop(year, true));
-        analytics.setYearsByRatingDate(calculateAvgTop(yearByRatingDate, true));
+        analytics.setCountries(calculateAvgTop(country, true, false));
+        analytics.setYears(calculateAvgTop(year, true, false));
+        analytics.setYearsByRatingDate(calculateAvgTop(yearByRatingDate, true, true));
         analytics.setRatingDist(calculateTop(ratings, true));
         analytics.setBestMovies(calculateTop(topMovies, false));
         analytics.setWorstMovies(calculateTop(worstMovies, false));
@@ -180,7 +181,8 @@ public class AnalyticsComplexUtils {
         return sortedTop;
     }
 
-    private static Map<String, String> calculateAvgTop(Map<String, MigrationOuputComplexAnalytics.TotalAvg> itemMap, boolean percentage) {
+    private static Map<String, String> calculateAvgTop(Map<String, MigrationOuputComplexAnalytics.TotalAvg> itemMap,
+                                                       boolean percentage, boolean yearRatio) {
 
         ValueAvgComparator bvc = new ValueAvgComparator(itemMap);
         TreeMap<String, MigrationOuputComplexAnalytics.TotalAvg> sortedMap = new TreeMap<>(bvc);
@@ -192,7 +194,15 @@ public class AnalyticsComplexUtils {
         for (Map.Entry<String,MigrationOuputComplexAnalytics.TotalAvg> item : sortedMap.entrySet()) {
             if (percentage) {
                 String percentageValue = " - " + FORMATTER.format((item.getValue().getHits() * 100.0f) / total) + "%";
-                sortedTop.put(item.getKey(), " (" + item.getValue().getHits() + percentageValue + ") - " + item.getValue().avg());
+                String value = " (" + item.getValue().getHits() + percentageValue + ") - " + item.getValue().avg();
+                if (yearRatio) {
+                    float yearDays = 365f;
+                    if (ZonedDateTime.now().getYear() == Integer.valueOf(item.getKey())) {
+                        yearDays = ZonedDateTime.now().getDayOfYear();
+                    }
+                    value+= " (" + FORMATTER.format(item.getValue().getHits() / yearDays) + " movies per day)";
+                }
+                sortedTop.put(item.getKey(), value);
             }
             else {
                 sortedTop.put(item.getKey(), item.getValue().toString());
