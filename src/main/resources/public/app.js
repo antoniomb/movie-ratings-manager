@@ -14,7 +14,7 @@ app.filter('rawHtml', ['$sce', function($sce){
 app.controller('AppController', ['$scope', '$http', '$window',
     function ($scope, $http, $window) {
 
-    $scope.migrate = function(migration) {
+        $scope.migrate = function(migration) {
 
         //Default values
         if (!migration.from) {
@@ -76,6 +76,9 @@ app.controller('AppController', ['$scope', '$http', '$window',
                     result.removeClass('success').addClass('alert');
                 }
                 result.removeClass('alert').removeClass('info').addClass('success');
+
+                $scope.loadYearHighCharts($scope.analytics);
+                $scope.loadRatingsHighCharts($scope.analytics);
             })
             .error(function(data) {
                 $scope.result = data.message;
@@ -105,5 +108,83 @@ app.controller('AppController', ['$scope', '$http', '$window',
     $scope.getLength = function(obj){
         if (obj)
             return Object.keys(obj).length;
-    }
+    };
+
+    $scope.loadYearHighCharts = function(analytics) {
+
+        Highcharts.chart('container', {
+            chart: {
+                type: 'column'
+            },
+            title: {
+                text: 'Movies by Year'
+            },
+            legend: {
+                enabled: false
+            },
+            plotOptions: {
+                column: {
+                    borderRadius: 2
+                },
+                series: {
+                    pointWidth: 10
+                }
+            },
+            yAxis: [{
+                className: 'highcharts-color-0',
+                opposite: true,
+                title: {
+                    text: ''
+                }
+            }],
+            xAxis: {
+                categories: analytics.yearsChartKeys
+            },
+            series: [{
+                name: "Movies",
+                data: analytics.yearsChartValues
+            }]
+
+        });
+
+    };
+
+        $scope.loadRatingHighCharts = function(analytics) {
+
+            Highcharts.chart('container', {
+                chart: {
+                    type: 'column'
+                },
+                title: {
+                    text: 'Movies by Year'
+                },
+                legend: {
+                    enabled: false
+                },
+                plotOptions: {
+                    column: {
+                        borderRadius: 2
+                    },
+                    series: {
+                        pointWidth: 10
+                    }
+                },
+                yAxis: [{
+                    className: 'highcharts-color-0',
+                    opposite: true,
+                    title: {
+                        text: ''
+                    }
+                }],
+                xAxis: {
+                    categories: analytics.yearsChartKeys
+                },
+                series: [{
+                    name: "Movies",
+                    data: analytics.yearsChartValues
+                }]
+
+            });
+
+        }
 }]);

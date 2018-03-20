@@ -1,4 +1,5 @@
 @import 'https://fonts.googleapis.com/css?family=Varela+Round';
+@import 'https://code.highcharts.com/css/highcharts.css';
 
 @-ms-viewport{
     width: device-width;
@@ -112,3 +113,24 @@ input[data-toggle]:checked + label:active {
     border: 1px;
 }
 
+#container {
+    height: 400px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+.highcharts-color-0 {
+    fill: #68A9A4;
+    stroke: #68A9A4;
+}
+.highcharts-axis.highcharts-color-0 .highcharts-axis-line {
+    stroke: white;
+}
+.highcharts-axis.highcharts-color-0 text {
+    fill: #DC864A;
+}
+.highcharts-yaxis .highcharts-axis-line {
+    stroke-width: 0;
+}
+.highcharts-background {
+    fill: #a0d3e8;
+}

@@ -3,10 +3,26 @@ package es.antoniomb.dto;
 import es.antoniomb.utils.AnalyticsComplexUtils;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 public class MigrationOuputComplexAnalytics {
+
+    private Map<String, List<Movie>> directors;
+    private Map<String, List<Movie>> actors;
+    Map<String, List<Movie>> countries;
+    Map<String, List<Movie>> years;
+    Collection<Integer> yearsChartKeys;
+    Collection<Integer> yearsChartValues;
+    Map<String, List<Movie>> yearsByRatingDate;
+    Map<String, String> ratingDist;
+    Collection<Integer> ratingChartKeys;
+    Collection<Integer> ratingChartValues;
+    Map<Integer, Integer> ratingChart;
+    Map<String, String> bestMovies;
+    Map<String, String> worstMovies;
+    Map<String, String> jokeActor;
 
     public static class Movie {
         private String title;
@@ -59,16 +75,6 @@ public class MigrationOuputComplexAnalytics {
         }
     }
 
-    private Map<String, List<Movie>> directors;
-    private Map<String, List<Movie>> actors;
-    Map<String, List<Movie>> countries;
-    Map<String, List<Movie>> years;
-    Map<String, List<Movie>> yearsByRatingDate;
-    Map<String, String> ratingDist;
-    Map<String, String> bestMovies;
-    Map<String, String> worstMovies;
-    Map<String, String> jokeActor;
-
     public Map<String, List<Movie>> getDirectors() {
         return directors;
     }
@@ -101,6 +107,19 @@ public class MigrationOuputComplexAnalytics {
         this.years = years;
     }
 
+    public Collection<Integer> getYearsChartKeys() {
+        return yearsChartKeys;
+    }
+
+    public Collection<Integer> getYearsChartValues() {
+        return yearsChartValues;
+    }
+
+    public void setYearsChart(Map<Integer, Integer> yearsChart) {
+        this.yearsChartKeys = yearsChart.keySet();
+        this.yearsChartValues = yearsChart.values();
+    }
+
     public Map<String, List<Movie>> getYearsByRatingDate() {
         return yearsByRatingDate;
     }
@@ -115,6 +134,19 @@ public class MigrationOuputComplexAnalytics {
 
     public void setRatingDist(Map<String, String> ratingDist) {
         this.ratingDist = ratingDist;
+    }
+
+    public Collection<Integer> getRatingChartKeys() {
+        return ratingChartKeys;
+    }
+
+    public Collection<Integer> getRatingChartValues() {
+        return ratingChartValues;
+    }
+
+    public void setRatingChart(Map<Integer, Integer> ratingChart) {
+        this.ratingChartKeys = ratingChart.keySet();
+        this.ratingChartValues = ratingChart.values();
     }
 
     public Map<String, String> getBestMovies() {

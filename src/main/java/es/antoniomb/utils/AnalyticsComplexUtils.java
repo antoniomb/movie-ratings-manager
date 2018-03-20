@@ -43,8 +43,10 @@ public class AnalyticsComplexUtils {
         analytics.setActors(calculateTop(actors));
         analytics.setCountries(calculateTopAvg(sortMapMoviesByValue(country), false));
         analytics.setYears(calculateTopAvg(sortMapByKey(year), false));
+        analytics.setYearsChart(prepareForChart(sortMapByKey(year)));
         analytics.setYearsByRatingDate(calculateTopAvg(sortMapByKey(yearByRatingDate), true));
         analytics.setRatingDist(calculateTop(ratings, true));
+        analytics.setRatingChart(prepareForChart(ratings));
         analytics.setBestMovies(calculateTop(topMovies, false));
         analytics.setWorstMovies(calculateTop(worstMovies, false));
         analytics.setJokeActor(calculateTop(jokeActor, false));
@@ -236,6 +238,22 @@ public class AnalyticsComplexUtils {
             }
         }
         return sortedTop;
+    }
+
+    private static Map<Integer, Integer> prepareForChart(TreeMap<String, MigrationOuputComplexAnalytics.TotalAvg> data) {
+        Map<Integer, Integer> chartData = new LinkedHashMap<>();
+        for (Map.Entry<String, MigrationOuputComplexAnalytics.TotalAvg> entry : data.entrySet()) {
+            chartData.put(Integer.valueOf(entry.getKey()), entry.getValue().getMovies().size());
+        }
+        return chartData;
+    }
+
+    private static Map<Integer,Integer> prepareForChart(Map<String, Integer> ratings) {
+        Map<Integer, Integer> chartData = new LinkedHashMap<>();
+        for (Map.Entry<String, Integer> entry : ratings.entrySet()) {
+            chartData.put(Integer.valueOf(entry.getKey()),entry.getValue());
+        }
+        return chartData;
     }
 
     private static TreeMap<String, MigrationOuputComplexAnalytics.TotalAvg> sortMapByKey(Map<String, MigrationOuputComplexAnalytics.TotalAvg> itemMap) {
