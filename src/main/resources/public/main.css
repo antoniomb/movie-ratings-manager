@@ -112,10 +112,20 @@ input[data-toggle]:checked + label:active {
     padding: 0;
     border: 1px;
 }
-
-#container {
+#ratings {
+    height: 350px;
+}
+#ratings > div {
+    border: none;
+}
+#containerYear, #containerYearByRatingDate{
     height: 400px;
     max-width: 800px;
+    margin: 0 auto;
+}
+#containerRating {
+    height: 340px;
+    max-width: 600px;
     margin: 0 auto;
 }
 .highcharts-color-0 {
@@ -133,4 +143,16 @@ input[data-toggle]:checked + label:active {
 }
 .highcharts-background {
     fill: #a0d3e8;
+}
+.highcharts-pie-series .highcharts-point {
+    stroke: #EDE;
+    stroke-width: 2px;
+}
+.highcharts-pie-series .highcharts-data-label-connector {
+    stroke: silver;
+    stroke-dasharray: 2, 2;
+    stroke-width: 2px;
+}
+.highcharts-button {
+    display: none;
 }

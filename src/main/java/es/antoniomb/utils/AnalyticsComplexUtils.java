@@ -45,6 +45,7 @@ public class AnalyticsComplexUtils {
         analytics.setYears(calculateTopAvg(sortMapByKey(year), false));
         analytics.setYearsChart(prepareForChart(sortMapByKey(year)));
         analytics.setYearsByRatingDate(calculateTopAvg(sortMapByKey(yearByRatingDate), true));
+        analytics.setYearsByRatingDateChart(prepareForChart(sortMapByKey(yearByRatingDate)));
         analytics.setRatingDist(calculateTop(ratings, true));
         analytics.setRatingChart(prepareForChart(ratings));
         analytics.setBestMovies(calculateTop(topMovies, false));

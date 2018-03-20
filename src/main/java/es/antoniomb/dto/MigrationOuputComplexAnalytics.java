@@ -2,10 +2,7 @@ package es.antoniomb.dto;
 
 import es.antoniomb.utils.AnalyticsComplexUtils;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class MigrationOuputComplexAnalytics {
 
@@ -16,10 +13,10 @@ public class MigrationOuputComplexAnalytics {
     Collection<Integer> yearsChartKeys;
     Collection<Integer> yearsChartValues;
     Map<String, List<Movie>> yearsByRatingDate;
+    Collection<Integer> yearsByRatingDateChartKeys;
+    Collection<Integer> yearsByRatingDateChartValues;
     Map<String, String> ratingDist;
-    Collection<Integer> ratingChartKeys;
-    Collection<Integer> ratingChartValues;
-    Map<Integer, Integer> ratingChart;
+    List<Object[]> ratingChart;
     Map<String, String> bestMovies;
     Map<String, String> worstMovies;
     Map<String, String> jokeActor;
@@ -128,6 +125,15 @@ public class MigrationOuputComplexAnalytics {
         this.yearsByRatingDate = yearsByRatingDate;
     }
 
+    public Collection<Integer> getYearsByRatingDateChartValues() {
+        return yearsByRatingDateChartValues;
+    }
+
+    public void setYearsByRatingDateChart(Map<Integer, Integer> yearsChart) {
+        this.yearsByRatingDateChartKeys = yearsChart.keySet();
+        this.yearsByRatingDateChartValues = yearsChart.values();
+    }
+
     public Map<String, String> getRatingDist() {
         return ratingDist;
     }
@@ -136,17 +142,15 @@ public class MigrationOuputComplexAnalytics {
         this.ratingDist = ratingDist;
     }
 
-    public Collection<Integer> getRatingChartKeys() {
-        return ratingChartKeys;
-    }
-
-    public Collection<Integer> getRatingChartValues() {
-        return ratingChartValues;
+    public List<Object[]> getRatingChart() {
+        return ratingChart;
     }
 
     public void setRatingChart(Map<Integer, Integer> ratingChart) {
-        this.ratingChartKeys = ratingChart.keySet();
-        this.ratingChartValues = ratingChart.values();
+        this.ratingChart = new ArrayList<>();
+        for (Map.Entry<Integer, Integer> entry : ratingChart.entrySet()) {
+            this.ratingChart.add(Arrays.asList(String.valueOf(entry.getKey()),entry.getValue()).toArray());
+        }
     }
 
     public Map<String, String> getBestMovies() {

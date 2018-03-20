@@ -78,7 +78,8 @@ app.controller('AppController', ['$scope', '$http', '$window',
                 result.removeClass('alert').removeClass('info').addClass('success');
 
                 $scope.loadYearHighCharts($scope.analytics);
-                $scope.loadRatingsHighCharts($scope.analytics);
+                $scope.loadYearByRatingDateHighCharts($scope.analytics);
+                $scope.loadRatingHighCharts($scope.analytics);
             })
             .error(function(data) {
                 $scope.result = data.message;
@@ -112,7 +113,7 @@ app.controller('AppController', ['$scope', '$http', '$window',
 
     $scope.loadYearHighCharts = function(analytics) {
 
-        Highcharts.chart('container', {
+        Highcharts.chart('containerYear', {
             chart: {
                 type: 'column'
             },
@@ -149,9 +150,9 @@ app.controller('AppController', ['$scope', '$http', '$window',
 
     };
 
-        $scope.loadRatingHighCharts = function(analytics) {
+        $scope.loadYearByRatingDateHighCharts = function(analytics) {
 
-            Highcharts.chart('container', {
+            Highcharts.chart('containerYearByRatingDate', {
                 chart: {
                     type: 'column'
                 },
@@ -166,7 +167,8 @@ app.controller('AppController', ['$scope', '$http', '$window',
                         borderRadius: 2
                     },
                     series: {
-                        pointWidth: 10
+                        minPointWidth: 25,
+                        maxPointWidth: 80
                     }
                 },
                 yAxis: [{
@@ -177,11 +179,33 @@ app.controller('AppController', ['$scope', '$http', '$window',
                     }
                 }],
                 xAxis: {
-                    categories: analytics.yearsChartKeys
+                    categories: analytics.yearsByRatingDateChartKeys
                 },
                 series: [{
                     name: "Movies",
-                    data: analytics.yearsChartValues
+                    data: analytics.yearsByRatingDateChartValues
+                }]
+
+            });
+
+        };
+
+    $scope.loadRatingHighCharts = function(analytics) {
+
+            Highcharts.chart('containerRating', {
+                chart: {
+                    type: 'pie'
+                },
+                title: {
+                    text: 'Ratings distribution'
+                },
+                series: [{
+                    name: "Ratings",
+                    type: 'pie',
+                    allowPointSelect: true,
+                    keys: ['name', 'y'],
+                    data: analytics.ratingChart,
+                    showInLegend: false
                 }]
 
             });
