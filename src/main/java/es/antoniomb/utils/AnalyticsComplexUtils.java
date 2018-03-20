@@ -230,7 +230,7 @@ public class AnalyticsComplexUtils {
                     if (ZonedDateTime.now().getYear() == Integer.valueOf(item.getKey())) {
                         yearDays = ZonedDateTime.now().getDayOfYear();
                     }
-                    value+= " (" + FORMATTER.format(item.getValue().getHits() / yearDays) + " movies per day)";
+                    value+= " (" + FORMATTER.format(item.getValue().getHits() / yearDays) + " movies/day)";
                 }
                 sortedTop.put(item.getKey(), value);
             }

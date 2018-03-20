@@ -114,6 +114,8 @@ input[data-toggle]:checked + label:active {
 }
 #ratings {
     height: 350px;
+    display: block;
+    position: relative;
 }
 #ratings > div {
     border: none;

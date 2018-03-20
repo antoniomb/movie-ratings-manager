@@ -118,7 +118,7 @@ app.controller('AppController', ['$scope', '$http', '$window',
                 type: 'column'
             },
             title: {
-                text: 'Movies by Year'
+                text: ''
             },
             legend: {
                 enabled: false
@@ -150,14 +150,14 @@ app.controller('AppController', ['$scope', '$http', '$window',
 
     };
 
-        $scope.loadYearByRatingDateHighCharts = function(analytics) {
+    $scope.loadYearByRatingDateHighCharts = function(analytics) {
 
             Highcharts.chart('containerYearByRatingDate', {
                 chart: {
                     type: 'column'
                 },
                 title: {
-                    text: 'Movies by Year'
+                    text: ''
                 },
                 legend: {
                     enabled: false
@@ -197,7 +197,7 @@ app.controller('AppController', ['$scope', '$http', '$window',
                     type: 'pie'
                 },
                 title: {
-                    text: 'Ratings distribution'
+                    text: ''
                 },
                 series: [{
                     name: "Ratings",

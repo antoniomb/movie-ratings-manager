@@ -125,6 +125,10 @@ public class MigrationOuputComplexAnalytics {
         this.yearsByRatingDate = yearsByRatingDate;
     }
 
+    public Collection<Integer> getYearsByRatingDateChartKeys() {
+        return yearsByRatingDateChartKeys;
+    }
+
     public Collection<Integer> getYearsByRatingDateChartValues() {
         return yearsByRatingDateChartValues;
     }
