@@ -9,7 +9,7 @@ public class MigrationOuputComplexAnalytics {
     private Map<String, List<Movie>> directors;
     private Map<String, List<Movie>> actors;
     Map<String, List<Movie>> countries;
-    Map<String, List<Movie>> years;
+    Map<String, List<Movie>> moviesYears;
     Collection<Integer> yearsChartKeys;
     Collection<Integer> yearsChartValues;
     Map<String, List<Movie>> yearsByRatingDate;
@@ -20,6 +20,11 @@ public class MigrationOuputComplexAnalytics {
     Map<String, String> bestMovies;
     Map<String, String> worstMovies;
     Map<String, String> jokeActor;
+    Map<String, List<Movie>> shortMoviesYears;
+    Map<String, List<Movie>> tvSeriesYears;
+    private int totalMovies;
+    private int totalTvSeries;
+    private int totalShortMovies;
 
     public static class Movie {
         private String title;
@@ -96,12 +101,12 @@ public class MigrationOuputComplexAnalytics {
         this.countries = countries;
     }
 
-    public Map<String, List<Movie>> getYears() {
-        return years;
+    public Map<String, List<Movie>> getMoviesYears() {
+        return moviesYears;
     }
 
-    public void setYears(Map<String, List<Movie>> years) {
-        this.years = years;
+    public void setMoviesYears(Map<String, List<Movie>> moviesYears) {
+        this.moviesYears = moviesYears;
     }
 
     public Collection<Integer> getYearsChartKeys() {
@@ -179,5 +184,45 @@ public class MigrationOuputComplexAnalytics {
 
     public void setJokeActor(Map<String, String> jokeActor) {
         this.jokeActor = jokeActor;
+    }
+
+    public Map<String, List<Movie>> getShortMoviesYears() {
+        return shortMoviesYears;
+    }
+
+    public void setShortMoviesYears(Map<String, List<Movie>> shortMoviesYears) {
+        this.shortMoviesYears = shortMoviesYears;
+    }
+
+    public void setTvSeriesYears(Map<String, List<Movie>> tvSeriesYears) {
+        this.tvSeriesYears = tvSeriesYears;
+    }
+
+    public Map<String, List<Movie>> getTvSeriesYears() {
+        return tvSeriesYears;
+    }
+
+    public void setTotalMovies(int totalMovies) {
+        this.totalMovies = totalMovies;
+    }
+
+    public int getTotalMovies() {
+        return totalMovies;
+    }
+
+    public void setTotalTvSeries(int totalTvSeries) {
+        this.totalTvSeries = totalTvSeries;
+    }
+
+    public int getTotalTvSeries() {
+        return totalTvSeries;
+    }
+
+    public void setTotalShortMovies(int totalShortMovies) {
+        this.totalShortMovies = totalShortMovies;
+    }
+
+    public int getTotalShortMovies() {
+        return totalShortMovies;
     }
 }

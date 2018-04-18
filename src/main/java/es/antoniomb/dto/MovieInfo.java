@@ -17,6 +17,8 @@ public class MovieInfo {
     public String country;
     public String director;
     public List<String> actors;
+    private boolean shortMovie;
+    private boolean TVSerie;
 
     public MovieInfo() {
     }
@@ -90,6 +92,22 @@ public class MovieInfo {
         this.actors = actors;
     }
 
+    public void setShortMovie(boolean shortMovie) {
+        this.shortMovie = shortMovie;
+    }
+
+    public boolean isShortMovie() {
+        return shortMovie;
+    }
+
+    public void setTVSerie(boolean TVSerie) {
+        this.TVSerie = TVSerie;
+    }
+
+    public boolean isTVSerie() {
+        return TVSerie;
+    }
+
     @Override
     public String toString() {
         return "MovieInfo{" +
@@ -103,4 +121,5 @@ public class MovieInfo {
                 ", actors=" + StringUtils.join(actors.toArray(), ",") +
                 '}';
     }
+
 }

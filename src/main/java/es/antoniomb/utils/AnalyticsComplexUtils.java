@@ -20,37 +20,54 @@ public class AnalyticsComplexUtils {
 
         Map<String, List<MigrationOuputComplexAnalytics.Movie>> directors = new HashMap<>();
         Map<String, List<MigrationOuputComplexAnalytics.Movie>> actors = new HashMap<>();
-        Map<String, MigrationOuputComplexAnalytics.TotalAvg> country = new HashMap<>();
-        Map<String, MigrationOuputComplexAnalytics.TotalAvg> year = new HashMap<>();
-        Map<String, MigrationOuputComplexAnalytics.TotalAvg> yearByRatingDate = new HashMap<>();
+        Map<String, MigrationOuputComplexAnalytics.TotalAvg> moviesByCountry = new HashMap<>();
+        Map<String, MigrationOuputComplexAnalytics.TotalAvg> moviesByYear = new HashMap<>();
+        Map<String, MigrationOuputComplexAnalytics.TotalAvg> moviesByRatingYear = new HashMap<>();
         Map<String, Integer> ratings = new HashMap<>();
         Map<String, Integer> topMovies = new HashMap<>();
         Map<String, Integer> worstMovies = new HashMap<>();
         Map<String, Integer> jokeActor = new HashMap<>();
+        Map<String, MigrationOuputComplexAnalytics.TotalAvg> shortMoviesByYear = new HashMap<>();
+        Map<String, MigrationOuputComplexAnalytics.TotalAvg> tvSeriesByYear = new HashMap<>();
 
+        int totalMovies = 0, totalShortMovies = 0, totalTvSeries = 0;
         for (MovieInfo movieInfo : moviesInfo) {
 
             topDirector(directors, movieInfo);
             topActor(actors, jokeActor, movieInfo);
-            topCountry(country, movieInfo);
-            topYear(year, movieInfo);
-            topYearByRatingDate(yearByRatingDate, movieInfo);
+            topCountry(moviesByCountry, movieInfo);
+            topYearByRatingDate(moviesByRatingYear, movieInfo);
             ratingsDist(ratings, movieInfo);
             topMovies(topMovies, movieInfo);
             worstMovies(worstMovies, movieInfo);
+            if (movieInfo.isShortMovie()) {
+                topYear(shortMoviesByYear, movieInfo);
+                totalShortMovies++;
+            } else if (movieInfo.isTVSerie()) {
+                topYear(tvSeriesByYear, movieInfo);
+                totalTvSeries++;
+            } else {
+                topYear(moviesByYear, movieInfo);
+                totalMovies++;
+            }
         }
         analytics.setDirectors(calculateTop(directors));
         analytics.setActors(calculateTop(actors));
-        analytics.setCountries(calculateTopAvg(sortMapMoviesByValue(country), false));
-        analytics.setYears(calculateTopAvg(sortMapByKey(year), false));
-        analytics.setYearsChart(prepareForChart(sortMapByKey(year)));
-        analytics.setYearsByRatingDate(calculateTopAvg(sortMapByKey(yearByRatingDate), true));
-        analytics.setYearsByRatingDateChart(prepareForChart(sortMapByKey(yearByRatingDate)));
+        analytics.setCountries(calculateTopAvg(sortMapMoviesByValue(moviesByCountry), false));
+        analytics.setMoviesYears(calculateTopAvg(sortMapByKey(moviesByYear), false));
+        analytics.setYearsChart(prepareForChart(sortMapByKey(moviesByYear)));
+        analytics.setYearsByRatingDate(calculateTopAvg(sortMapByKey(moviesByRatingYear), true));
+        analytics.setYearsByRatingDateChart(prepareForChart(sortMapByKey(moviesByRatingYear)));
         analytics.setRatingDist(calculateTop(ratings, true));
         analytics.setRatingChart(prepareForChart(ratings));
         analytics.setBestMovies(calculateTop(topMovies, false));
         analytics.setWorstMovies(calculateTop(worstMovies, false));
         analytics.setJokeActor(calculateTop(jokeActor, false));
+        analytics.setShortMoviesYears(calculateTopAvg(sortMapByKey(shortMoviesByYear), false));
+        analytics.setTvSeriesYears(calculateTopAvg(sortMapByKey(tvSeriesByYear), false));
+        analytics.setTotalMovies(totalMovies);
+        analytics.setTotalShortMovies(totalShortMovies);
+        analytics.setTotalTvSeries(totalTvSeries);
 
         return analytics;
     }

@@ -197,7 +197,10 @@ public class FAMigrationService implements IMigrationService {
 
                 Elements titleElement = movieElement.getElementsByClass("mc-title");
                 String title = titleElement.get(0).getElementsByTag("a").get(0).childNode(0).outerHtml();
+                boolean isShortMovie = title.contains("(S)");
+                boolean isTVSerie = title.contains("(TV Series)");
                 title = title.replaceAll("\\(S\\)","");
+                title = title.replaceAll("\\(TV Series\\)","");
                 title = title.replaceAll("\\(TV\\)","").trim();
                 String year = titleElement.get(0).getAllElements().get(0).childNode(1).outerHtml().trim().substring(1, 5);
                 String country = titleElement.get(0).getElementsByTag("img").get(0).attr("title");
@@ -224,6 +227,8 @@ public class FAMigrationService implements IMigrationService {
                 movieInfo.setCountry(country);
                 movieInfo.setDirector(director);
                 movieInfo.setActors(actors);
+                movieInfo.setShortMovie(isShortMovie);
+                movieInfo.setTVSerie(isTVSerie);
                 movies.add(movieInfo);
 
                 LOGGER.info(movieInfo.toString());

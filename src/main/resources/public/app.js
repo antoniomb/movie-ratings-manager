@@ -40,16 +40,6 @@ app.controller('AppController', ['$scope', '$http', '$window',
                 $scope.ratingAvg = data.ratingAvg;
                 $scope.analytics = data.analyticsComplex;
 
-                if (data.analytics !== null) {
-                    $scope.topDirector = data.analytics.topDirector;
-                    $scope.topActor = data.analytics.topActor;
-                    $scope.topCountry = data.analytics.topCountry;
-                    $scope.topYear = data.analytics.topYear;
-                    $scope.ratingsDistribution = data.analytics.ratingsDistribution;
-                    $scope.bestMovies = data.analytics.bestMovies;
-                    $scope.worstMovies = data.analytics.worstMovies;
-                    $scope.topJoke = data.analytics.topJoke;
-                }
                 if ($scope.sourceStatus == true && $scope.targetStatus == true) {
                     if (migration.to == "csv") {
                         var blob = new Blob([data.csv], {type: 'text/csv'});

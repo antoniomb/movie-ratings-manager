@@ -98,7 +98,6 @@ public class MigrationService {
                     break;
                 case ANALYSIS:
                     result.setMoviesWrited(moviesInfo.size());
-//                    result.setAnalytics(AnalyticsUtils.calculateAnalytics(moviesInfo));
                     result.setAnalyticsComplex(AnalyticsComplexUtils.calculateAnalytics(moviesInfo));
                 default:
             }
