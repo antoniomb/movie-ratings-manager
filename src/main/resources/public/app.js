@@ -14,7 +14,7 @@ app.filter('rawHtml', ['$sce', function($sce){
 app.controller('AppController', ['$scope', '$http', '$window',
     function ($scope, $http, $window) {
 
-        $scope.migrate = function(migration) {
+    $scope.migrate = function(migration) {
 
         //Default values
         if (!migration.from) {
@@ -29,7 +29,7 @@ app.controller('AppController', ['$scope', '$http', '$window',
         analysis.addClass("ng-hide");
 
         $scope.result = "Loading ... \n";
-        result.removeClass('success').removeClass('alert').addClass('info');
+        result.removeClass('success').removeClass('alert').removeClass('ng-hide').addClass('info');
         var api_url = $window.location.origin + '/migrate';
         $http.post(api_url, migration)
             .success(function(data) {

@@ -6,13 +6,13 @@
 }
 
 body{
-    background: #F5F5F5;
+    background: #dddfd4;
     color: #424242;
     font-family: 'Varela Round', sans-serif;
 }
 h1 {
     text-transform: uppercase;
-    color: #FF5252;
+    color: #633c27;
     padding: 0.8rem 0rem;
     text-align: center;
 }
@@ -21,6 +21,7 @@ h2{
 }
 p.target {
     margin-bottom: 0.8rem;
+    font-size: 1.2rem;
 }
 .content{
     background:#FFF;
@@ -29,15 +30,23 @@ p.target {
 .section-box{
     padding: 1rem;
 }
+a {
+    color: #b79b0e;
+}
 /*Buttons*/
 button, .button {
     font-family: 'Varela Round', sans-serif;
-    background-color: #FF5252;
-    font-size: 1rem;
+    background-color: #ddb800;
+    font-size: 1.4rem;
     color: #FFFFFF;
+    border-radius: 10px;
 }
 button:hover, button:focus, .button:hover, .button:focus{
-    background-color: #FF8A80;
+    background-color: #9a5a3c;
+}
+button.big.button {
+    width: 100%;
+    text-transform: uppercase;
 }
 .button-group.round > * > button, .button-group.round > * .button {
     border-left: 2px solid;
@@ -53,9 +62,14 @@ button:hover, button:focus, .button:hover, .button:focus{
     background: #BDBDBD;
     pointer-events: none;
 }
-button.big.button {
-    width: 100%;
-    text-transform: uppercase;
+.button-group.round > *:last-child, .button-group.round > *:last-child > a, .button-group.round > *:last-child > button, .button-group.round > *:last-child > .button {
+    border-bottom-right-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+.button-group.round > *:first-child, .button-group.round > *:first-child > a, .button-group.round > *:first-child > button, .button-group.round > *:first-child > .button {
+    border-bottom-left-radius: 10px;
+    border-top-left-radius: 10px;
 }
 i.fi-arrow-right {
     margin-right: 5px;
@@ -70,6 +84,7 @@ input:-webkit-autofill {
 input:not([type]), input[type="text"], input[type="password"], input[type="date"], input[type="datetime"], input[type="datetime-local"], input[type="month"], input[type="week"], input[type="email"], input[type="number"], input[type="search"], input[type="tel"], input[type="time"], input[type="url"], input[type="color"], textarea {
     border-color: #ddd;
     box-shadow: none;
+    font-size: 1.2rem;
 }
 input[data-toggle] {
     display: none;
@@ -77,29 +92,39 @@ input[data-toggle] {
 
 input[data-toggle]:checked + label,
 input[data-toggle]:checked + label:active {
-    background-color: #f40c21;
+    background-color: #7d4627;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15) inset, 0 1px 2px rgba(0, 0, 0, 0.05); }
 
 .button-group.toggle li:not(first-child) {
     margin: 0 -0.9rem;
 }
-
+#migration-actions {
+    background: none;
+    height: 80px;
+}
 #migration-result {
-    font-size: 1rem;
+    font-size: 1.4rem;
     padding: 16px;
     border: 0;
+    background-color: #9fafaf;
 }
-
+#analysis-result {
+    padding: 0;
+    background-color: transparent;
+}
+#analysis-result .title{
+    font-size: 1.4rem;
+}
 #analysis-result b {
     font-size: 1rem;
     display: block;
     margin-bottom: 6px;
 }
-#analysis-result span {
-    font-size: 0.8rem;
+#analysis-result span, #analysis-result div {
+    font-size: 1.2rem;
 }
 #analysis-result li {
-    font-size: 0.7rem;
+    font-size: 0.9rem;
     list-style: none;
 }
 #analysis-result span:hover {
@@ -108,12 +133,17 @@ input[data-toggle]:checked + label:active {
 #analysis-result div.data {
     margin-bottom: 5px;
 }
+#analysis-result div.info {
+    border: none;
+    margin-bottom: 5px;
+    background-color: white;
+}
 #run-block {
     padding: 0;
     border: 1px;
 }
 #ratings {
-    height: 350px;
+    height: 440px;
     display: block;
     position: relative;
 }
@@ -123,7 +153,7 @@ input[data-toggle]:checked + label:active {
 #containerYear, #containerYearByRatingDate{
     height: 400px;
     max-width: 800px;
-    margin: 0 auto;
+    margin: 40px 0 20px;
 }
 #containerRating {
     height: 340px;
@@ -144,7 +174,7 @@ input[data-toggle]:checked + label:active {
     stroke-width: 0;
 }
 .highcharts-background {
-    fill: #a0d3e8;
+    fill: transparent;
 }
 .highcharts-pie-series .highcharts-point {
     stroke: #EDE;
