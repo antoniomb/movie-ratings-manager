@@ -37,16 +37,17 @@ a {
 button, .button {
     font-family: 'Varela Round', sans-serif;
     background-color: #ddb800;
-    font-size: 1.4rem;
+    font-size: 1.2rem;
     color: #FFFFFF;
     border-radius: 10px;
 }
 button:hover, button:focus, .button:hover, .button:focus{
-    background-color: #9a5a3c;
+    background-color: #846f09;
 }
 button.big.button {
     width: 100%;
     text-transform: uppercase;
+    background-color: #846f09;
 }
 .button-group.round > * > button, .button-group.round > * .button {
     border-left: 2px solid;
@@ -92,7 +93,7 @@ input[data-toggle] {
 
 input[data-toggle]:checked + label,
 input[data-toggle]:checked + label:active {
-    background-color: #7d4627;
+    background-color: #846f09;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15) inset, 0 1px 2px rgba(0, 0, 0, 0.05); }
 
 .button-group.toggle li:not(first-child) {
@@ -107,6 +108,7 @@ input[data-toggle]:checked + label:active {
     padding: 16px;
     border: 0;
     background-color: #9fafaf;
+    color: white;
 }
 #analysis-result {
     padding: 0;
@@ -114,6 +116,7 @@ input[data-toggle]:checked + label:active {
 }
 #analysis-result .title{
     font-size: 1.4rem;
+    font-weight: bold;
 }
 #analysis-result b {
     font-size: 1rem;
@@ -121,7 +124,7 @@ input[data-toggle]:checked + label:active {
     margin-bottom: 6px;
 }
 #analysis-result span, #analysis-result div {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
 }
 #analysis-result li {
     font-size: 0.9rem;
@@ -147,8 +150,8 @@ input[data-toggle]:checked + label:active {
     display: block;
     position: relative;
 }
-#ratings > div {
-    border: none;
+#ratings div.data {
+    font-size: 1rem;
 }
 #containerYear, #containerYearByRatingDate{
     height: 400px;
