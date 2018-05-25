@@ -13,7 +13,7 @@ body{
 h1 {
     text-transform: uppercase;
     color: #633c27;
-    padding: 0.8rem 0rem;
+    padding: 0.8rem 0;
     text-align: center;
 }
 h2{
@@ -124,7 +124,7 @@ input[data-toggle]:checked + label:active {
     margin-bottom: 6px;
 }
 #analysis-result span, #analysis-result div {
-    font-size: 1.1rem;
+    font-size: 1rem;
 }
 #analysis-result li {
     font-size: 0.9rem;
@@ -151,7 +151,7 @@ input[data-toggle]:checked + label:active {
     position: relative;
 }
 #ratings div.data {
-    font-size: 1rem;
+    font-size: 0.9rem;
 }
 #containerYear, #containerYearByRatingDate{
     height: 400px;
