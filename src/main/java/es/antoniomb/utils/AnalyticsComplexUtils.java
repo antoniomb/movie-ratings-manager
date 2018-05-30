@@ -28,9 +28,10 @@ public class AnalyticsComplexUtils {
         Map<String, Integer> worstMovies = new HashMap<>();
         Map<String, Integer> jokeActor = new HashMap<>();
         Map<String, MigrationOuputComplexAnalytics.TotalAvg> shortMoviesByYear = new HashMap<>();
+        Map<String, MigrationOuputComplexAnalytics.TotalAvg> documentariesByYear = new HashMap<>();
         Map<String, MigrationOuputComplexAnalytics.TotalAvg> tvSeriesByYear = new HashMap<>();
 
-        int totalMovies = 0, totalShortMovies = 0, totalTvSeries = 0;
+        int totalMovies = 0, totalShortMovies = 0, totalDocumentaries = 0, totalTvSeries = 0;
         for (MovieInfo movieInfo : moviesInfo) {
 
             topDirector(directors, movieInfo);
@@ -43,6 +44,9 @@ public class AnalyticsComplexUtils {
             if (movieInfo.isShortMovie()) {
                 topYear(shortMoviesByYear, movieInfo);
                 totalShortMovies++;
+            } else if (movieInfo.isDocumentary()) {
+                topYear(documentariesByYear, movieInfo);
+                totalDocumentaries++;
             } else if (movieInfo.isTVSerie()) {
                 topYear(tvSeriesByYear, movieInfo);
                 totalTvSeries++;
@@ -64,9 +68,11 @@ public class AnalyticsComplexUtils {
         analytics.setWorstMovies(calculateTop(worstMovies, false));
         analytics.setJokeActor(calculateTop(jokeActor, false));
         analytics.setShortMoviesYears(calculateTopAvg(sortMapByKey(shortMoviesByYear), false));
+        analytics.setDocumentariesYears(calculateTopAvg(sortMapByKey(documentariesByYear), false));
         analytics.setTvSeriesYears(calculateTopAvg(sortMapByKey(tvSeriesByYear), false));
         analytics.setTotalMovies(totalMovies);
         analytics.setTotalShortMovies(totalShortMovies);
+        analytics.setTotalDocumentaries(totalDocumentaries);
         analytics.setTotalTvSeries(totalTvSeries);
 
         return analytics;

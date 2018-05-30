@@ -19,6 +19,7 @@ public class MovieInfo {
     public List<String> actors;
     private boolean shortMovie;
     private boolean TVSerie;
+    private boolean documentary;
 
     public MovieInfo() {
     }
@@ -106,6 +107,14 @@ public class MovieInfo {
 
     public boolean isTVSerie() {
         return TVSerie;
+    }
+
+    public void setDocumentary(boolean documentary) {
+        this.documentary = documentary;
+    }
+
+    public boolean isDocumentary() {
+        return documentary;
     }
 
     @Override

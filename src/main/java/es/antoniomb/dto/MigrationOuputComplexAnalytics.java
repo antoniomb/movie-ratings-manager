@@ -21,9 +21,11 @@ public class MigrationOuputComplexAnalytics {
     Map<String, String> worstMovies;
     Map<String, String> jokeActor;
     Map<String, List<Movie>> shortMoviesYears;
+    Map<String, List<Movie>> documentariesYears;
     Map<String, List<Movie>> tvSeriesYears;
     private int totalMovies;
     private int totalTvSeries;
+    private int totalDocumentaries;
     private int totalShortMovies;
 
     public static class Movie {
@@ -194,6 +196,15 @@ public class MigrationOuputComplexAnalytics {
         this.shortMoviesYears = shortMoviesYears;
     }
 
+    public void setDocumentariesYears(Map<String, List<Movie>> documentariesYears) {
+        this.documentariesYears = documentariesYears;
+    }
+
+    public Map<String, List<Movie>> getDocumentariesYears() {
+        return documentariesYears;
+    }
+
+
     public void setTvSeriesYears(Map<String, List<Movie>> tvSeriesYears) {
         this.tvSeriesYears = tvSeriesYears;
     }
@@ -210,19 +221,27 @@ public class MigrationOuputComplexAnalytics {
         return totalMovies;
     }
 
-    public void setTotalTvSeries(int totalTvSeries) {
-        this.totalTvSeries = totalTvSeries;
-    }
-
-    public int getTotalTvSeries() {
-        return totalTvSeries;
-    }
-
     public void setTotalShortMovies(int totalShortMovies) {
         this.totalShortMovies = totalShortMovies;
     }
 
     public int getTotalShortMovies() {
         return totalShortMovies;
+    }
+
+    public void setTotalDocumentaries(int totalDocumentaries) {
+        this.totalDocumentaries = totalDocumentaries;
+    }
+
+    public int getTotalDocumentaries() {
+        return totalDocumentaries;
+    }
+
+    public void setTotalTvSeries(int totalTvSeries) {
+        this.totalTvSeries = totalTvSeries;
+    }
+
+    public int getTotalTvSeries() {
+        return totalTvSeries;
     }
 }

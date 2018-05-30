@@ -199,6 +199,7 @@ public class FAMigrationService implements IMigrationService {
                 String title = titleElement.get(0).getElementsByTag("a").get(0).childNode(0).outerHtml();
                 boolean isShortMovie = title.contains("(S)");
                 boolean isTVSerie = title.contains("(TV Series)");
+                boolean isDocumentary = false;
                 title = title.replaceAll("\\(S\\)","");
                 title = title.replaceAll("\\(TV Series\\)","");
                 title = title.replaceAll("\\(TV\\)","").trim();
@@ -213,6 +214,9 @@ public class FAMigrationService implements IMigrationService {
                 if (castElement.size() > 1) {
                     for (Element element : castElement) {
                         String actor = element.getElementsByTag("a").get(0).childNode(0).outerHtml();
+                        if (actor.equals("Documentary")) {
+                            isDocumentary = true;
+                        }
                         actors.add(actor);
                     }
                 }
@@ -228,6 +232,7 @@ public class FAMigrationService implements IMigrationService {
                 movieInfo.setDirector(director);
                 movieInfo.setActors(actors);
                 movieInfo.setShortMovie(isShortMovie);
+                movieInfo.setDocumentary(isDocumentary);
                 movieInfo.setTVSerie(isTVSerie);
                 movies.add(movieInfo);
 

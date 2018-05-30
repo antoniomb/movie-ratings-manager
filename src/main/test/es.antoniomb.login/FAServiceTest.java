@@ -1,10 +1,13 @@
 package es.antoniomb.login;
 
+import es.antoniomb.dto.MovieInfo;
 import es.antoniomb.dto.UserInfo;
 import es.antoniomb.service.FAMigrationService;
 import es.antoniomb.utils.FAUtils;
 import org.junit.Assert;
 import org.junit.Test;
+
+import java.util.List;
 
 /**
  * Created by amiranda on 18/9/16.
@@ -32,6 +35,8 @@ public class FAServiceTest {
     public void fillMoviesInfo() {
         UserInfo userInfo = faMigrationService.login("antoniomiranda", "Abc123456");
         faMigrationService.fillUserInfo(userInfo);
-        faMigrationService.fillMoviesInfo(userInfo, null, null);
+        List<MovieInfo> moviesInfo = faMigrationService.fillMoviesInfo(userInfo, null, null);
+
+        Assert.assertEquals(10, moviesInfo.size());
     }
 }
