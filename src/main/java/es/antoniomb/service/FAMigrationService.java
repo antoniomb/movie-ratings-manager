@@ -216,8 +216,9 @@ public class FAMigrationService implements IMigrationService {
                         String actor = element.getElementsByTag("a").get(0).childNode(0).outerHtml();
                         if (actor.equals("Documentary")) {
                             isDocumentary = true;
+                        } else {
+                            actors.add(actor);
                         }
-                        actors.add(actor);
                     }
                 }
 
