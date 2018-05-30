@@ -211,7 +211,7 @@ public class FAMigrationService implements IMigrationService {
 
                 List<String> actors = new ArrayList<>();
                 Elements castElement = movieElement.getElementsByClass("mc-cast").get(0).getElementsByClass("nb");
-                if (castElement.size() > 1) {
+                if (castElement.size() > 0) {
                     for (Element element : castElement) {
                         String actor = element.getElementsByTag("a").get(0).childNode(0).outerHtml();
                         if (actor.equals("Documentary")) {
