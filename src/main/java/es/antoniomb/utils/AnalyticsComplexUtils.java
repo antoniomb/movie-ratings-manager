@@ -305,7 +305,9 @@ public class AnalyticsComplexUtils {
     private static Map<String, MigrationOuputComplexAnalytics.Movie> sortMapByRating(
             Map<String, MigrationOuputComplexAnalytics.Movie> itemMap) {
         List<Map.Entry<String, Movie>> list = new LinkedList<>(itemMap.entrySet());
-        list.sort(Comparator.comparing(o -> (Integer.valueOf(o.getValue().getRating()) * -1)));
+        Comparator<Map.Entry<String, Movie>> comparator =
+                Comparator.comparing(o -> (Integer.valueOf(o.getValue().getRating()) * -1));
+        list.sort(comparator);
         Map<String, Movie> sortedMap = new LinkedHashMap<>();
         for (Map.Entry<String, Movie> entry : list) {
             sortedMap.put(entry.getKey(), entry.getValue());

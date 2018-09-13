@@ -128,6 +128,7 @@ public class FAMigrationService implements IMigrationService {
         List<Future<List<MovieInfo>>> futures = new ArrayList<>();
         for (int i = 1; i <= userInfo.getPages(); i++) {
             int page = i;
+            LOGGER.info("Process movies page "+i+"/"+userInfo.getPages());
             futures.add(executorService.submit(() ->
                     fillMoviesInfoPage(userInfo, fromDate, toDate, page)));
         }
