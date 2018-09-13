@@ -67,9 +67,8 @@ public class FAMigrationService implements IMigrationService {
                     .method(Connection.Method.POST)
                     .validateTLSCertificates(false)
                     .execute();
-        }
-        catch (IOException e) {
-            LOGGER.log(Level.WARNING, "Error logging user "+username, e);
+        } catch (IOException e) {
+            LOGGER.log(Level.WARNING, "Error logging user " + username, e);
         }
 
         if (login == null || login.cookie(FAUtils.SESSION_COOKIE) == null) {
@@ -97,10 +96,10 @@ public class FAMigrationService implements IMigrationService {
             if (userInfo.getUserId() == null) {
                 throw new MigrationException("Error obtaining userID");
             }
-            LOGGER.info("User id: "+userInfo.getUserId());
+            LOGGER.info("User id: " + userInfo.getUserId());
 
             //Request for rating pages and votes number
-            Document ratingsPage = Jsoup.connect(FAUtils.URLS.RATINGS.getUrl()+userInfo.getUserId()).cookies(userInfo.getCookies()).get();
+            Document ratingsPage = Jsoup.connect(FAUtils.URLS.RATINGS.getUrl() + userInfo.getUserId()).cookies(userInfo.getCookies()).get();
 
 
             String pages = "1";
@@ -111,11 +110,10 @@ public class FAMigrationService implements IMigrationService {
             userInfo.setPages(Integer.valueOf(pages));
             LOGGER.info("User ratings pages: " + userInfo.getPages());
 
-            String votes =  ratingsPage.body().getElementsByClass("active-tab").get(0).childNode(3).childNode(1).outerHtml();
+            String votes = ratingsPage.body().getElementsByClass("active-tab").get(0).childNode(3).childNode(1).outerHtml();
             if (votes != null) {
-                userInfo.setVotes(Integer.valueOf(votes.substring(1).replaceAll(",","")));
-            }
-            else {
+                userInfo.setVotes(Integer.valueOf(votes.substring(1).replaceAll(",", "")));
+            } else {
                 throw new MigrationException("Error obtaining user votes");
             }
             LOGGER.info("User total votes: " + userInfo.getVotes());
@@ -128,7 +126,7 @@ public class FAMigrationService implements IMigrationService {
     public List<MovieInfo> fillMoviesInfo(UserInfo userInfo, String fromDate, String toDate) {
         List<MovieInfo> movies = new ArrayList<>();
         List<Future<List<MovieInfo>>> futures = new ArrayList<>();
-        for (int i=1; i <= userInfo.getPages(); i++) {
+        for (int i = 1; i <= userInfo.getPages(); i++) {
             int page = i;
             futures.add(executorService.submit(() ->
                     fillMoviesInfoPage(userInfo, fromDate, toDate, page)));
@@ -141,7 +139,7 @@ public class FAMigrationService implements IMigrationService {
                 try {
                     movies.addAll(future.get());
                     futuresDone++;
-                } catch (InterruptedException|ExecutionException e) {
+                } catch (InterruptedException | ExecutionException e) {
                     LOGGER.log(Level.WARNING, "Error obtaining ratings", e);
                 }
             }
@@ -177,16 +175,16 @@ public class FAMigrationService implements IMigrationService {
 
             try {
                 String[] split = date.replaceAll(",", "").split(" ");
-                date = split[2]+"-"+ //year
-                       String.format("%02d", FAUtils.MONTH_FORMAT.parse(split[0]).getMonth()+1) + "-" + //month
-                       String.format("%02d", Integer.valueOf(split[1])); //day
+                date = split[2] + "-" + //year
+                        String.format("%02d", FAUtils.MONTH_FORMAT.parse(split[0]).getMonth() + 1) + "-" + //month
+                        String.format("%02d", Integer.valueOf(split[1])); //day
             } catch (ParseException e) {
-                LOGGER.log(Level.WARNING, "Error parsing date "+date, e);
+                LOGGER.log(Level.WARNING, "Error parsing date " + date, e);
             }
 
             //If date ranges defined, escape if its out of range
             if ((fromDate != null && date.compareTo(fromDate) < 0) ||
-                (toDate != null && date.compareTo(toDate) > 0) ) {
+                    (toDate != null && date.compareTo(toDate) > 0)) {
                 continue;
             }
 
@@ -200,9 +198,9 @@ public class FAMigrationService implements IMigrationService {
                 boolean isShortMovie = title.contains("(S)");
                 boolean isTVSerie = title.contains("(TV Series)");
                 boolean isDocumentary = false;
-                title = title.replaceAll("\\(S\\)","");
-                title = title.replaceAll("\\(TV Series\\)","");
-                title = title.replaceAll("\\(TV\\)","").trim();
+                title = title.replaceAll("\\(S\\)", "");
+                title = title.replaceAll("\\(TV Series\\)", "");
+                title = title.replaceAll("\\(TV\\)", "").trim();
                 String year = titleElement.get(0).getAllElements().get(0).childNode(1).outerHtml().trim().substring(1, 5);
                 String country = titleElement.get(0).getElementsByTag("img").get(0).attr("title");
 
@@ -216,7 +214,7 @@ public class FAMigrationService implements IMigrationService {
                         String actor = element.getElementsByTag("a").get(0).childNode(0).outerHtml();
                         if (actor.equals("Documentary")) {
                             isDocumentary = true;
-                        } else {
+                        } else if (!actor.equals("Animation")){
                             actors.add(actor);
                         }
                     }
@@ -237,7 +235,9 @@ public class FAMigrationService implements IMigrationService {
                 movieInfo.setTVSerie(isTVSerie);
                 movies.add(movieInfo);
 
-                LOGGER.info(movieInfo.toString());
+                if (LOGGER.isLoggable(Level.FINEST)) {
+                    LOGGER.finest(movieInfo.toString());
+                }
             }
         }
         return movies;

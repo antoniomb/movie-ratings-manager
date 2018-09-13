@@ -8,6 +8,9 @@ import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static es.antoniomb.dto.MigrationOuputComplexAnalytics.Movie;
+import static es.antoniomb.dto.MigrationOuputComplexAnalytics.TotalAvg;
+
 public class AnalyticsComplexUtils {
 
     private static final String JOKE_ACTOR = "Nicolas Cage";
@@ -24,35 +27,40 @@ public class AnalyticsComplexUtils {
         Map<String, MigrationOuputComplexAnalytics.TotalAvg> moviesByYear = new HashMap<>();
         Map<String, MigrationOuputComplexAnalytics.TotalAvg> moviesByRatingYear = new HashMap<>();
         Map<String, Integer> ratings = new HashMap<>();
-        Map<String, Integer> topMovies = new HashMap<>();
-        Map<String, Integer> worstMovies = new HashMap<>();
-        Map<String, Integer> jokeActor = new HashMap<>();
-        Map<String, MigrationOuputComplexAnalytics.TotalAvg> shortMoviesByYear = new HashMap<>();
-        Map<String, MigrationOuputComplexAnalytics.TotalAvg> documentariesByYear = new HashMap<>();
-        Map<String, MigrationOuputComplexAnalytics.TotalAvg> tvSeriesByYear = new HashMap<>();
+        Map<String, MigrationOuputComplexAnalytics.Movie> topMovies = new HashMap<>();
+        Map<String, MigrationOuputComplexAnalytics.Movie> worstMovies = new HashMap<>();
+        Map<String, MigrationOuputComplexAnalytics.Movie> jokeActor = new HashMap<>();
+        Map<String, MigrationOuputComplexAnalytics.Movie> shortMovies = new HashMap<>();
+        Map<String, MigrationOuputComplexAnalytics.Movie> documentaries = new HashMap<>();
+        Map<String, MigrationOuputComplexAnalytics.Movie> tvSeries = new HashMap<>();
 
         int totalMovies = 0, totalShortMovies = 0, totalDocumentaries = 0, totalTvSeries = 0;
         for (MovieInfo movieInfo : moviesInfo) {
-
-            topDirector(directors, movieInfo);
-            topActor(actors, jokeActor, movieInfo);
-            topCountry(moviesByCountry, movieInfo);
-            topYearByRatingDate(moviesByRatingYear, movieInfo);
-            ratingsDist(ratings, movieInfo);
-            topMovies(topMovies, movieInfo);
-            worstMovies(worstMovies, movieInfo);
-            if (movieInfo.isShortMovie()) {
-                topYear(shortMoviesByYear, movieInfo);
-                totalShortMovies++;
-            } else if (movieInfo.isDocumentary()) {
-                topYear(documentariesByYear, movieInfo);
-                totalDocumentaries++;
-            } else if (movieInfo.isTVSerie()) {
-                topYear(tvSeriesByYear, movieInfo);
-                totalTvSeries++;
-            } else {
+            if (isMovie(movieInfo)) {
+                topDirector(directors, movieInfo);
+                topActor(actors, jokeActor, movieInfo);
+                topCountry(moviesByCountry, movieInfo);
+                topYearByRatingDate(moviesByRatingYear, movieInfo);
+                ratingsDist(ratings, movieInfo);
+                if (movieInfo.getRate().equals("10")) {
+                    topMovies(topMovies, movieInfo);
+                }
+                if (movieInfo.getRate().equals("1")) {
+                    topMovies(worstMovies, movieInfo);
+                }
                 topYear(moviesByYear, movieInfo);
                 totalMovies++;
+            } else {
+                if (movieInfo.isShortMovie()) {
+                    topMovies(shortMovies, movieInfo);
+                    totalShortMovies++;
+                } else if (movieInfo.isDocumentary()) {
+                    topMovies(documentaries, movieInfo);
+                    totalDocumentaries++;
+                } else if (movieInfo.isTVSerie()) {
+                    topMovies(tvSeries, movieInfo);
+                    totalTvSeries++;
+                }
             }
         }
         analytics.setDirectors(calculateTop(directors));
@@ -62,14 +70,14 @@ public class AnalyticsComplexUtils {
         analytics.setYearsChart(prepareForChart(sortMapByKey(moviesByYear)));
         analytics.setYearsByRatingDate(calculateTopAvg(sortMapByKey(moviesByRatingYear), true));
         analytics.setYearsByRatingDateChart(prepareForChart(sortMapByKey(moviesByRatingYear)));
-        analytics.setRatingDist(calculateTop(ratings, true));
+        analytics.setRatingDist(calculateTop(sortMapByValue(ratings), true));
         analytics.setRatingChart(prepareForChart(ratings));
-        analytics.setBestMovies(calculateTop(topMovies, false));
-        analytics.setWorstMovies(calculateTop(worstMovies, false));
-        analytics.setJokeActor(calculateTop(jokeActor, false));
-        analytics.setShortMoviesYears(calculateTopAvg(sortMapByKey(shortMoviesByYear), false));
-        analytics.setDocumentariesYears(calculateTopAvg(sortMapByKey(documentariesByYear), false));
-        analytics.setTvSeriesYears(calculateTopAvg(sortMapByKey(tvSeriesByYear), false));
+        analytics.setBestMovies(calculateTopRatings(sortMapByRating(topMovies)));
+        analytics.setWorstMovies(calculateTopRatings(sortMapByRating(worstMovies)));
+        analytics.setJokeActor(calculateTopRatings(sortMapByRating(jokeActor)));
+        analytics.setShortMovies(calculateTopRatings(sortMapByRating(shortMovies)));
+        analytics.setDocumentaries(calculateTopRatings(sortMapByRating(documentaries)));
+        analytics.setTvSeries(calculateTopRatings(sortMapByRating(tvSeries)));
         analytics.setTotalMovies(totalMovies);
         analytics.setTotalShortMovies(totalShortMovies);
         analytics.setTotalDocumentaries(totalDocumentaries);
@@ -78,99 +86,90 @@ public class AnalyticsComplexUtils {
         return analytics;
     }
 
-    private static void worstMovies(Map<String, Integer> worstMovies, MovieInfo movieInfo) {
-        if (movieInfo.getRate().equals("1")) {
-            worstMovies.put(movieInfo.getTitle(), Integer.valueOf(movieInfo.getYear()));
-        }
+    private static boolean isMovie(MovieInfo movieInfo) {
+        return !movieInfo.isShortMovie() && !movieInfo.isDocumentary() && !movieInfo.isTVSerie();
+
     }
 
-    private static void topMovies(Map<String, Integer> topMovies, MovieInfo movieInfo) {
-        if (movieInfo.getRate().equals("10")) {
-            topMovies.put(movieInfo.getTitle(), Integer.valueOf(movieInfo.getYear()));
-        }
+    private static void topMovies(Map<String, MigrationOuputComplexAnalytics.Movie> topMovies, MovieInfo movieInfo) {
+        topMovies.put(movieInfo.getTitle(),
+                Movie.of(movieInfo.getId(), movieInfo.getTitle(), movieInfo.getYear(), movieInfo.getRate()));
     }
 
     private static void ratingsDist(Map<String, Integer> year, MovieInfo movieInfo) {
         if (year.containsKey(movieInfo.getRate())) {
             Integer count = year.get(movieInfo.getRate());
             year.put(movieInfo.getRate(), ++count);
-        }
-        else {
+        } else {
             year.put(movieInfo.getRate(), 1);
         }
     }
 
     private static void topYear(Map<String, MigrationOuputComplexAnalytics.TotalAvg> year, MovieInfo movieInfo) {
-        MigrationOuputComplexAnalytics.Movie movie = MigrationOuputComplexAnalytics.Movie.of(
-                movieInfo.getTitle(), movieInfo.getYear(), movieInfo.getRate());
+        Movie movie = Movie.of(
+                movieInfo.getId(), movieInfo.getTitle(), movieInfo.getYear(), movieInfo.getRate());
         if (year.containsKey(movieInfo.getYear())) {
-            MigrationOuputComplexAnalytics.TotalAvg count = year.get(movieInfo.getYear());
+            TotalAvg count = year.get(movieInfo.getYear());
             count.addRating(movieInfo.getRate());
             count.getMovies().add(movie);
             year.put(movieInfo.getYear(), count);
-        }
-        else {
+        } else {
             year.put(movieInfo.getYear(),
-                    new MigrationOuputComplexAnalytics.TotalAvg(movieInfo.getRate(), movie));
+                    new TotalAvg(movieInfo.getRate(), movie));
         }
     }
 
     private static void topYearByRatingDate(Map<String, MigrationOuputComplexAnalytics.TotalAvg> yearByRatingDate, MovieInfo movieInfo) {
         String ratingDate = movieInfo.getDate().split("-")[0];
-        MigrationOuputComplexAnalytics.Movie movie = MigrationOuputComplexAnalytics.Movie.of(
-                movieInfo.getTitle(), movieInfo.getYear(), movieInfo.getRate());
+        Movie movie = Movie.of(
+                movieInfo.getId(), movieInfo.getTitle(), movieInfo.getYear(), movieInfo.getRate());
         if (yearByRatingDate.containsKey(ratingDate)) {
-            MigrationOuputComplexAnalytics.TotalAvg count = yearByRatingDate.get(ratingDate);
+            TotalAvg count = yearByRatingDate.get(ratingDate);
             count.addRating(movieInfo.getRate());
             count.getMovies().add(movie);
             yearByRatingDate.put(ratingDate, count);
-        }
-        else {
+        } else {
             yearByRatingDate.put(ratingDate,
-                    new MigrationOuputComplexAnalytics.TotalAvg(movieInfo.getRate(),movie));
+                    new TotalAvg(movieInfo.getRate(), movie));
         }
     }
 
     private static void topCountry(Map<String, MigrationOuputComplexAnalytics.TotalAvg> country, MovieInfo movieInfo) {
-        MigrationOuputComplexAnalytics.Movie movie = MigrationOuputComplexAnalytics.Movie.of(
-                movieInfo.getTitle(), movieInfo.getYear(), movieInfo.getRate());
+        Movie movie = Movie.of(movieInfo.getId(), movieInfo.getTitle(), movieInfo.getYear(), movieInfo.getRate());
         if (country.containsKey(movieInfo.getCountry())) {
-            MigrationOuputComplexAnalytics.TotalAvg count = country.get(movieInfo.getCountry());
+            TotalAvg count = country.get(movieInfo.getCountry());
             count.addRating(movieInfo.getRate());
 
             count.getMovies().add(movie);
             country.put(movieInfo.getCountry(), count);
-        }
-        else {
+        } else {
             country.put(movieInfo.getCountry(),
-                    new MigrationOuputComplexAnalytics.TotalAvg(movieInfo.getRate(),movie));
+                    new TotalAvg(movieInfo.getRate(), movie));
         }
     }
 
-    private static void topActor(Map<String, List<MigrationOuputComplexAnalytics.Movie>> actors, Map<String, Integer> jokeActor, MovieInfo movieInfo) {
+    private static void topActor(Map<String, List<MigrationOuputComplexAnalytics.Movie>> actors,
+                                 Map<String, MigrationOuputComplexAnalytics.Movie> jokeActor, MovieInfo movieInfo) {
         for (String actor : movieInfo.getActors()) {
+            Movie movie = Movie.of(movieInfo.getId(), movieInfo.getTitle(), movieInfo.getYear(), movieInfo.getRate());
             if (actors.containsKey(actor)) {
-                actors.get(actor).add(MigrationOuputComplexAnalytics.Movie.of(movieInfo.getTitle(),movieInfo.getYear(),movieInfo.getRate()));
-            }
-            else {
-                actors.put(actor, new ArrayList<>(List.of(
-                        MigrationOuputComplexAnalytics.Movie.of(movieInfo.getTitle(),movieInfo.getYear(),movieInfo.getRate()))));
+                actors.get(actor).add(movie);
+            } else {
+                actors.put(actor, new ArrayList<>(List.of(movie)));
             }
             if (actor.equals(JOKE_ACTOR)) {
-                jokeActor.put(movieInfo.getTitle() + " - " + movieInfo.getRate(), Integer.valueOf(movieInfo.getYear()));
+                jokeActor.put(movieInfo.getTitle(), movie);
                 break;
             }
         }
     }
 
     private static void topDirector(Map<String, List<MigrationOuputComplexAnalytics.Movie>> directors, MovieInfo movieInfo) {
+        Movie movie = Movie.of(movieInfo.getId(), movieInfo.getTitle(), movieInfo.getYear(), movieInfo.getRate());
         if (directors.containsKey(movieInfo.getDirector())) {
-            directors.get(movieInfo.getDirector()).add(MigrationOuputComplexAnalytics.Movie.of(
-                    movieInfo.getTitle(),movieInfo.getYear(),movieInfo.getRate()));
-        }
-        else {
-            directors.put(movieInfo.getDirector(), new ArrayList<>(List.of(
-                    MigrationOuputComplexAnalytics.Movie.of(movieInfo.getTitle(),movieInfo.getYear(),movieInfo.getRate()))));
+            directors.get(movieInfo.getDirector()).add(movie);
+        } else {
+            directors.put(movieInfo.getDirector(), new ArrayList<>(List.of(movie)));
         }
     }
 
@@ -185,9 +184,9 @@ public class AnalyticsComplexUtils {
 
         Map<String, List<MigrationOuputComplexAnalytics.Movie>> sortedMap = new LinkedHashMap<>();
         int i = 0;
-        for (Map.Entry<String,Integer> item : sortedMapBySize.entrySet()) {
+        for (Map.Entry<String, Integer> item : sortedMapBySize.entrySet()) {
             sortedMap.put(item.getKey(), itemMap.get(item.getKey()).stream().
-                    sorted((o1, o2) -> o1.getYear().compareTo(o2.getYear())).
+                    sorted(Comparator.comparing(Movie::getYear)).
                     collect(Collectors.toList()));
             if (++i >= TOP_VALUES) {
                 break;
@@ -196,18 +195,28 @@ public class AnalyticsComplexUtils {
         return sortedMap;
     }
 
-    private static Map<String, String> calculateTop(Map<String, Integer> itemMap, boolean percentage) {
-        TreeMap<String, Integer> sortedMap = sortMapByValue(itemMap);
+    private static Map<String, MigrationOuputComplexAnalytics.Movie> calculateTopRatings(
+            Map<String, MigrationOuputComplexAnalytics.Movie> itemMap) {
+        Map<String, MigrationOuputComplexAnalytics.Movie> sortedMap = new LinkedHashMap<>();
+        int i = 0;
+        for (Map.Entry<String, MigrationOuputComplexAnalytics.Movie> item : itemMap.entrySet()) {
+            sortedMap.put(item.getKey(), item.getValue());
+            if (++i >= TOP_VALUES) {
+                break;
+            }
+        }
+        return sortedMap;
+    }
 
+    private static Map<String, String> calculateTop(Map<String, Integer> itemMap, boolean percentage) {
         Map<String, String> sortedTop = new LinkedHashMap<>();
         int i = 0;
-        int total = sortedMap.values().stream().mapToInt(Integer::intValue).sum();
-        for (Map.Entry<String,Integer> item : sortedMap.entrySet()) {
+        int total = itemMap.values().stream().mapToInt(Integer::intValue).sum();
+        for (Map.Entry<String, Integer> item : itemMap.entrySet()) {
             if (percentage) {
                 String percentageValue = " - " + FORMATTER.format((item.getValue() * 100.0f) / total) + "%";
                 sortedTop.put(item.getKey(), " (" + item.getValue() + percentageValue + ")");
-            }
-            else {
+            } else {
                 sortedTop.put(item.getKey(), item.getValue().toString());
             }
             if (++i >= TOP_VALUES) {
@@ -243,8 +252,8 @@ public class AnalyticsComplexUtils {
 
         Map<String, String> sortedTop = new LinkedHashMap<>();
         int i = 0;
-        int total = sortedMap.values().stream().mapToInt(MigrationOuputComplexAnalytics.TotalAvg::getHits).sum();
-        for (Map.Entry<String,MigrationOuputComplexAnalytics.TotalAvg> item : sortedMap.entrySet()) {
+        int total = sortedMap.values().stream().mapToInt(TotalAvg::getHits).sum();
+        for (Map.Entry<String, MigrationOuputComplexAnalytics.TotalAvg> item : sortedMap.entrySet()) {
             if (percentage) {
                 String percentageValue = " - " + FORMATTER.format((item.getValue().getHits() * 100.0f) / total) + "%";
                 String value = " (" + item.getValue().getHits() + percentageValue + ") - " + item.getValue().avg();
@@ -253,11 +262,10 @@ public class AnalyticsComplexUtils {
                     if (ZonedDateTime.now().getYear() == Integer.valueOf(item.getKey())) {
                         yearDays = ZonedDateTime.now().getDayOfYear();
                     }
-                    value+= " (" + FORMATTER.format(item.getValue().getHits() / yearDays) + " movies/day)";
+                    value += " (" + FORMATTER.format(item.getValue().getHits() / yearDays) + " movies/day)";
                 }
                 sortedTop.put(item.getKey(), value);
-            }
-            else {
+            } else {
                 sortedTop.put(item.getKey(), item.getValue().toString());
             }
         }
@@ -272,10 +280,10 @@ public class AnalyticsComplexUtils {
         return chartData;
     }
 
-    private static Map<Integer,Integer> prepareForChart(Map<String, Integer> ratings) {
+    private static Map<Integer, Integer> prepareForChart(Map<String, Integer> ratings) {
         Map<Integer, Integer> chartData = new LinkedHashMap<>();
         for (Map.Entry<String, Integer> entry : ratings.entrySet()) {
-            chartData.put(Integer.valueOf(entry.getKey()),entry.getValue());
+            chartData.put(Integer.valueOf(entry.getKey()), entry.getValue());
         }
         return chartData;
     }
@@ -294,6 +302,17 @@ public class AnalyticsComplexUtils {
         return sortedMap;
     }
 
+    private static Map<String, MigrationOuputComplexAnalytics.Movie> sortMapByRating(
+            Map<String, MigrationOuputComplexAnalytics.Movie> itemMap) {
+        List<Map.Entry<String, Movie>> list = new LinkedList<>(itemMap.entrySet());
+        list.sort(Comparator.comparing(o -> (Integer.valueOf(o.getValue().getRating()) * -1)));
+        Map<String, Movie> sortedMap = new LinkedHashMap<>();
+        for (Map.Entry<String, Movie> entry : list) {
+            sortedMap.put(entry.getKey(), entry.getValue());
+        }
+        return sortedMap;
+    }
+
     private static Map<String, MigrationOuputComplexAnalytics.TotalAvg> sortMapMoviesByValue(
             Map<String, MigrationOuputComplexAnalytics.TotalAvg> itemMap) {
         Map<String, Integer> itemMapBySize = new HashMap();
@@ -303,7 +322,7 @@ public class AnalyticsComplexUtils {
         TreeMap<String, Integer> sortedMapBySize = sortMapByValue(itemMapBySize);
 
         Map<String, MigrationOuputComplexAnalytics.TotalAvg> sortedMap = new LinkedHashMap<>();
-        for (Map.Entry<String,Integer> item : sortedMapBySize.entrySet()) {
+        for (Map.Entry<String, Integer> item : sortedMapBySize.entrySet()) {
             sortedMap.put(item.getKey(), itemMap.get(item.getKey()));
         }
         return sortedMap;

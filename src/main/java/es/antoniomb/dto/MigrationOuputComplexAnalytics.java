@@ -17,35 +17,50 @@ public class MigrationOuputComplexAnalytics {
     Collection<Integer> yearsByRatingDateChartValues;
     Map<String, String> ratingDist;
     List<Object[]> ratingChart;
-    Map<String, String> bestMovies;
-    Map<String, String> worstMovies;
-    Map<String, String> jokeActor;
-    Map<String, List<Movie>> shortMoviesYears;
-    Map<String, List<Movie>> documentariesYears;
-    Map<String, List<Movie>> tvSeriesYears;
+    Map<String, Movie> bestMovies;
+    Map<String, Movie> worstMovies;
+    Map<String, Movie> jokeActor;
+    Map<String, Movie> shortMovies;
+    Map<String, Movie> documentaries;
+    Map<String, Movie> tvSeries;
     private int totalMovies;
     private int totalTvSeries;
     private int totalDocumentaries;
     private int totalShortMovies;
 
     public static class Movie {
+        private String faId;
         private String title;
         private String year;
         private String rating;
-        private Movie(String title, String year, String rating) {
+
+        private Movie(String faId, String title, String year, String rating) {
+            this.faId = faId;
             this.title = title;
             this.year = year;
             this.rating = rating;
         }
+
         public static Movie of(String title, String year, String rating) {
-            return new Movie(title, year, rating);
+            return new Movie(null, title, year, rating);
         }
+
+        public static Movie of(String faId, String title, String year, String rating) {
+            return new Movie(faId, title, year, rating);
+        }
+
+        public String getFaId() {
+            return faId;
+        }
+
         public String getTitle() {
             return title;
         }
+
         public String getYear() {
             return year;
         }
+
         public String getRating() {
             return rating;
         }
@@ -55,21 +70,26 @@ public class MigrationOuputComplexAnalytics {
         private int hits;
         private int totalRating;
         private List<Movie> movies = new ArrayList<>();
+
         public TotalAvg(String rating, Movie movie) {
             this.hits = 1;
             this.totalRating = Integer.parseInt(rating);
             this.movies.add(movie);
         }
-        public int getHits(){
+
+        public int getHits() {
             return hits;
         }
+
         public void addRating(String rating) {
             ++this.hits;
-            this.totalRating+=Integer.parseInt(rating);
+            this.totalRating += Integer.parseInt(rating);
         }
+
         public List<Movie> getMovies() {
             return movies;
         }
+
         public void setMovies(List<Movie> movies) {
             this.movies = movies;
         }
@@ -160,57 +180,57 @@ public class MigrationOuputComplexAnalytics {
     public void setRatingChart(Map<Integer, Integer> ratingChart) {
         this.ratingChart = new ArrayList<>();
         for (Map.Entry<Integer, Integer> entry : ratingChart.entrySet()) {
-            this.ratingChart.add(Arrays.asList(String.valueOf(entry.getKey()),entry.getValue()).toArray());
+            this.ratingChart.add(Arrays.asList(String.valueOf(entry.getKey()), entry.getValue()).toArray());
         }
     }
 
-    public Map<String, String> getBestMovies() {
+    public Map<String, Movie> getBestMovies() {
         return bestMovies;
     }
 
-    public void setBestMovies(Map<String, String> bestMovies) {
+    public void setBestMovies(Map<String, Movie> bestMovies) {
         this.bestMovies = bestMovies;
     }
 
-    public Map<String, String> getWorstMovies() {
+    public Map<String, Movie> getWorstMovies() {
         return worstMovies;
     }
 
-    public void setWorstMovies(Map<String, String> worstMovies) {
+    public void setWorstMovies(Map<String, Movie> worstMovies) {
         this.worstMovies = worstMovies;
     }
 
-    public Map<String, String> getJokeActor() {
+    public Map<String, Movie> getJokeActor() {
         return jokeActor;
     }
 
-    public void setJokeActor(Map<String, String> jokeActor) {
+    public void setJokeActor(Map<String, Movie> jokeActor) {
         this.jokeActor = jokeActor;
     }
 
-    public Map<String, List<Movie>> getShortMoviesYears() {
-        return shortMoviesYears;
+    public Map<String, Movie> getShortMovies() {
+        return shortMovies;
     }
 
-    public void setShortMoviesYears(Map<String, List<Movie>> shortMoviesYears) {
-        this.shortMoviesYears = shortMoviesYears;
+    public void setShortMovies(Map<String, Movie> shortMovies) {
+        this.shortMovies = shortMovies;
     }
 
-    public void setDocumentariesYears(Map<String, List<Movie>> documentariesYears) {
-        this.documentariesYears = documentariesYears;
+    public void setDocumentaries(Map<String, Movie> documentaries) {
+        this.documentaries = documentaries;
     }
 
-    public Map<String, List<Movie>> getDocumentariesYears() {
-        return documentariesYears;
+    public Map<String, Movie> getDocumentaries() {
+        return documentaries;
     }
 
 
-    public void setTvSeriesYears(Map<String, List<Movie>> tvSeriesYears) {
-        this.tvSeriesYears = tvSeriesYears;
+    public void setTvSeries(Map<String, Movie> tvSeries) {
+        this.tvSeries = tvSeries;
     }
 
-    public Map<String, List<Movie>> getTvSeriesYears() {
-        return tvSeriesYears;
+    public Map<String, Movie> getTvSeries() {
+        return tvSeries;
     }
 
     public void setTotalMovies(int totalMovies) {
