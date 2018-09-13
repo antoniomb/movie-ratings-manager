@@ -14,15 +14,10 @@ app.filter('rawHtml', ['$sce', function($sce){
 app.controller('AppController', ['$scope', '$http', '$window',
     function ($scope, $http, $window) {
 
-    $scope.migrate = function(migration) {
+    //Default values
+    $scope.migration = {from:"filmaffinity", to:"analysis"};
 
-        //Default values
-        if (!migration.from) {
-            migration.from = "filmaffinity";
-        }
-        if (!migration.to) {
-            migration.to = "analysis";
-        }
+    $scope.migrate = function(migration) {
 
         var result = angular.element(document.querySelector('#migration-result'));
         var analysis = angular.element(document.querySelector('#analysis-result'));

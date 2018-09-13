@@ -178,7 +178,7 @@ input[data-toggle]:checked + label:active {
     margin: 0 auto;
 }
 #containerRating {
-    height: 340px;
+    height: 320px;
     max-width: 600px;
     margin: 0 auto;
 }
