@@ -135,13 +135,17 @@ public class FAMigrationService implements IMigrationService {
 
         //Wait for futures
         int futuresDone = 0;
+        int retries = 0;
         while (true) {
             for (Future<List<MovieInfo>> future : futures) {
                 try {
                     movies.addAll(future.get());
                     futuresDone++;
                 } catch (InterruptedException | ExecutionException e) {
-                    LOGGER.log(Level.WARNING, "Error obtaining ratings", e);
+                    LOGGER.log(Level.WARNING, "Error obtaining ratings. Message: " + e.getMessage());
+                    if (--retries > 20) {
+                        throw new MigrationException("Filmaffinity processing error");
+                    }
                 }
             }
 
