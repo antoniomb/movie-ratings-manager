@@ -143,7 +143,7 @@ public class FAMigrationService implements IMigrationService {
                     futuresDone++;
                 } catch (InterruptedException | ExecutionException e) {
                     LOGGER.log(Level.WARNING, "Error obtaining ratings. Message: " + e.getMessage());
-                    if (--retries > 20) {
+                    if (++retries > 20) {
                         throw new MigrationException("Filmaffinity processing error");
                     }
                 }
@@ -168,6 +168,7 @@ public class FAMigrationService implements IMigrationService {
         String url = FAUtils.URLS.RATINGS.getUrl() + userInfo.getUserId() + FAUtils.URLS.PAGE_PREFIX.getUrl() + i;
         Document ratingsPage = null;
         try {
+            userInfo.getCookies().remove("client-data");
             ratingsPage = Jsoup.connect(url).cookies(userInfo.getCookies()).get();
         } catch (IOException e) {
             LOGGER.log(Level.WARNING, "Error loading cookies", e);
