@@ -34,7 +34,7 @@ public class FAMigrationService implements IMigrationService {
 
     private static Logger LOGGER = Logger.getLogger(FAMigrationService.class.getName());
 
-    private final ExecutorService executorService = Executors.newFixedThreadPool(5);
+    private final ExecutorService executorService = Executors.newFixedThreadPool(1);
 
     @Override
     public List<MovieInfo> getRatings(MigrationInput input) {
