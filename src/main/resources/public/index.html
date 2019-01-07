@@ -1,1 +1,334 @@
-<!DOCTYPE html><html ng-app="app"><head>    <title>Movie ratings manager</title>    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.js"></script>    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular-touch.js"></script>    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular-animate.js"></script>    <script src="lib/angular-datepicker.js"></script>    <script src="lib/highcharts.js"></script>    <script src="lib/highcharts-exporting.js"></script>    <link rel="stylesheet" href="lib/foundation.css" type="text/css">    <link rel="stylesheet" href="lib/foundation-icons.css" type="text/css">    <link rel="stylesheet" href="lib/angular-datepicker.css" type="text/css">    <link rel="stylesheet" href="main.css?rev=2" type="text/css">    <link rel="shortcut icon" type="image/png" href="favicon.ico"/>    <meta charset='utf-8'>    <meta name="viewport" content="width=device-width"></head><body><div ng-controller="AppController">    <div class="row">        <h1>Movie ratings manager</h1>    </div>    <form name="migrationInfo" ng-submit="migrate(migration)">        <div class="row">            <div class="small-12 medium-10 small-centered columns content">                <div class="small-12 medium-10 small-centered columns section-box">                    <h2>Source data</h2>                    <p class="target">Login data of source account</p>                    <ul class="button-group round toggle" data-toggle="buttons-radio">                        <li class="small-12">                            <input type="radio" id="fromFilmaffinity" name="from-group" data-toggle="button"                                   ng-model="migration.from" value="filmaffinity">                            <label class="button" for="fromFilmaffinity">Filmaffinity</label>                        </li>                        <!--                        <li>                            <input type="radio" id="fromIMDB" name="from-group" data-toggle="button"                                   ng-model="migration.from" value="imdb">                            <label class="button disabled" for="fromIMDB">IMDB</label>                        </li>                        <li>                            <input type="radio" id="fromLetsCine" name="from-group" data-toggle="button"                                   ng-model="migration.from" value="letscine">                            <label class="button disabled" for="fromLetsCine">LetsCine</label>                        </li>-->                    </ul>                    <div class="small-12 large-6">                        <span>Username:</span>                    </div>                    <input class="large-6" type="text" name="fromUsername" ng-model="migration.fromUsername" required>                    <div class="small-12 large-6">                        <span>Password:</span>                    </div>                    <input class="large-6" type="password" name="fromPassword" ng-model="migration.fromPassword"                           required>                    <h2>Action</h2>                    <p class="target">Action to execute</p>                    <ul class="button-group round toggle" data-toggle="buttons-radio">                        <li>                            <input type="radio" id="toAnalysis" name="to-group" data-toggle="button"                                   ng-model="migration.to" value="analysis">                            <label class="button" for="toAnalysis">Analyze</label>                        </li>                        <li>                            <input type="radio" id="toLetsCine" name="to-group" data-toggle="button"                                   ng-model="migration.to" value="letscine">                            <label class="button" for="toLetsCine">Migrate to LetsCine</label>                        </li>                        <!--<li>                            <input type="radio" id="toCSV" name="to-group" data-toggle="button"                                   ng-model="migration.to" value="csv" checked>                            <label class="button" for="toCSV">Download CSV</label>                        </li>-->                        <!--                            <li>                                <input type="radio" id="toFilmaffinity" name="to-group" data-toggle="button"                                       ng-model="migration.to" value="filmaffinity">                                <label class="button disabled" for="toFilmaffinity">Filmaffinity</label>                            </li>                            <li>                                <input type="radio" id="toIMDB" name="to-group" data-toggle="button"                                       ng-model="migration.to" value="imdb">                                <label class="button disabled" for="toIMDB">IMDB</label>                            </li>                        -->                    </ul>                    <!--letsCine login-cookie-->                    <div class="row small-12 large-6" ng-show="migration.to == 'letscine'">                        <div class="small-12 large-6 columns">                            <span>Elgg cookie:</span>                        </div>                        <input class="large-6 columns" type="text" name="toUsername" ng-model="migration.toUsername">                    </div>                    <!--<div class="small-12 large-6 columns">                    <span>Username:</span>                    <input class="large-6 columns" type="text" name="username" ng-model="migration.toUsername"><br>                    <div class="small-12 large-6 columns">                        <span>Password:</span>                        <input class="large-6 columns" type="password" name="password" ng-model="migration.toPassword">                    </div>-->                    <h2>Date rating range</h2>                    <p class="target">Optional date rating ranged execution</p>                    <div class="row small-12 large-6">                        <div class="small-12 large-6 columns">                            <datepicker date-format="yyyy-MM-dd">                                <input ng-model="migration.fromDate" type="text" id="from-date" placeholder="From">                            </datepicker>                        </div>                        <div class="small-12 large-6 columns">                            <datepicker date-format="yyyy-MM-dd">                                <input ng-model="migration.toDate" type="text" id="to-date" placeholder="To">                            </datepicker>                        </div>                    </div>                </div>                <div id="migration-actions" class="small-12 medium-10 small-centered columns content">                    <div class="right small-4">                        <button class="big button" type="submit">Run!</button>                    </div>                </div>            </div>            <div id="migration-result" class="small-12 medium-10 small-centered columns content info ng-hide">                <div class="title">{{result}}</div>            </div>            <div id="analysis-result" class="small-12 medium-10 small-centered columns content ng-hide">                <div class="category small-12 small-centered columns ">                    <div class="title">Categories</div>                    <div class="info">                        <ul>                            <li><span>Movies: {{analytics.totalMovies}}</span></li>                            <li><span>Short Movies: {{analytics.totalShortMovies}}</span></li>                            <li><span>Documentaries: {{analytics.totalDocumentaries}}</span></li>                            <li><span>TV Series: {{analytics.totalTvSeries}}</span></li>                        </ul>                    </div>                </div>                <div class="category small-12 small-centered columns ">                    <div class="title">Top Directors</div>                    <div class="info">                        <div class="data" data-ng-repeat="(name,movies) in analytics.directors">									<span ng-click="showMovies = ! showMovies">										<i class="fi-arrow-right"></i>										{{name}} ({{movies.length}}) - <i>{{calculateAverage(movies)}}</i>										<a target="_blank"                                           href="https://www.filmaffinity.com/en/search.php?stype=director&stext={{name}}"><i                                                class="fi-link"></i></a>									</span>                            <ul ng-show="showMovies">                                <li data-ng-repeat="movie in movies">                                    <a target="_blank" href="https://www.filmaffinity.com/es/film{{movie.faId}}.html">                                        [{{movie.year}}] {{movie.title}} - <i>{{movie.rating}}</i>                                    </a>                                </li>                            </ul>                        </div>                    </div>                </div>                <div class="category small-12 small-centered columns ">                    <div class="title">Top Actors</div>                    <div class="info">                        <div class="data" data-ng-repeat="(name,movies) in analytics.actors">									<span ng-click="showMovies = ! showMovies">										<i class="fi-arrow-right"></i>										{{name}} ({{movies.length}}) - <i>{{calculateAverage(movies)}}</i>										<a target="_blank"                                           href="https://www.filmaffinity.com/en/search.php?stype=cast&stext={{name}}"><i                                                class="fi-link"></i></a>									</span>                            <ul ng-show="showMovies">                                <li data-ng-repeat="movie in movies">                                    <a target="_blank" href="https://www.filmaffinity.com/es/film{{movie.faId}}.html">                                        [{{movie.year}}] {{movie.title}} - <i>{{movie.rating}}</i>                                    </a>                                </li>                            </ul>                        </div>                    </div>                </div>                <div class="category small-12 small-centered columns ">                    <div class="title">Top Movies by country</div>                    <div class="info">                        <div class="data" data-ng-repeat="(name,movies) in analytics.countries">									<span ng-click="showMovies = ! showMovies">										<i class="fi-arrow-right"></i>										{{name}}									</span>                            <ul ng-show="showMovies">                                <li data-ng-repeat="movie in movies">                                    <a target="_blank" href="https://www.filmaffinity.com/es/film{{movie.faId}}.html">                                        [{{movie.year}}] {{movie.title}} - <i>{{movie.rating}}</i>                                    </a>                                </li>                            </ul>                        </div>                    </div>                </div>                <div class="category small-12 small-centered columns ">                    <div class="title">Top Movies by year</div>                    <div class="info">                        <div class="data" data-ng-repeat="(name,movies) in analytics.moviesYears">									<span ng-click="showMovies = ! showMovies">										<i class="fi-arrow-right"></i>										{{name}}									</span>                            <ul ng-show="showMovies">                                <li data-ng-repeat="movie in movies">                                    <a target="_blank" href="https://www.filmaffinity.com/es/film{{movie.faId}}.html">                                        [{{movie.year}}] {{movie.title}} - <i>{{movie.rating}}</i>                                    </a>                                </li>                            </ul>                        </div>                    </div>                    <div id="containerYear"></div>                </div>                <div class="category small-12 small-centered columns ">                    <div class="title">Top Movies by rating year</div>                    <div class="info">                        <div class="data" data-ng-repeat="(name,movies) in analytics.yearsByRatingDate">									<span ng-click="showMovies = ! showMovies">										<i class="fi-arrow-right"></i>										{{name}}									</span>                            <ul ng-show="showMovies">                                <li data-ng-repeat="movie in movies">                                    <a target="_blank" href="https://www.filmaffinity.com/es/film{{movie.faId}}.html">                                        [{{movie.year}}] {{movie.title}} - <i>{{movie.rating}}</i>                                    </a>                                </li>                            </ul>                        </div>                    </div>                    <div id="containerYearByRatingDate"></div>                </div>                <div class="category small-12 small-centered columns ">                    <div class="title">Ratings Distribution</div>                    <div id="ratings" class="info">                        <div class="small-6 small-left columns info">                            <div class="data" data-ng-repeat="(name,value) in analytics.ratingDist">                                {{name}} {{value}}                            </div>                        </div>                        <div class="small-6 small-right columns">                            <div id="containerRating"></div>                        </div>                    </div>                </div>                <div class="category small-12 small-centered columns ">                    <div class="title">Best Rated Movies - <i>{{getLength(analytics.bestMovies)}}</i></div>                    <div class="info">                        <div class="data" data-ng-repeat="movie in analytics.bestMovies">                            <a target="_blank" href="https://www.filmaffinity.com/es/film{{movie.faId}}.html">                                [{{movie.year}}] {{movie.title}} - <i>{{movie.rating}}</i>                            </a>                        </div>                    </div>                </div>                <div class="category small-12 small-centered columns ">                    <div class="title">Worst Rated Movies - <i>{{getLength(analytics.worstMovies)}}</i></div>                    <div class="info">                        <div class="data" data-ng-repeat="movie in analytics.worstMovies">                            <a target="_blank" href="https://www.filmaffinity.com/es/film{{movie.faId}}.html">                                [{{movie.year}}] {{movie.title}} - <i>{{movie.rating}}</i>                            </a>                        </div>                    </div>                </div>                <div class="category small-12 small-centered columns ">                    <div class="title">Nicolas Cage Movies - <i>{{getLength(analytics.jokeActor)}}</i></div>                    <div class="info">                        <div class="data" data-ng-repeat="movie in analytics.jokeActor">                            <a target="_blank" href="https://www.filmaffinity.com/es/film{{movie.faId}}.html">                                [{{movie.year}}] {{movie.title}} - <i>{{movie.rating}}</i>                            </a>                        </div>                    </div>                </div>                <div class="category small-12 small-centered columns ">                    <div class="title">Top Short Movies</div>                    <div class="info">                        <div class="data" data-ng-repeat="movie in analytics.shortMovies">                            <a target="_blank" href="https://www.filmaffinity.com/es/film{{movie.faId}}.html">                                [{{movie.year}}] {{movie.title}} - <i>{{movie.rating}}</i>                            </a>                        </div>                    </div>                </div>                <div class="category small-12 small-centered columns ">                    <div class="title">Top Documentaries</div>                    <div class="info">                        <div class="data" data-ng-repeat="movie in analytics.documentaries">                            <a target="_blank" href="https://www.filmaffinity.com/es/film{{movie.faId}}.html">                                [{{movie.year}}] {{movie.title}} - <i>{{movie.rating}}</i>                            </a>                        </div>                    </div>                </div>                <div class="category small-12 small-centered columns ">                    <div class="title">Top Tv Series</div>                    <div class="info">                        <div class="data" data-ng-repeat="movie in analytics.tvSeries">                            <a target="_blank" href="https://www.filmaffinity.com/es/film{{movie.faId}}.html">                                [{{movie.year}}] {{movie.title}} - <i>{{movie.rating}}</i>                            </a>                        </div>                    </div>                </div>            </div>        </div>    </form></div><script src="app.js?rev=1"></script></body></html>
+<!DOCTYPE html>
+<html ng-app="app">
+<head>
+    <title>Movie ratings manager</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular-touch.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular-animate.js"></script>
+    <script src="lib/angular-datepicker.js"></script>
+    <script src="lib/highcharts.js"></script>
+    <script src="lib/highcharts-exporting.js"></script>
+    <link rel="stylesheet" href="lib/foundation.css" type="text/css">
+    <link rel="stylesheet" href="lib/foundation-icons.css" type="text/css">
+    <link rel="stylesheet" href="lib/angular-datepicker.css" type="text/css">
+    <link rel="stylesheet" href="main.css?rev=2" type="text/css">
+    <link rel="shortcut icon" type="image/png" href="favicon.ico"/>
+    <meta charset='utf-8'>
+    <meta name="viewport" content="width=device-width">
+</head>
+<body>
+<div ng-controller="AppController">
+    <div class="row">
+        <h1>Movie ratings manager</h1>
+    </div>
+    <form name="migrationInfo" ng-submit="migrate(migration)">
+        <div class="row">
+            <div class="small-12 medium-10 small-centered columns content">
+                <div class="small-12 medium-10 small-centered columns section-box">
+                    <h2>Source data</h2>
+                    <p class="target">Login data of source account</p>
+                    <ul class="button-group round toggle" data-toggle="buttons-radio">
+                        <li class="small-12">
+                            <input type="radio" id="fromFilmaffinity" name="from-group" data-toggle="button"
+                                   ng-model="migration.from" value="filmaffinity">
+                            <label class="button" for="fromFilmaffinity">Filmaffinity</label>
+                        </li>
+                        <!--
+                        <li>
+                            <input type="radio" id="fromIMDB" name="from-group" data-toggle="button"
+                                   ng-model="migration.from" value="imdb">
+                            <label class="button disabled" for="fromIMDB">IMDB</label>
+                        </li>
+                        <li>
+                            <input type="radio" id="fromLetsCine" name="from-group" data-toggle="button"
+                                   ng-model="migration.from" value="letscine">
+                            <label class="button disabled" for="fromLetsCine">LetsCine</label>
+                        </li>-->
+                    </ul>
+                    <div class="small-12 large-6">
+                        <span>Username:</span>
+                    </div>
+                    <input class="large-6" type="text" name="fromUsername" ng-model="migration.fromUsername" required>
+                    <div class="small-12 large-6">
+                        <span>Password:</span>
+                    </div>
+                    <input class="large-6" type="password" name="fromPassword" ng-model="migration.fromPassword"
+                           required>
+
+                    <h2>Action</h2>
+                    <p class="target">Action to execute</p>
+                    <ul class="button-group round toggle" data-toggle="buttons-radio">
+                        <li>
+                            <input type="radio" id="toAnalysis" name="to-group" data-toggle="button"
+                                   ng-model="migration.to" value="analysis">
+                            <label class="button" for="toAnalysis">Analyze</label>
+                        </li>
+                        <!--<li>
+                            <input type="radio" id="toLetsCine" name="to-group" data-toggle="button"
+                                   ng-model="migration.to" value="letscine">
+                            <label class="button" for="toLetsCine">Migrate to LetsCine</label>
+                        </li>-->
+                        <li>
+                            <input type="radio" id="toCSV" name="to-group" data-toggle="button"
+                                   ng-model="migration.to" value="csv" checked>
+                            <label class="button" for="toCSV">Download CSV</label>
+                        </li>
+                        <!--
+                            <li>
+                                <input type="radio" id="toFilmaffinity" name="to-group" data-toggle="button"
+                                       ng-model="migration.to" value="filmaffinity">
+                                <label class="button disabled" for="toFilmaffinity">Filmaffinity</label>
+                            </li>
+                            <li>
+                                <input type="radio" id="toIMDB" name="to-group" data-toggle="button"
+                                       ng-model="migration.to" value="imdb">
+                                <label class="button disabled" for="toIMDB">IMDB</label>
+                            </li>
+                        -->
+                    </ul>
+
+                    <!--letsCine login-cookie-->
+                    <div class="row small-12 large-6" ng-show="migration.to == 'letscine'">
+                        <div class="small-12 large-6 columns">
+                            <span>Elgg cookie:</span>
+                        </div>
+                        <input class="large-6 columns" type="text" name="toUsername" ng-model="migration.toUsername">
+                    </div>
+                    <!--<div class="small-12 large-6 columns">
+                    <span>Username:</span>
+                    <input class="large-6 columns" type="text" name="username" ng-model="migration.toUsername"><br>
+                    <div class="small-12 large-6 columns">
+                        <span>Password:</span>
+                        <input class="large-6 columns" type="password" name="password" ng-model="migration.toPassword">
+                    </div>-->
+
+                    <h2>Date rating range</h2>
+                    <p class="target">Optional date rating ranged execution</p>
+                    <div class="row small-12 large-6">
+                        <div class="small-12 large-6 columns">
+                            <datepicker date-format="yyyy-MM-dd">
+                                <input ng-model="migration.fromDate" type="text" id="from-date" placeholder="From">
+                            </datepicker>
+                        </div>
+                        <div class="small-12 large-6 columns">
+                            <datepicker date-format="yyyy-MM-dd">
+                                <input ng-model="migration.toDate" type="text" id="to-date" placeholder="To">
+                            </datepicker>
+                        </div>
+                    </div>
+                </div>
+                <div id="migration-actions" class="small-12 medium-10 small-centered columns content">
+                    <div class="right small-4">
+                        <button class="big button" type="submit">Run!</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="migration-result" class="small-12 medium-10 small-centered columns content info ng-hide">
+                <div class="title">{{result}}</div>
+            </div>
+
+            <div id="analysis-result" class="small-12 medium-10 small-centered columns content ng-hide">
+
+                <div class="category small-12 small-centered columns ">
+                    <div class="title">Categories</div>
+                    <div class="info">
+                        <ul>
+                            <li><span>Movies: {{analytics.totalMovies}}</span></li>
+                            <li><span>Short Movies: {{analytics.totalShortMovies}}</span></li>
+                            <li><span>Documentaries: {{analytics.totalDocumentaries}}</span></li>
+                            <li><span>TV Series: {{analytics.totalTvSeries}}</span></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="category small-12 small-centered columns ">
+                    <div class="title">Top Directors</div>
+                    <div class="info">
+                        <div class="data" data-ng-repeat="(name,movies) in analytics.directors">
+									<span ng-click="showMovies = ! showMovies">
+										<i class="fi-arrow-right"></i>
+										{{name}} ({{movies.length}}) - <i>{{calculateAverage(movies)}}</i>
+										<a target="_blank"
+                                           href="https://www.filmaffinity.com/en/search.php?stype=director&stext={{name}}"><i
+                                                class="fi-link"></i></a>
+									</span>
+                            <ul ng-show="showMovies">
+                                <li data-ng-repeat="movie in movies">
+                                    <a target="_blank" href="https://www.filmaffinity.com/es/film{{movie.faId}}.html">
+                                        [{{movie.year}}] {{movie.title}} - <i>{{movie.rating}}</i>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="category small-12 small-centered columns ">
+                    <div class="title">Top Actors</div>
+                    <div class="info">
+                        <div class="data" data-ng-repeat="(name,movies) in analytics.actors">
+									<span ng-click="showMovies = ! showMovies">
+										<i class="fi-arrow-right"></i>
+										{{name}} ({{movies.length}}) - <i>{{calculateAverage(movies)}}</i>
+										<a target="_blank"
+                                           href="https://www.filmaffinity.com/en/search.php?stype=cast&stext={{name}}"><i
+                                                class="fi-link"></i></a>
+									</span>
+                            <ul ng-show="showMovies">
+                                <li data-ng-repeat="movie in movies">
+                                    <a target="_blank" href="https://www.filmaffinity.com/es/film{{movie.faId}}.html">
+                                        [{{movie.year}}] {{movie.title}} - <i>{{movie.rating}}</i>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="category small-12 small-centered columns ">
+                    <div class="title">Top Movies by country</div>
+                    <div class="info">
+                        <div class="data" data-ng-repeat="(name,movies) in analytics.countries">
+									<span ng-click="showMovies = ! showMovies">
+										<i class="fi-arrow-right"></i>
+										{{name}}
+									</span>
+                            <ul ng-show="showMovies">
+                                <li data-ng-repeat="movie in movies">
+                                    <a target="_blank" href="https://www.filmaffinity.com/es/film{{movie.faId}}.html">
+                                        [{{movie.year}}] {{movie.title}} - <i>{{movie.rating}}</i>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="category small-12 small-centered columns ">
+                    <div class="title">Top Movies by year</div>
+                    <div class="info">
+                        <div class="data" data-ng-repeat="(name,movies) in analytics.moviesYears">
+									<span ng-click="showMovies = ! showMovies">
+										<i class="fi-arrow-right"></i>
+										{{name}}
+									</span>
+                            <ul ng-show="showMovies">
+                                <li data-ng-repeat="movie in movies">
+                                    <a target="_blank" href="https://www.filmaffinity.com/es/film{{movie.faId}}.html">
+                                        [{{movie.year}}] {{movie.title}} - <i>{{movie.rating}}</i>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div id="containerYear"></div>
+                </div>
+
+                <div class="category small-12 small-centered columns ">
+                    <div class="title">Top Movies by rating year</div>
+                    <div class="info">
+                        <div class="data" data-ng-repeat="(name,movies) in analytics.yearsByRatingDate">
+									<span ng-click="showMovies = ! showMovies">
+										<i class="fi-arrow-right"></i>
+										{{name}}
+									</span>
+                            <ul ng-show="showMovies">
+                                <li data-ng-repeat="movie in movies">
+                                    <a target="_blank" href="https://www.filmaffinity.com/es/film{{movie.faId}}.html">
+                                        [{{movie.year}}] {{movie.title}} - <i>{{movie.rating}}</i>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div id="containerYearByRatingDate"></div>
+                </div>
+
+                <div class="category small-12 small-centered columns ">
+                    <div class="title">Ratings Distribution</div>
+                    <div id="ratings" class="info">
+                        <div class="small-6 small-left columns info">
+                            <div class="data" data-ng-repeat="(name,value) in analytics.ratingDist">
+                                {{name}} {{value}}
+                            </div>
+                        </div>
+                        <div class="small-6 small-right columns">
+                            <div id="containerRating"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="category small-12 small-centered columns ">
+                    <div class="title">Best Rated Movies - <i>{{getLength(analytics.bestMovies)}}</i></div>
+                    <div class="info">
+                        <div class="data" data-ng-repeat="movie in analytics.bestMovies">
+                            <a target="_blank" href="https://www.filmaffinity.com/es/film{{movie.faId}}.html">
+                                [{{movie.year}}] {{movie.title}} - <i>{{movie.rating}}</i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="category small-12 small-centered columns ">
+                    <div class="title">Worst Rated Movies - <i>{{getLength(analytics.worstMovies)}}</i></div>
+                    <div class="info">
+                        <div class="data" data-ng-repeat="movie in analytics.worstMovies">
+                            <a target="_blank" href="https://www.filmaffinity.com/es/film{{movie.faId}}.html">
+                                [{{movie.year}}] {{movie.title}} - <i>{{movie.rating}}</i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="category small-12 small-centered columns ">
+                    <div class="title">Nicolas Cage Movies - <i>{{getLength(analytics.jokeActor)}}</i></div>
+                    <div class="info">
+                        <div class="data" data-ng-repeat="movie in analytics.jokeActor">
+                            <a target="_blank" href="https://www.filmaffinity.com/es/film{{movie.faId}}.html">
+                                [{{movie.year}}] {{movie.title}} - <i>{{movie.rating}}</i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="category small-12 small-centered columns ">
+                    <div class="title">Top Short Movies</div>
+                    <div class="info">
+                        <div class="data" data-ng-repeat="movie in analytics.shortMovies">
+                            <a target="_blank" href="https://www.filmaffinity.com/es/film{{movie.faId}}.html">
+                                [{{movie.year}}] {{movie.title}} - <i>{{movie.rating}}</i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="category small-12 small-centered columns ">
+                    <div class="title">Top Documentaries</div>
+                    <div class="info">
+                        <div class="data" data-ng-repeat="movie in analytics.documentaries">
+                            <a target="_blank" href="https://www.filmaffinity.com/es/film{{movie.faId}}.html">
+                                [{{movie.year}}] {{movie.title}} - <i>{{movie.rating}}</i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="category small-12 small-centered columns ">
+                    <div class="title">Top Tv Series</div>
+                    <div class="info">
+                        <div class="data" data-ng-repeat="movie in analytics.tvSeries">
+                            <a target="_blank" href="https://www.filmaffinity.com/es/film{{movie.faId}}.html">
+                                [{{movie.year}}] {{movie.title}} - <i>{{movie.rating}}</i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+</div>
+<script src="app.js?rev=1"></script>
+</body>
+</html>
